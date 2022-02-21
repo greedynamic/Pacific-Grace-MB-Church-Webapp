@@ -49,6 +49,6 @@ The user wants to purchase some church products, like books or brochures. The us
 
 ## Workload enough for five people?
 
-The workload for a total of 6 epics will be sufficient for five people to achieve. Each epic has many subproblems that cover-up work to complete in a two-week iteration for each member in the five-person group. 
+Yes the workload for a total of 6 epics will be sufficient for five people to achieve. Each epic has many subproblems that cover-up work to complete in a two-week iteration for each member in the five-person group. 
 
 
