@@ -18,15 +18,17 @@ app.use(express.urlencoded({extended:false}));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.get('/db', async (req, res) => {
+app.get('/database', async (req, res) => {
   try {
     const client = await pool.connect();
-    const result = await client.query(`SELECT * FROM usr`);
+    const result = await client.query(`select * from usr`);
     const results = { 'results': (result) ? result.rows : null};
-    res.render('pages/db', results );
+    res.render('pages/db', results);
     client.release();
   } catch (err) {
-    console.error(err);
-    res.send("Error " + err);
+    res.send(err);
   }
-})
+});
+
+
+app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
