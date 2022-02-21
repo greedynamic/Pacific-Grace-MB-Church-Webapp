@@ -1,6 +1,9 @@
 # Pacific-Grace-MB-Church-Webapp
 This webapp is created for Port Moody Pacific Grace MB Church
 
+## UI mockup:
+![alt text](https://github.com/greedynamic/276_indivAssmnts/blob/main/MockupUI.jpeg)
+
 ## Issues Addressed By This Project
 
 The customer currently has a dated website that they use for their church, Port Moody Pacific Grace MB Church.
@@ -43,9 +46,6 @@ The user feels generous and opens the website. The user clicks the donation butt
 
 Typical sample story / scenario six:
 The user wants to purchase some church products, like books or brochures. The user opens the website and goes to the shop merchandise. The webpage shows all merchandise to the user and adds it to the cart. If the user is not a registered user, the website asks to log in or create an account. After the registration, the user is able to checkout and pay using Paypal. After the purchase, the user’s registered email receives a summary in the email and the website prompts a thankful message. 
-
-## UI mockup:
-![alt text](https://github.com/greedynamic/276_indivAssmnts/blob/main/MockupUI.jpeg)
 
 ## Workload enough for five people?
 
