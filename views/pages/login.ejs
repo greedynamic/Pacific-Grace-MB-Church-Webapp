@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- <link rel="stylesheet" type="text/css" href="/stylesheets/home.css"> -->
+        <script src="../../index.js" defer></script>
+        <title>Login</title>
+    </head>
+
+    <body>
+        <div id="content">
+            <h2>Login</h2>
+            <img scr="/public/images/logo.png" alt="logo">
+            <form id="loginForm" method="post">
+                <label for="email">Email:</label>
+                <input type="text" name="email" minlength="1" maxlength="100" required><br>
+                <label for="password">Password:</label>
+                <input type="text" name="password" minglength="1" maxlength="20" required><br>
+                <input type="submit" value="Login">
+            </form>
+
+            <form id="signupForm" action="/signup">
+                <p>No Account?</p>
+                <input type="Submit" value="Create one">
+            </form>
+
+        </div>
+    </body>
+</html>

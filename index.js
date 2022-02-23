@@ -30,5 +30,9 @@ app.get('/database', async (req, res) => {
   }
 });
 
+app.get('/signup', (req,res) => res.render('pages/signup'));
+
+app.get('/login', (req,res) => res.render('pages/login'));
+
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
