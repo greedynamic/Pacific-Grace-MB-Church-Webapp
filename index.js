@@ -45,7 +45,7 @@ app.post('/login', async (req,res) => {
     await client.query(loginQuery); 
     const results = {'results': (result) ? result.rows : null};
 
-    if (results.length == 1 && results[0].password == password) {
+    if (results.length == 1 && results[0] == password) {
       res.render("pages/db");
     } else {
       // failed password
