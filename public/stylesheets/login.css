@@ -1,0 +1,53 @@
+label {
+    display: inline-block;
+    width: 160px;
+    text-align: left;
+}
+
+body {
+    font-family: arial;
+    color: black;
+    background-color: aliceblue;
+}
+
+div {
+    text-align: center;
+}
+
+#topContent {
+    margin-top: 8%;
+}
+
+#loginContent {
+    font-size: 28px;
+    margin-top: 40px;
+}
+
+#signupContent {
+    font-size: 20px;
+    margin-top: 30px;
+}
+
+input {
+    background-color: white;
+    border-color: darkgrey;
+}
+
+input[type=text] {
+    padding: 8px;
+    width: 190px;
+    vertical-align: top;
+}
+
+input[type=submit] {
+    color: black;
+    border-radius: 3px;
+    font-size: 20px;
+    padding: 8px;
+    width: 80px;
+    margin-top: 20px;
+}
+
+input[type=submit]:hover {
+    background-color: rgb(203, 250, 203);
+}
