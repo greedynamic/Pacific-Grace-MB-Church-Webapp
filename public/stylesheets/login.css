@@ -5,27 +5,42 @@ label {
 }
 
 body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     font-family: arial;
     color: black;
+    background-color: rgb(203, 250, 203);
+}
+
+#content {
+    padding: 4vw;
+    border-radius: 20px;
     background-color: aliceblue;
 }
 
-div {
-    text-align: center;
+img.resize {
+    height: auto; 
+    width: auto; 
+    max-width: 100px; 
+    max-height: 100px;
 }
 
 #topContent {
-    margin-top: 8%;
+
 }
 
 #loginContent {
     font-size: 28px;
-    margin-top: 40px;
+    margin-top: 50px;
 }
 
 #signupContent {
     font-size: 20px;
-    margin-top: 30px;
+    margin-top: 100px;
 }
 
 input {
@@ -35,7 +50,7 @@ input {
 
 input[type=text] {
     padding: 8px;
-    width: 190px;
+    width: 200px;
     vertical-align: top;
 }
 

@@ -9,26 +9,27 @@
     </head>
 
     <body>
-        <div id="topContent">
-            <img scr="/images/logo.png" alt="logo">
-        </div>
+        <div id="content">
+            <div id="topContent">
+                <img src="/images/logo.png" alt="logo">
+            </div>
 
-        <div id="loginContent">
-            <form id="loginForm" method="post">
-                <label for="email">Email</label>
-                <input type="text" name="email" minlength="1" maxlength="100" required><br>
-                <label for="password">Password</label>
-                <input type="text" name="password" minglength="1" maxlength="20" required><br>
-                <input type="submit" value="Login">
-            </form>
-        </div>
+            <div id="loginContent">
+                <form id="loginForm" method="post">
+                    <label for="email">Email</label>
+                    <input type="text" name="email" minlength="1" maxlength="100" required><br>
+                    <label for="password">Password</label>
+                    <input type="text" name="password" minglength="1" maxlength="20" required><br>
+                    <input type="submit" value="Login">
+                </form>
+            </div>
 
-        <div id="signupContent">
-            <form id="signupForm" action="/signup">
-                <text>No account?</text>
-                <a href="/signup">Create one</a>
-            </form>
+            <div id="signupContent">
+                <form id="signupForm" action="/signup">
+                    <text>No account?</text>
+                    <a href="/signup">Create one</a>
+                </form>
+            </div>
         </div>
-        
     </body>
 </html>
