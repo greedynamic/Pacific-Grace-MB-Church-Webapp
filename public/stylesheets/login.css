@@ -18,15 +18,14 @@ body {
 
 #content {
     padding: 4vw;
+    width: 35vw;
     border-radius: 20px;
     background-color: aliceblue;
 }
 
-img.resize {
+img {
+    width: 60%; 
     height: auto; 
-    width: auto; 
-    max-width: 100px; 
-    max-height: 100px;
 }
 
 #topContent {
