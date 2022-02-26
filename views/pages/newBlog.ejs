@@ -18,7 +18,23 @@
     <div class="container">
         <h1 class="mb-4">New Blog</h1>
         <form action="/blog/" method="post">
-            <%- include("../partials/blog_form.ejs") %>  
+            <div class="form-group">
+                <label for="title">Title</label>
+                <input required type="text" name="title" id="title" class="form-control">
+    
+            </div>
+    
+            <div class="form-group">
+                <label for="summary">Summary</label>
+                <textarea name="summary" id="summary" class="form-control"></textarea>
+            </div>
+    
+            <div class="form-group">
+                <label for="content">Content</label>
+                <textarea required name="content" id="content" class="form-control"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Publish</button>
+            <a href="/" class="btn btn-secondary">Cancel</a>
         </form>
 
     </div>
