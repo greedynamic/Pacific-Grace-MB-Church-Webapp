@@ -47,7 +47,7 @@ input {
     border-color: darkgrey;
 }
 
-input[type=text] {
+input[type=text] input[type=password] {
     padding: 8px;
     width: 200px;
     vertical-align: top;
