@@ -33,6 +33,21 @@ app.get('/database', async (req, res) => {
 });
 
 app.get('/signup', (req,res) => res.render('pages/signup'));
+app.post('/signup', async (req,res) => {
+  try {
+    var email = req.body.email;
+    var password = req.body.password;
+    // adds account to database, creating account
+    var registerQuery = `insert into usr values('${email}', '${password}')`;
+
+    const client = await pool.connect();
+    await client.query(registerQuery); 
+    res.render("pages/login");
+    client.release();
+  } catch (err) {
+    res.send(err);
+  }
+})
 
 app.get('/login', (req,res) => res.render('pages/login'));
 
