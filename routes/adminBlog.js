@@ -43,7 +43,6 @@ router.get('/:title', (req,res) => {
 router.post('/', (req,res) => {
     const{title, summary, content} = req.body;
     const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-    console.log(content);
     var query = `INSERT INTO blog VALUES (DEFAULT, '${title}', '${summary}', '${content}', '${date}');`;
     pool.query(query, (error, result) => {
         if(error){
@@ -85,12 +84,13 @@ router.get('/edit/:title', (req,res) => {
 /** Update blog edit in the blog table */
 router.post('/edit/:title', (req,res) => {
     const{title, summary, content} = req.body;
-    var editQuery = `UPDATE blog SET title='${title}', summary='${summary}', content='${content}' WHERE title='${req.params.title}';`;
+    const updated_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    var editQuery = `UPDATE blog SET title='${title}', summary='${summary}', content='${content}', updated_at='${updated_at}' WHERE title='${req.params.title}';`;
     pool.query(editQuery, (error, result) =>{
         if(error)
           res.send(error);
         else{
-          res.redirect(`/blog/${title}`);
+          res.redirect('/blog');
         }
     })
 })
