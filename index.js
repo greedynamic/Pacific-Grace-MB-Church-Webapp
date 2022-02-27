@@ -48,11 +48,12 @@ app.post('/login', async (req,res) => {
     const passwordResult = {'results': (result) ? result.rows : null};
 
     if (passwordResult.length == 1 && passwordResult[0] == password) {
+      console.log("login worked");
       res.render("pages/db");
     } else {
       // failed login
       console.log(results.length);
-      res.redirect("pages/login");
+      res.redirect("pages/signup");
     }
     client.release();
   } catch (err) {
