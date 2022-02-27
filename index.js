@@ -45,14 +45,14 @@ app.post('/login', async (req,res) => {
 
     const client = await pool.connect();
     await client.query(loginQuery); 
-    const results = {'results': (result) ? result.rows : null};
+    const passwordResult = {'results': (result) ? result.rows : null};
 
-    if (results.length == 1 && results[0] == password) {
+    if (passwordResult.length == 1 && passwordResult[0] == password) {
       res.render("pages/db");
     } else {
-      // failed password
+      // failed login
       console.log(results.length);
-      res.render("pages/signup");
+      res.render("pages/login");
     }
     client.release();
   } catch (err) {
