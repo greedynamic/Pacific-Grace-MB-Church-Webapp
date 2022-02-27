@@ -47,13 +47,15 @@ app.post('/login', async (req,res) => {
     await client.query(loginQuery); 
     const passwordResult = {'results': (result) ? result.rows : null};
 
+    console.log(passwordResult[0]);
+
     if (passwordResult.length == 1 && passwordResult[0] == password) {
       console.log("login worked");
-      res.render("pages/db");
+      res.redirect("pages/db");
     } else {
       // failed login
       console.log(results.length);
-      res.redirect("pages/signup");
+      res.render("pages/signup");
     }
     client.release();
   } catch (err) {
