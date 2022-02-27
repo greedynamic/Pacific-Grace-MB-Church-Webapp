@@ -15,21 +15,9 @@
 <body>
     <div class="container">
         <% if (blogs.length > 0) { %>
-<<<<<<< HEAD
             <h1 class="mb-2"><%= blogs[0].title %></h1>
             <a href="/blog/" class="btn btn-secondary">All Blogs</a>
             <% for(var i=0; i < blogs.length; i++) { %>
-=======
-            <% for(var i=0; i < blogs.length; i++) { %>
-                <h1 class="mb-2"><%= blogs[i].title %></h1>
-                <div class="text-muted mb-2"> 
-                    Published Date: <%= blogs[i].published_at.toLocaleDateString()%>
-                    <% if (blogs[i].updated_at != null ) {%>
-                        Last Updated: <%= blogs[i].updated_at.toLocaleDateString() %>
-                    <% } %> 
-                </div>
-                <a href="/blog/" class="btn btn-secondary">All Blogs</a> 
->>>>>>> 15df5d50119b38412f150c74b59fec01845c80c2
                 <a href="/blog/edit/<%= blogs[i].title %>" class="btn btn-info">Edit</a>
                 <div class="mt-4" id="content">
                     <%- blogs[i].content %>
