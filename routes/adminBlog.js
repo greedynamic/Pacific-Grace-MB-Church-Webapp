@@ -24,7 +24,7 @@ router.get('/', (req, res) => {
     })
 })
 
-router.get('/blogHomepage', (req, res) => {
+router.get('/homepage', (req, res) => {
   pool.query('SELECT * FROM blog;', (error, result) => {
       if(error)
         res.send(error);
