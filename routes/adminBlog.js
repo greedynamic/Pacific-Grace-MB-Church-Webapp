@@ -43,10 +43,6 @@ router.get('/:title', (req,res) => {
 router.post('/', (req,res) => {
     const{title, summary, content} = req.body;
     const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-<<<<<<< HEAD
-    console.log(content);
-=======
->>>>>>> 15df5d50119b38412f150c74b59fec01845c80c2
     var query = `INSERT INTO blog VALUES (DEFAULT, '${title}', '${summary}', '${content}', '${date}');`;
     pool.query(query, (error, result) => {
         if(error){
@@ -88,21 +84,13 @@ router.get('/edit/:title', (req,res) => {
 /** Update blog edit in the blog table */
 router.post('/edit/:title', (req,res) => {
     const{title, summary, content} = req.body;
-<<<<<<< HEAD
-    var editQuery = `UPDATE blog SET title='${title}', summary='${summary}', content='${content}' WHERE title='${req.params.title}';`;
-=======
     const updated_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
     var editQuery = `UPDATE blog SET title='${title}', summary='${summary}', content='${content}', updated_at='${updated_at}' WHERE title='${req.params.title}';`;
->>>>>>> 15df5d50119b38412f150c74b59fec01845c80c2
     pool.query(editQuery, (error, result) =>{
         if(error)
           res.send(error);
         else{
-<<<<<<< HEAD
-          res.redirect(`/blog/${title}`);
-=======
           res.redirect('/blog');
->>>>>>> 15df5d50119b38412f150c74b59fec01845c80c2
         }
     })
 })
