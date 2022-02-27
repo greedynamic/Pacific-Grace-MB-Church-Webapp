@@ -45,21 +45,23 @@ app.post('/login', async (req,res) => {
 
     const client = await pool.connect();
     await client.query(loginQuery); 
-    const passwordResult = {'results': (result) ? result.rows : null};
+    // const passwordResult = {'results': (result) ? result.rows : null};
+    const passwordResult = res.rows[0];
+    res.redirect("pages/db");
+    
 
-    console.log(passwordResult[0]);
-
-    if (passwordResult.length == 1 && passwordResult[0] == password) {
-      console.log("login worked");
-      res.redirect("pages/db");
-    } else {
-      // failed login
-      console.log(results.length);
-      res.render("pages/signup");
-    }
-    client.release();
+    // if (passwordResult.length == 1 && passwordResult[0] == password) {
+    //   console.log("login worked");
+    //   res.redirect("pages/db");
+    // } else {
+    //   // failed login
+    //   console.log(results.length);
+    //   res.render("pages/signup");
+    // }
+    // client.release();
   } catch (err) {
-    res.send(err);
+    res.render("pages/signup");
+    // res.send(err);
   }
 });
 
