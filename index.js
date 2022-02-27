@@ -33,7 +33,6 @@ app.get('/database', async (req, res) => {
 });
 
 app.get('/signup', (req,res) => res.render('pages/signup'));
-<<<<<<< HEAD
 app.post('/signup', async (req,res) => {
   try {
     var email = req.body.email;
@@ -49,8 +48,6 @@ app.post('/signup', async (req,res) => {
     res.send(err);
   }
 })
-=======
->>>>>>> 15df5d50119b38412f150c74b59fec01845c80c2
 
 app.get('/login', (req,res) => res.render('pages/login'));
 
