@@ -1,6 +1,7 @@
 const express = require('express');
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
+const blogRoute = require('./routes/adminBlog');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
@@ -11,10 +12,11 @@ const pool = new Pool({
     }
 });
 var app = express();
-  
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
+app.use('/blog', blogRoute);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -57,6 +59,7 @@ app.post('/login', async (req,res) => {
     res.send(err);
   }
 });
+
 
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
