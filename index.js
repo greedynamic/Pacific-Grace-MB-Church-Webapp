@@ -39,7 +39,7 @@ app.post('/login', async (req,res) => {
     var email = req.body.email;
     var password = req.body.password;
     // gets the password from a given email
-    var loginQuery = `select password from usr where exists (select * from usr where email=${email})`;
+    var loginQuery = `select password from usr where exists (select * from usr where email='${email}')`;
 
     const client = await pool.connect();
     await client.query(loginQuery); 
@@ -52,7 +52,7 @@ app.post('/login', async (req,res) => {
       console.log(results.length);
       res.render("pages/signup");
     }
-  client.release();
+    client.release();
   } catch (err) {
     res.send(err);
   }
