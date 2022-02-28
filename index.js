@@ -34,6 +34,25 @@ app.get('/database', async (req, res) => {
 
 app.get('/signup', (req,res) => res.render('pages/signup'));
 
+//needs testing
+app.post('/signup', async (req,res) => {
+  try {
+    var firstName = req.body.fName;
+    var lastName  = req.body.lName;
+    var email = req.body.email;
+    var password = req.body.password;
+    // adds account to database, creating account
+    var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
+
+    const client = await pool.connect();
+    await client.query(registerQuery); 
+    res.render("pages/login");
+    client.release();
+  } catch (err) {
+    res.send(err);
+  }
+})
+
 app.get('/login', (req,res) => res.render('pages/login'));
 
 app.post('/login', async (req,res) => {

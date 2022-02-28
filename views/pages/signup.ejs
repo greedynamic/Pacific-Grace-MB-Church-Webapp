@@ -1,1 +1,32 @@
-    
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" type="text/css" href="/stylesheets/login.css">
+        <script src="../../index.js" defer></script>
+        <title>Register an Account</title>
+    </head>
+
+    <body>
+        <div id="content">
+            <div id="topContent">
+                <img src="/images/logo.png" alt="logo">
+            </div>
+
+            <div id="loginContent">
+                <form id="loginForm" method="post">
+                    <label for="fName">First Name</label>
+                    <input type="text" name="fName" minlength="1" maxlength="100" required><br>
+                    <label for="lName">Last Name</label>
+                    <input type="text" name="lName" minlength="1" maxlength="100" required><br>
+                    <label for="email">Email</label>
+                    <input type="text" name="email" minlength="1" maxlength="100" required><br>
+                    <label for="password">Password</label>
+                    <input type="password" name="password" minglength="1" maxlength="20" required><br>
+                    <input type="submit" value="Register">
+                </form>
+            </div>
+        </div>
+    </body>
+</html>
