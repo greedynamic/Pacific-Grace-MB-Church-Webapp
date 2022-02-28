@@ -47,7 +47,8 @@ app.post('/signup', async (req,res) => {
 
     const client = await pool.connect();
     await client.query(registerQuery); 
-    res.render("pages/login");
+    //change later
+    res.redirect("/database");
     client.release();
   } catch (err) {
     res.send(err);
