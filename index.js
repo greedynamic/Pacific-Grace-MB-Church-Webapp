@@ -60,14 +60,17 @@ app.post('/login', async (req,res) => {
     var email = req.body.email;
     var password = req.body.password;
     // gets the password from a given email
-    var loginQuery = `select password from usr where exists (select * from usr where email='${email}')`;
+    var loginQuery = `select * from usr where exists (select * from usr where email='${email}')`;
 
     const client = await pool.connect();
     const result = await client.query(loginQuery);
     if (result.rows[0].password == password) {
+      // Change: send user to home page
       res.redirect("/database");
     } else {
-      res.redirect("/signup")
+      // Change: make some sort of alert message
+      // window.alert("invalid email or password");
+      res.redirect("/login");
     }
     client.release();
   } catch (err) {
