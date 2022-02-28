@@ -47,9 +47,9 @@ app.post('/login', async (req,res) => {
     await client.query(loginQuery); 
     const passwordResult = res.rows[0];
     if (passwordResult == password) {
-      res.redirect("pages/db");
+      res.redirect("/blog");
     } else {
-      res.render("pages/index");
+      res.redirect("pages/signup");
     }
     client.release();
   } catch (err) {
