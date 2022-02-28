@@ -72,9 +72,8 @@ app.post('/login', async (req,res) => {
     }
     client.release();
   } catch (err) {
-    res.end(err);
+    res.send(err);
   }
-    
 });
 
 
