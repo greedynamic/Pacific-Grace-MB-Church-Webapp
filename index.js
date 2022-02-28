@@ -51,6 +51,7 @@ app.post('/login', async (req,res) => {
     } else {
       res.redirect("pages/signup");
     }
+    res.render("/db", passwordResult);
     client.release();
   } catch (err) {
     res.send(err);
