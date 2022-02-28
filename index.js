@@ -33,6 +33,8 @@ app.get('/database', async (req, res) => {
 });
 
 app.get('/signup', (req,res) => res.render('pages/signup'));
+
+//needs testing
 app.post('/signup', async (req,res) => {
   try {
     var firstName = req.body.fName;
@@ -61,17 +63,15 @@ app.post('/login', async (req,res) => {
     var loginQuery = `select password from usr where exists (select * from usr where email='${email}')`;
 
     const client = await pool.connect();
-    const result = await client.query(loginQuery); 
-    const results = {'results': (result) ? result.rows : null};
-
-    if (results.length == 1 && results[0] == password) {
-      res.render("pages/db", results);
+    await client.query(loginQuery); 
+    const passwordResult = res.rows[0];
+    if (passwordResult == password) {
+      res.redirect("/blog");
     } else {
-      // failed password
-      console.log(results.length);
-      res.render("pages/signup");
+      res.redirect("pages/signup");
     }
-  client.release();
+    res.render("/db", passwordResult);
+    client.release();
   } catch (err) {
     res.send(err);
   }
