@@ -63,8 +63,8 @@ app.post('/login', async (req,res) => {
     var loginQuery = `select password from usr where exists (select * from usr where email='${email}')`;
 
     const client = await pool.connect();
-    client.query(loginQuery);
-    const passwordResult = res.rows[0];
+    const result = client.query(loginQuery);
+    const passwordResult = {'results': (result) ? result.rows : null};
     if (passwordResult == password) {
       res.render("pages/db", passwordResult);
     } else {
