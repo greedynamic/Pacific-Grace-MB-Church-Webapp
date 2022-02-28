@@ -17,11 +17,10 @@
 <body>
     <div class="container">
         <h1 class="mb-4">New Blog</h1>
-        <form action="/blog/" method="post">
+        <form action="/blog" method="post">
             <div class="form-group">
                 <label for="title">Title</label>
                 <input required type="text" name="title" id="title" class="form-control">
-    
             </div>
     
             <div class="form-group">
@@ -31,7 +30,11 @@
     
             <div class="form-group">
                 <label for="content">Content</label>
+<<<<<<< HEAD
                 <textarea required name="content" id="content" class="form-control"></textarea>
+=======
+                <textarea name="content" id="content" class="form-control"></textarea>
+>>>>>>> 71418920a651117ed52e04c73543bc744be90079
             </div>
             <button type="submit" class="btn btn-primary">Publish</button>
             <a href="/blog" class="btn btn-secondary">Cancel</a>

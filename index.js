@@ -24,7 +24,7 @@ app.get('/database', async (req, res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(`select * from usr`);
-    const results = { 'results': (result) ? result.rows : null};
+    const results = {'results': (result) ? result.rows : null};
     res.render('pages/db', results);
     client.release();
   } catch (err) {
