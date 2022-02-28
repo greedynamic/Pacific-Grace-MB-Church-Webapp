@@ -41,6 +41,7 @@ app.post('/signup', async (req,res) => {
     var lastName  = req.body.lName;
     var email = req.body.email;
     var password = req.body.password;
+    //check if email is in database
     // adds account to database, creating account
     var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
 
