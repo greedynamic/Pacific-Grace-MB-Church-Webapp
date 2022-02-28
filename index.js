@@ -55,7 +55,7 @@ app.post('/signup', async (req,res) => {
 
 app.get('/login', (req,res) => res.render('pages/login'));
 
-app.post('/login', (req,res) => {
+app.post('/login', async (req,res) => {
     var email = req.body.email;
     var password = req.body.password;
     // gets the password from a given email
@@ -63,7 +63,7 @@ app.post('/login', (req,res) => {
 
     const client = await pool.connect();
 
-    await client.query(loginQuery, (err,res) => {
+    client.query(loginQuery, (err,res) => {
       try {
         const passwordResult = res.rows[0];
         if (passwordResult == password) {
