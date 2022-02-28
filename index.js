@@ -35,10 +35,12 @@ app.get('/database', async (req, res) => {
 app.get('/signup', (req,res) => res.render('pages/signup'));
 app.post('/signup', async (req,res) => {
   try {
+    var firstName = req.body.fName;
+    var lastName  = req.body.lName;
     var email = req.body.email;
     var password = req.body.password;
     // adds account to database, creating account
-    var registerQuery = `insert into usr values('${email}', '${password}')`;
+    var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
 
     const client = await pool.connect();
     await client.query(registerQuery); 
@@ -56,14 +58,14 @@ app.post('/login', async (req,res) => {
     var email = req.body.email;
     var password = req.body.password;
     // gets the password from a given email
-    var loginQuery = `select password from usr where exists (select * from usr where email=${email})`;
+    var loginQuery = `select password from usr where exists (select * from usr where email='${email}')`;
 
     const client = await pool.connect();
     await client.query(loginQuery); 
     const results = {'results': (result) ? result.rows : null};
 
     if (results.length == 1 && results[0] == password) {
-      res.render("pages/db");
+      res.render("pages/db", results);
     } else {
       // failed password
       console.log(results.length);
