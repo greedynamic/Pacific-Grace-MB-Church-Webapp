@@ -22,19 +22,41 @@
         <title>Blog - <%= blogs[0].title %></title> 
     <% } %>
 </head>
-<body>
-    <div class="container">
-        <% if (blogs.length > 0) { %>
-            <h1 class="mb-2"><%= blogs[0].title %></h1>
-            <a href="/blog/" class="btn btn-secondary">All Blogs</a>
-            <% for(var i=0; i < blogs.length; i++) { %>
-                <a href="/blog/edit/<%= blogs[i].title %>" class="btn btn-info">Edit</a>
-                <div class="mt-4" id="content">
-                    <%- blogs[i].content %>
-                </div>
-            <% }    
-        } %> 
-    </div>
+<body class="is-preload">
+    <!-- Wrapper -->
+    <div id="wrapper">
 
+      <!-- Main -->
+        <div id="main">
+          <div class="inner">
+
+            <!-- Header -->
+            <header id="header">
+              <div class="logo">
+                <a href="https://church276.herokuapp.com/blog_home.html">Home</a>
+              </div>
+            </header>
+            <div class="container primary-button">
+                <% for(var i=0; i < blogs.length; i++) {
+                     if (blogs.length > 0) { %>
+                        <h1 class="mb-2"><%= blogs[0].title %></h1>
+                        <div class="text-muted mb-2">
+                            Published Date: <%=blogs[i].published_at.toLocaleDateString()%> 
+                            <% if(blogs[i].updated_at != null) { %>
+                                Last Updated: <%=blogs[i].updated_at.toLocaleDateString()%>
+                            <% } %>
+                        </div>
+                        <a href="/blog/">All Blogs</a>
+                        <a href="/blog/edit/<%= blogs[i].title %>">Edit</a>
+                        <div class="mt-4" id="content">
+                            <%- blogs[i].content %>
+                        </div>
+                    <% }    
+                } %> 
+            </div>
+          
+          </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -31,9 +31,9 @@
                 <a href="https://church276.herokuapp.com/blog_home.html">Home</a>
               </div>
             </header>
-            </section>
             <div class="banner-caption">
                 <h3><em> All church blogs</em> </h3>
+                <div class="primary-button"><a href="/blog/new">New Blog</a></div>
                 <% if(blogs.length) { 
                     for(var i=0; i < blogs.length; i++) { %> 
                         <div class="card mt-4">
@@ -44,49 +44,15 @@
                                 <div class="primary-button">
                                     <a href="/blog/<%= blogs[i].title %>">Read More</a>
                                     <form action="/blog/del/<%= blogs[i].title %>" method="post" class="d-inline">
-                                        <button type="submit" class="primary-button">Delete</button>
+                                        <button type="submit">Delete</button>
                                     </form>
+                                    <a href="/blog/edit/<%= blogs[i].title %>">Edit</a>
                                 </div>
                             </div>
                         </div>
                     <% }
                 } %> 
               </div>
-            <!-- Banner 
-            <section class="main-banner">
-              <div class="container-fluid">
-                <div class="row">
-                  <div class="col-md-12">
-                    <div class="banner-content">
-                      <div class="row">
-                        <div class="col-md-12">
-                          <div class="banner-caption">
-                            <h4><em> All church blogs</em> </h4>
-                            <% if(blogs.length) { 
-                                for(var i=0; i < blogs.length; i++) { %> 
-                                    <div class="card mt-4">
-                                        <div class="card-body">
-                                            <h4 class="card-title"><%= blogs[i].title %></h4>
-                                            <div class="card-subtitle text-muted mb-2"><%= blogs[i].published_at.toLocaleDateString() %></div>
-                                            <div class="car-text mb-2"><%- blogs[i].summary %></div>
-                                            <div class="primary-button">
-                                                <a href="/blog/<%= blogs[i].title %>">Read More</a>
-                                                <form action="/blog/del/<%= blogs[i].title %>" method="post" class="d-inline">
-                                                    <button type="submit" class="primary-button">Delete</button>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <% }
-                            } %> 
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section> -->
           </div>
         </div>
     </div>
