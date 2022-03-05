@@ -13,6 +13,18 @@ const pool = new Pool({
 });
 var app = express();
 
+const flash = require('express-flash')
+const session = require('express-session')
+const users = [];
+
+const bcrypt = require('bcrypt')
+const passport = require('passport')
+const initializePassport = require('./passport-config');
+const req = require('express/lib/request');
+initializePassport(
+  passport, email => users.find(user.email === email)
+)
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
@@ -41,15 +53,22 @@ app.post('/signup', async (req,res) => {
     var lastName  = req.body.lName;
     var email = req.body.email;
     var password = req.body.password;
-    //check if email is in database
-    // adds account to database, creating account
-    var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
 
     const client = await pool.connect();
-    await client.query(registerQuery); 
-    //change later
-    res.redirect("/database");
-    client.release();
+    //check if email is in database
+    var loginQuery = `select * from usr where email='${email}'`;
+    const result = await client.query(loginQuery);
+    if(result != null) {
+      //have this go to a different error page or until some other implementation found
+      res.send("Use a different email")
+    } else {
+      // adds account to database, creating account
+      var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
+      await client.query(registerQuery); 
+      //change later
+      res.redirect("/database");
+      client.release();
+    }
   } catch (err) {
     res.send(err);
   }
