@@ -5,6 +5,12 @@ label {
     text-align: left;
 }
 
+
+ul, li {
+    text-align: left;
+    font-size: 11pt;
+}
+
 body {
     margin: 0;
     height: 100vh;

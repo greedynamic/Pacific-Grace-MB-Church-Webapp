@@ -15,6 +15,11 @@
             </div>
 
             <div id="loginContent">
+                <ul>
+                    <% if(typeof errors != 'undefined') { %> <% errors.forEach(error=>{ %>
+                            <li><%= error.message %></li>
+                    <% }) %><% } %>
+                </ul>
                 <form id="loginForm" method="post">
                     <input type="text" placeholder="First Name" name="fName" minlength="1" maxlength="100" required><br>
                     <input type="text" placeholder="Last Name" name="lName" minlength="1" maxlength="100" required><br>

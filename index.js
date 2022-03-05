@@ -53,22 +53,30 @@ app.post('/signup', async (req,res) => {
     var lastName  = req.body.lName;
     var email = req.body.email;
     var password = req.body.password;
+    let errors = [];
 
     const client = await pool.connect();
     //check if email is in database
     var loginQuery = `select * from usr where email='${email}'`;
     const result = await client.query(loginQuery);
-    if(result != null) {
-      //have this go to a different error page or until some other implementation found
-      res.send("Use a different email")
-    } else {
-      // adds account to database, creating account
-      var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
-      await client.query(registerQuery); 
-      //change later
-      res.redirect("/database");
-      client.release();
-    }
+
+      if(result.rows.length > 0) {
+        errors.push({message: "Email in use; please use a different email"})
+      }
+      if(password.length < 5) {
+        errors.push({message: "Password minimum length 5 characters"});
+      }
+
+      if(errors.length == 0) {
+        // adds account to database, creating account
+        var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
+        await client.query(registerQuery); 
+        res.redirect("/database");
+        client.release();
+      } else {
+        res.render('pages/signup', {errors});
+      }
+      
   } catch (err) {
     res.send(err);
   }
