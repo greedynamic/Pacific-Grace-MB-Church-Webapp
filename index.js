@@ -35,7 +35,7 @@ app.set('view engine', 'ejs');
 app.get('/database', async (req, res) => {
   try {
     const client = await pool.connect();
-    const result = await client.query(`select * from usr`);
+    const result = await client.query(`select * from usrs`);
     const results = {'results': (result) ? result.rows : null};
     res.render('pages/db', results);
     client.release();
@@ -52,12 +52,12 @@ app.post('/signup', async (req,res) => {
     var firstName = req.body.fName;
     var lastName  = req.body.lName;
     var email = req.body.email;
-    var password = req.body.password;
+    var password = bcrypt.hash(req.body.password,12);
     let errors = [];
 
     const client = await pool.connect();
     //check if email is in database
-    var loginQuery = `select * from usr where email='${email}'`;
+    var loginQuery = `select * from usrs where email='${email}'`;
     const result = await client.query(loginQuery);
 
       if(result.rows.length > 0) {
@@ -69,7 +69,7 @@ app.post('/signup', async (req,res) => {
 
       if(errors.length == 0) {
         // adds account to database, creating account
-        var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
+        var registerQuery = `insert into usrs values('${firstName}', '${lastName}', '${email}', '${password}')`;
         await client.query(registerQuery); 
         res.redirect("/database");
         client.release();
@@ -88,7 +88,7 @@ app.post('/login', async (req,res) => {
   try {
     var email = req.body.email;
     var password = req.body.password;
-    var loginQuery = `select * from usr where email='${email}'`;
+    var loginQuery = `select * from usrs where email='${email}'`;
 
     const client = await pool.connect();
     const result = await client.query(loginQuery);
