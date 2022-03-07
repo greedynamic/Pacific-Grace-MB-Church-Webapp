@@ -67,7 +67,7 @@ app.post('/signup', async (req,res) => {
       if(result.rowsCount > 0) {
         errors.push({message: "Email in use; please use a different email"})
       }
-      if(password.length < 5) {
+      if(password.length < 8) {
         errors.push({message: "Password minimum length 5 characters"});
       }
 
@@ -94,6 +94,7 @@ app.post('/login', async (req,res) => {
     var email = req.body.email;
     var password = req.body.password;
     var loginQuery = `select * from usr where email='${email}' and password='${password}'`;
+    let errors = [];
 
     const client = await pool.connect();
     const result = await client.query(loginQuery);
@@ -103,7 +104,10 @@ app.post('/login', async (req,res) => {
          email:userResult.email, password:userResult.password};
       res.redirect("/database"); // homepage
     } else {
-      res.redirect("/login");
+      // Change: make some sort of alert message
+      // window.alert("invalid email or password");
+      errors.push({message: "Invalid email or password"});
+      res.render('pages/login', {errors});
     }
     client.release();
   } catch (err) {
