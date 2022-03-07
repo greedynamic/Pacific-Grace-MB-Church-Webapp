@@ -84,19 +84,22 @@ app.post('/login', async (req,res) => {
   try {
     var email = req.body.email;
     var password = req.body.password;
-    var loginQuery = `select * from usr where email='${email}'`;
     let errors = [];
-
+    var loginQuery = `select * from usr where email='${email}'`;
+  
     const client = await pool.connect();
     const result = await client.query(loginQuery);
-    if (result.rows[0].password == password) {
-      // Change: send user to home page
-      res.redirect("/database");
-    } else {
-      // Change: make some sort of alert message
-      // window.alert("invalid email or password");
+    if(result.rows.length == 0) {
       errors.push({message: "Invalid email or password"});
       res.render('pages/login', {errors});
+    } else {
+      if (result.rows[0].password == password) {
+        // Change: send user to home page
+        res.redirect("/database");
+      } else {
+        errors.push({message: "Invalid email or password"});
+        res.render('pages/login', {errors});
+      }
     }
     client.release();
   } catch (err) {
