@@ -51,7 +51,6 @@ app.get('/database', async (req, res) => {
 
 app.get('/signup', (req,res) => res.render('pages/signup'));
 
-//needs testing
 app.post('/signup', async (req,res) => {
   try {
     var firstName = req.body.fName;
@@ -65,7 +64,7 @@ app.post('/signup', async (req,res) => {
     var loginQuery = `select * from usr where email='${email}'`;
     const result = await client.query(loginQuery);
 
-      if(result.rows.length > 0) {
+      if(result.rowsCount > 0) {
         errors.push({message: "Email in use; please use a different email"})
       }
       if(password.length < 5) {
@@ -76,12 +75,12 @@ app.post('/signup', async (req,res) => {
         // adds account to database, creating account
         var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
         await client.query(registerQuery); 
-        res.redirect("/database");
+        res.redirect("/login");
         client.release();
       } else {
         res.render('pages/signup', {errors});
       }
-  
+
 
   } catch (err) {
     res.send(err);
@@ -104,8 +103,6 @@ app.post('/login', async (req,res) => {
          email:userResult.email, password:userResult.password};
       res.redirect("/database"); // homepage
     } else {
-      // Change: make some sort of alert message
-      // window.alert("invalid email or password");
       res.redirect("/login");
     }
     client.release();
@@ -114,10 +111,11 @@ app.post('/login', async (req,res) => {
   }
 });
 
+// test function to test session user
+// remove later
 app.get('/f', (req,res) => {
   if(req.session.user){
     res.send(`hi ${req.session.user.fname}`);
-
   } else {
     res.redirect("/login");
   }
@@ -125,7 +123,7 @@ app.get('/f', (req,res) => {
 
 app.post('/logout', (req,res) => {
   req.session.destroy();
-  res.redirect("/database"); // homepage or login
+  res.redirect("/login");
 })
 
 app.listen(PORT, () => console.log(`Listening on ${PORT}`));
