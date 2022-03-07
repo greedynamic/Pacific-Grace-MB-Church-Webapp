@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "dotenv": "^16.0.0",
     "ejs": "^3.1.5",
     "express": "^4.17.3",
     "express-flash": "^0.0.2",
