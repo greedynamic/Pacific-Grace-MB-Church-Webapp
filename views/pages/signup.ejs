@@ -15,17 +15,23 @@
             </div>
 
             <div id="loginContent">
+                <ul>
+                    <% if(typeof errors != 'undefined') { %> <% errors.forEach(error=>{ %>
+                            <li><%= error.message %></li>
+                    <% }) %><% } %>
+                </ul>
                 <form id="loginForm" method="post">
-                    <label for="fName">First Name</label>
-                    <input type="text" name="fName" minlength="1" maxlength="100" required><br>
-                    <label for="lName">Last Name</label>
-                    <input type="text" name="lName" minlength="1" maxlength="100" required><br>
-                    <label for="email">Email</label>
-                    <input type="text" name="email" minlength="1" maxlength="100" required><br>
-                    <label for="password">Password</label>
-                    <input type="password" name="password" minglength="1" maxlength="20" required><br>
+                    <input type="text" placeholder="First Name" name="fName" minlength="1" maxlength="100" required><br>
+                    <input type="text" placeholder="Last Name" name="lName" minlength="1" maxlength="100" required><br>
+                    <input type="text" placeholder="Email" name="email" minlength="1" maxlength="100" required><br>
+                    <input type="password" placeholder="Password" name="password" minglength="1" maxlength="20" required><br>
                     <input type="submit" value="Register">
-                    <input type="submit" value="Sign in">
+                </form>
+            </div>
+            <div id="signupContent">
+                <form action="/signup">
+                    <text>Have an account?</text>
+                    <a href="/login">Sign in</a>
                 </form>
             </div>
         </div>

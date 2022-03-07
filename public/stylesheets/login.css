@@ -5,6 +5,12 @@ label {
     text-align: left;
 }
 
+
+ul, li {
+    text-align: left;
+    font-size: 11pt;
+}
+
 body {
     margin: 0;
     height: 100vh;
@@ -41,6 +47,11 @@ img {
 input {
     background-color: white;
     border-color: darkgrey;
+    margin-bottom: 5px;
+}
+
+input:last-child {
+    margin-bottom: 0;
 }
 
 input[type=text], input[type=password] {
@@ -51,7 +62,10 @@ input[type=text], input[type=password] {
     border: 1px solid black;
     border-radius: 5px;
     margin-bottom: 20px;
+<<<<<<< HEAD
     font-size: 20px;
+=======
+>>>>>>> 81888af7338394355fa3fe7c0d95dbd5cdef36d8
 }
 
 input[type=submit] {
