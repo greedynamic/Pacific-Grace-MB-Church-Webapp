@@ -11,6 +11,11 @@
         <div id="content">
             <img src="/images/logo.png" alt="logo">
             <div id="loginContent">
+                <ul>
+                    <% if(typeof errors != 'undefined') { %> <% errors.forEach(error=>{ %>
+                            <li><%= error.message %></li>
+                    <% }) %><% } %>
+                </ul>
                 <form method="post">
                     <input type="text" placeholder="Email" name="email" minlength="1" maxlength="100" required><br>
                     <input type="password" placeholder="Password" name="password" minglength="1" maxlength="20" required><br>
