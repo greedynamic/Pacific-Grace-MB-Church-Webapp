@@ -2,9 +2,12 @@ const express = require('express');
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
+const session = require('express-session');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
+const { exists } = require('fs');
+const { user } = require('pg/lib/defaults');
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL || 'postgres://wwiwookhmzbgif:b99fe28f9a5e30cdca56d64ce4165e8c1bf3f8a4fc1895b437043db9fa4ed35a@ec2-34-230-110-100.compute-1.amazonaws.com:5432/d329ha74afil4s',
     ssl: {
@@ -17,6 +20,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use('/blog', blogRoute);
+app.use(session({
+  name: "session",
+  secret: "secret",
+  resave: false,
+  saveUninitialized: false
+}))
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -60,13 +70,15 @@ app.post('/login', async (req,res) => {
   try {
     var email = req.body.email;
     var password = req.body.password;
-    var loginQuery = `select * from usr where email='${email}'`;
+    var loginQuery = `select * from usr where email='${email}' and password='${password}'`;
 
     const client = await pool.connect();
     const result = await client.query(loginQuery);
-    if (result.rows[0].password == password) {
-      // Change: send user to home page
-      res.redirect("/database");
+    if (result.rowCount == 1) {
+      var userResult = result.rows[0];
+      req.session.user = {fname:userResult.fname, lname:userResult.lname,
+         email:userResult.email, password:userResult.password};
+      res.redirect("/database"); // homepage
     } else {
       // Change: make some sort of alert message
       // window.alert("invalid email or password");
@@ -78,6 +90,18 @@ app.post('/login', async (req,res) => {
   }
 });
 
+app.get('/f', (req,res) => {
+  if(req.session.user){
+    res.send(`hi ${req.session.user.fname}`);
 
+  } else {
+    res.redirect("/login");
+  }
+})
 
-app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+app.post('/logout', (req,res) => {
+  req.session.destroy();
+  res.redirect("/database"); // homepage or login
+})
+
+app.listen(PORT, () => console.log(`Listening on ${PORT}`));

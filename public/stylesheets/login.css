@@ -12,7 +12,7 @@ body {
     align-items: center;
     justify-content: center;
     text-align: center;
-    font-family: arial;
+    font-family: Arial;
     color: black;
     background-color: rgb(203, 250, 203);
 }
@@ -30,7 +30,6 @@ img {
 }
 
 #loginContent {
-    font-size: 28px;
     margin-top: 50px;
 }
 
@@ -45,20 +44,26 @@ input {
 }
 
 input[type=text], input[type=password] {
-    padding: 8px;
-    width: 200px;
+    padding: 0.75rem;
+    width: 400px;
     vertical-align: top;
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    font-size: 20px;
 }
 
 input[type=submit] {
     color: black;
-    border-radius: 3px;
+    background-color: rgb(198, 255, 198);
+    border: 1px solid black;
+    border-radius: 5px;
     font-size: 20px;
     padding: 8px;
-    min-width: 80px;
-    margin-top: 20px;
+    width: 400px;
 }
 
 input[type=submit]:hover {
-    background-color: palegreen;
+    background-color: rgb(146, 233, 146);
 }
