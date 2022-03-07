@@ -59,7 +59,7 @@ app.post('/signup', async (req,res) => {
         errors.push({message: "Email in use; please use a different email"})
       }
       if(password.length < 8) {
-        errors.push({message: "Password minimum length 5 characters"});
+        errors.push({message: "Password minimum length 8 characters"});
       }
 
       if(errors.length == 0) {
