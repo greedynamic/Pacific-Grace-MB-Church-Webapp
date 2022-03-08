@@ -34,13 +34,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.get('/', (req,res) => {
-  // testing
   if(req.session.user){
-    ("guest").display = "block";
+    res.render('pages/homepage', {user:req.session.user});
   } else {
-    ("guest").display = "none";
+    res.render('pages/homepage', {user:null});
   }
-  res.render('pages/homepage');
 });
 
 app.get('/database', async (req, res) => {
@@ -129,11 +127,9 @@ app.post('/login', async (req,res) => {
   }
 });
 
-// alter button to post via form method=post or smt
-app.post('/logout', (req,res) => {
+app.get('/logout', (req,res) => {
   req.session.destroy();
   res.redirect('/');
 })
-
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));

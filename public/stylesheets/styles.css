@@ -76,7 +76,7 @@
 
 @media screen and (max-width: 950px){
     .header_container{
-        display: felx;
+        display: flex;
         justify-content: space-between;
         height:80px;
         z-index: 1;

@@ -30,17 +30,21 @@
                     <a href="#videos" class="header_links">VIDEOS<i class="fa-solid fa-sort-down"></i></a></li>
                 <li class = "header_item">
                     <a href="#blog" class="header_links">BLOG</a></li>
-
-                <!-- change visibility and put in div.guest-->
-                <li class = "header_item">
-                    <a href="/login" class="header_links">LOGIN</a></li>
-                <li class = "header_item">
-                    <a href="/signup" class="header_links">SIGNUP</a></li>
-
-                <div id="guest">
-                    <!-- put login, signup here -->
-                </div>
-
+                <% if(user) { %>
+                    <div id="user">
+                        <li class = "header_item">
+                            <a class="header_links"><%= user.email %></a></li>
+                        <li class = "header_item">
+                            <a href="/logout" class="header_links">LOGOUT</a></li>
+                    </div>
+                <% } else { %>
+                    <div id="guest">
+                        <li class = "header_item">
+                            <a href="/login" class="header_links">LOGIN</a></li>
+                        <li class = "header_item">
+                            <a href="/signup" class="header_links">SIGNUP</a></li>
+                    </div>
+                <% } %>
             </ul>
         </div>
     </nav>    
