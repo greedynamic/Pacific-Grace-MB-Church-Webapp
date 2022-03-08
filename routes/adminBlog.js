@@ -14,7 +14,7 @@ router.use(express.static(path.join(__dirname, '../public')));
 
 /** Get all blogs in the blog table via '/blog' */
 router.get('/', (req, res) => {
-    pool.query('SELECT * FROM blog;', (error, result) => {
+    pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
         if(error)
           res.send(error);
         else{

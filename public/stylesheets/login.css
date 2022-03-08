@@ -1,7 +1,14 @@
 label {
     display: inline-block;
+    font-size: 16pt;
     width: 160px;
     text-align: left;
+}
+
+
+ul, li {
+    text-align: left;
+    font-size: 11pt;
 }
 
 body {
@@ -28,10 +35,6 @@ img {
     height: auto; 
 }
 
-#topContent {
-
-}
-
 #loginContent {
     font-size: 28px;
     margin-top: 50px;
@@ -45,23 +48,33 @@ img {
 input {
     background-color: white;
     border-color: darkgrey;
+    margin-bottom: 5px;
 }
 
-input[type=text] {
-    padding: 8px;
-    width: 200px;
+input:last-child {
+    margin-bottom: 0;
+}
+
+input[type=text], input[type=password] {
+    padding: 0.75rem;
+    width: 400px;
     vertical-align: top;
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-bottom: 20px;
 }
 
 input[type=submit] {
     color: black;
-    border-radius: 3px;
+    background-color: rgb(198, 255, 198);
+    border: 1px solid black;
+    border-radius: 5px;
     font-size: 20px;
     padding: 8px;
-    width: 80px;
-    margin-top: 20px;
+    width: 400px;
 }
 
 input[type=submit]:hover {
-    background-color: rgb(203, 250, 203);
+    background-color: palegreen;
 }

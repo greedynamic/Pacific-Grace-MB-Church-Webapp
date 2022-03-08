@@ -7,25 +7,24 @@
         <script src="../../index.js" defer></script>
         <title>Login</title>
     </head>
-
     <body>
         <div id="content">
-            <div id="topContent">
-                <img src="/images/logo.png" alt="logo">
-            </div>
-
+            <a href="/"><img src="/images/logo.png" alt="logo"></a>
             <div id="loginContent">
-                <form id="loginForm" method="post">
-                    <label for="email">Email</label>
-                    <input type="text" name="email" minlength="1" maxlength="100" required><br>
-                    <label for="password">Password</label>
-                    <input type="text" name="password" minglength="1" maxlength="20" required><br>
+                <ul>
+                    <% if(typeof errors != 'undefined') { %> <% errors.forEach(error=>{ %>
+                            <li><%= error.message %></li>
+                    <% }) %><% } %>
+                </ul>
+                <form method="post">
+                    <input type="text" placeholder="Email" name="email" minlength="1" maxlength="100" required><br>
+                    <input type="password" placeholder="Password" name="password" minglength="1" maxlength="20" required><br>
                     <input type="submit" value="Login">
                 </form>
             </div>
-
+            <div id="errorMessage"></div>
             <div id="signupContent">
-                <form id="signupForm" action="/signup">
+                <form action="/signup">
                     <text>No account?</text>
                     <a href="/signup">Create one</a>
                 </form>
