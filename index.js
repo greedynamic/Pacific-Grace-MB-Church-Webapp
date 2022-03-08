@@ -15,19 +15,34 @@ var app = express();
 
 const flash = require('express-flash')
 const session = require('express-session')
-const users = [];
-
 const bcrypt = require('bcrypt')
 const passport = require('passport')
+const users = [];
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use('/blog', blogRoute);
+app.use(session({
+  name: "session",
+  secret: "secret",
+  resave: false,
+  saveUninitialized: false
+}))
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.get('/', (req,res) => res.render('pages/homepage'));
+app.get('/', (req,res) => {
+  // testing
+  if(req.session.user){
+    ("guest").display = "block";
+  } else {
+    ("guest").display = "none";
+  }
+  res.render('pages/homepage');
+});
+
 app.get('/database', async (req, res) => {
   try {
     const client = await pool.connect();
@@ -40,21 +55,26 @@ app.get('/database', async (req, res) => {
   }
 });
 
-app.get('/signup', (req,res) => res.render('pages/signup'));
+app.get('/signup', (req,res) => {
+  if(req.session.user){
+    res.redirect("/");
+  } else {
+    res.render('pages/signup');
+  }
+});
 
-//needs testing
 app.post('/signup', async (req,res) => {
   try {
-    var firstName = req.body.fName;
-    var lastName  = req.body.lName;
-    var email = req.body.email;
-    var password = req.body.password;
+    const firstName = req.body.fName;
+    const lastName  = req.body.lName;
+    const email = req.body.email;
+    const password = req.body.password;
     let errors = [];
 
     const client = await pool.connect();
     //check if email is in database
-    var loginQuery = `select * from usr where email='${email}'`;
-    const result = await client.query(loginQuery);
+    const emailQuery = `select * from usr where email='${email}'`;
+    const result = await client.query(emailQuery);
 
       if(result.rows.length > 0) {
         errors.push({message: "Email in use; please use a different email"})
@@ -65,36 +85,40 @@ app.post('/signup', async (req,res) => {
 
       if(errors.length == 0) {
         // adds account to database, creating account
-        var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
+        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
         await client.query(registerQuery); 
-        res.redirect("/database");
+        res.redirect("/login");
         client.release();
       } else {
         res.render('pages/signup', {errors});
       }
-  
-
   } catch (err) {
     res.send(err);
   }
 })
 
-app.get('/login', (req,res) => res.render('pages/login'));
+app.get('/login', (req,res) => {
+  if(req.session.user){
+    res.redirect('/');
+  } else {
+    res.render('pages/login');
+  }
+});
 
 app.post('/login', async (req,res) => {
   try {
-    var email = req.body.email;
-    var password = req.body.password;
+    const email = req.body.email;
+    const password = req.body.password;
     const loginQuery = `select * from usr where email='${email}' and password='${password}'`;
     let errors = [];
 
     const client = await pool.connect();
     const result = await client.query(loginQuery);
     if (result.rowCount == 1) {
-      var userResult = result.rows[0];
+      const userResult = result.rows[0];
       req.session.user = {fname:userResult.fname, lname:userResult.lname,
-        email:userResult.email, password:userResult.password, admin:userResult.admin};
-      res.redirect("/database"); // homepage
+        email:userResult.email, password:userResult.password, admin:userResult.admin};;
+      res.redirect("/");
     } else {
       errors.push({message: "Invalid email or password"});
       res.render('pages/login', {errors});
@@ -105,10 +129,11 @@ app.post('/login', async (req,res) => {
   }
 });
 
-
-app.get('/logout', (req,res) => {
+// alter button to post via form method=post or smt
+app.post('/logout', (req,res) => {
   req.session.destroy();
-  res.redirect('/logout');
+  res.redirect('/');
 })
+
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
