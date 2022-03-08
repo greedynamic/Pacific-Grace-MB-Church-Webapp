@@ -78,7 +78,14 @@ app.post('/signup', async (req,res) => {
   }
 })
 
-app.get('/login', (req,res) => res.render('pages/login'));
+app.get('/login', (req,res) => {
+  // user signed in
+  if(req.session.user){
+    res.redirect('/database');
+  } else {
+    res.render('pages/login');
+  }
+});
 
 app.post('/login', async (req,res) => {
   try {
@@ -108,7 +115,9 @@ app.post('/login', async (req,res) => {
 });
 
 app.get('/logout', (req,res) => {
-  req.session.destroy();
+  if(req.session.user){
+    req.session.destroy();
+  }
   res.redirect('/logout');
 })
 
