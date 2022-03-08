@@ -33,7 +33,15 @@ app.use(session({
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.get('/', (req,res) => res.render('pages/homepage'));
+app.get('/', (req,res) => {
+  // testing
+  if(req.session.user){
+    ("guest").display = "block";
+  } else {
+    ("guest").display = "none";
+  }
+  res.render('pages/homepage');
+});
 
 app.get('/database', async (req, res) => {
   try {
@@ -49,7 +57,7 @@ app.get('/database', async (req, res) => {
 
 app.get('/signup', (req,res) => {
   if(req.session.user){
-    res.redirect("/database"); // homepage
+    res.redirect("/");
   } else {
     res.render('pages/signup');
   }
@@ -91,7 +99,7 @@ app.post('/signup', async (req,res) => {
 
 app.get('/login', (req,res) => {
   if(req.session.user){
-    res.redirect('/database'); // homepage
+    res.redirect('/');
   } else {
     res.render('pages/login');
   }
@@ -110,7 +118,7 @@ app.post('/login', async (req,res) => {
       const userResult = result.rows[0];
       req.session.user = {fname:userResult.fname, lname:userResult.lname,
         email:userResult.email, password:userResult.password, admin:userResult.admin};;
-      res.redirect("/database"); // homepage
+      res.redirect("/");
     } else {
       errors.push({message: "Invalid email or password"});
       res.render('pages/login', {errors});
@@ -121,10 +129,11 @@ app.post('/login', async (req,res) => {
   }
 });
 
-// alter button to post
+// alter button to post via form method=post or smt
 app.post('/logout', (req,res) => {
   req.session.destroy();
-  res.redirect('/logout');
+  res.redirect('/');
 })
+
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
