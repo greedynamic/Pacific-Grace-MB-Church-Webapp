@@ -71,8 +71,6 @@ app.post('/signup', async (req,res) => {
       } else {
         res.render('pages/signup', {errors});
       }
-  
-
   } catch (err) {
     res.send(err);
   }
@@ -97,7 +95,7 @@ app.post('/login', async (req,res) => {
         // Change: send user to home page
         res.redirect("/database");
       } else {
-        errors.push({message: "Invalid emaile or password"});
+        errors.push({message: "Invalid email or password"});
         res.render('pages/login', {errors});
       }
     }
@@ -106,7 +104,5 @@ app.post('/login', async (req,res) => {
     res.send(err);
   }
 });
-
-
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
