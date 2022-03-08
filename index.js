@@ -51,7 +51,11 @@ app.get('/', (req,res) => {
       res.send(error);
     else{
       var results = {'blogs' : result.rows};
-      res.render('pages/homepage', results);
+      if(req.session.user){
+        res.render('pages/homepage', {user:req.session.user}, results);
+      } else {
+        res.render('pages/homepage', {user:null} , results);
+      }
     }
   })
 });
