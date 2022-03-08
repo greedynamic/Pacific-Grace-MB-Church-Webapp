@@ -2,9 +2,11 @@ const express = require('express');
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
+const registerRoute = require('./routes/register');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
+const req = require('express/lib/request');
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL || 'postgres://wwiwookhmzbgif:b99fe28f9a5e30cdca56d64ce4165e8c1bf3f8a4fc1895b437043db9fa4ed35a@ec2-34-230-110-100.compute-1.amazonaws.com:5432/d329ha74afil4s',
     ssl: {
@@ -23,13 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use('/blog', blogRoute);
-app.use(session({
-  name: "session",
-  secret: "secret",
-  resave: false,
-  saveUninitialized: false
-}))
-
+app.use('/register', registerRoute);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
