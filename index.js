@@ -86,7 +86,7 @@ app.post('/login', async (req,res) => {
     var password = req.body.password;
     let errors = [];
     var loginQuery = `select * from usr where email='${email}'`;
-  
+   
     const client = await pool.connect();
     const result = await client.query(loginQuery);
     if(result.rows.length == 0) {
