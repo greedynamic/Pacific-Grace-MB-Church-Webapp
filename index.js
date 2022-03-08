@@ -107,6 +107,9 @@ app.post('/login', async (req,res) => {
   }
 });
 
-
+app.get('/logout', (req,res) => {
+  req.session.destroy();
+  res.redirect('/logout');
+})
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
