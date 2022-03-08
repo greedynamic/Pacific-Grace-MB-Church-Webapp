@@ -44,15 +44,15 @@ app.get('/signup', (req,res) => res.render('pages/signup'));
 //needs testing
 app.post('/signup', async (req,res) => {
   try {
-    var firstName = req.body.fName;
-    var lastName  = req.body.lName;
-    var email = req.body.email;
-    var password = req.body.password;
+    const firstName = req.body.fName;
+    const lastName  = req.body.lName;
+    const email = req.body.email;
+    const password = req.body.password;
     let errors = [];
 
     const client = await pool.connect();
     //check if email is in database
-    var loginQuery = `select * from usr where email='${email}'`;
+    const loginQuery = `select * from usr where email='${email}'`;
     const result = await client.query(loginQuery);
 
       if(result.rows.length > 0) {
@@ -64,7 +64,7 @@ app.post('/signup', async (req,res) => {
 
       if(errors.length == 0) {
         // adds account to database, creating account
-        var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
+        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
         await client.query(registerQuery); 
         res.redirect("/database");
         client.release();
@@ -80,29 +80,33 @@ app.get('/login', (req,res) => res.render('pages/login'));
 
 app.post('/login', async (req,res) => {
   try {
-    var email = req.body.email;
-    var password = req.body.password;
+    const email = req.body.email;
+    const password = req.body.password;
+    const loginQuery = `select * from usr where email='${email}' and password='${password}'`;
     let errors = [];
-    var loginQuery = `select * from usr where email='${email}'`;
-   
+    
     const client = await pool.connect();
     const result = await client.query(loginQuery);
-    if(result.rows.length == 0) {
+    
+    if (result.rowCount == 1) {
+      const userResult = result.rows[0];
+      req.session.user = {fname:userResult.fname, lname:userResult.lname,
+        email:userResult.email, password:userResult.password, admin:userResult.admin};
+      res.redirect("/database"); // homepage
+    } else {
       errors.push({message: "Invalid email or password"});
       res.render('pages/login', {errors});
-    } else {
-      if (result.rows[0].password == password) {
-        // Change: send user to home page
-        res.redirect("/database");
-      } else {
-        errors.push({message: "Invalid email or password"});
-        res.render('pages/login', {errors});
-      }
     }
     client.release();
   } catch (err) {
     res.send(err);
   }
 });
+
+app.post('/logout', (req,res) => {
+  req.session.destroy();
+  res.redirect("/login");
+});
+
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
