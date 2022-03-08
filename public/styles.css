@@ -1,0 +1,496 @@
+*{
+    margin: 0;
+    padding: 0;   
+    font-family: 'Raleway', sans-serif;
+}
+
+.header{
+    background: black;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    position: sticky;
+    top: 0px;
+    z-index: 999;
+}
+
+.header_container{
+    display: flex;
+    justify-content: space-between;
+    height: 80px;
+    z-index: 1;
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 50px;
+
+}
+
+#headerlogo{
+    background-color: aqua;
+    background-image: linear-gradient(to top, teal 0%, aqua 100%);
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 2rem;
+}
+
+.fa-church{
+    margin-right: 1rem;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+
+.header_menu{
+    display:flex;
+    align-items: center;
+    list-style: none;
+    text-align: center;
+}
+
+.header_item{
+    height: 80px;
+}
+
+.header_links{
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: 0 15px;
+    height: 100%;
+}
+.header_links:hover{
+    color:teal;
+    transition: 0.3s;
+}
+
+@media screen and (max-width: 950px){
+    .header_container{
+        display: felx;
+        justify-content: space-between;
+        height:80px;
+        z-index: 1;
+        width: 100%;
+        max-width: 1300px;
+        padding:0;
+    }
+    .header_menu{
+        display: grid;
+        grid-template-columns: auto;
+        margin: 0;
+        width: 100%;
+        position: absolute;
+        top: -1000px;
+        opacity:0;
+        transition: 0.5s;
+        height: 50vh;
+        z-index: -1;
+        background: black;
+    }
+    .header_menu.active{
+        background: black;
+        top: 100%;
+        opacity: 1;
+        transition: 0.5s;
+        z-index: 99;
+        height: 50vh;
+        font-size: 20px;
+    }
+
+    #headerlogo{
+        padding-left: 25px;
+
+    }
+    .header_toggle .bar{
+        width:25px;
+        height: 3px;
+        margin:5px auto;
+        transition: 0.3s;
+        background: white;
+    }
+
+    .header_item{
+        width: 100%;
+        height: 50px;
+    }
+    .header_links{
+        text-align: center;
+        padding: 24px;
+        width: 100%;
+        display: table;
+    }
+    #mobile_menu{
+        position: absolute;
+        top: 20%;
+        right: 5%;
+        transform: translate(5%,20%);
+    }
+    .header_toggle .bar{
+        display: block;
+        cursor: pointer;
+    }
+    #mobile_menu.is-active .bar:nth-child(2){
+        opacity:0;
+
+    }
+    #mobile_menu.is-active .bar:nth-child(1){
+        transform: translateY(8px) rotate(45deg);
+
+    }
+    #mobile_menu.is-active .bar:nth-child(3){
+        transform: translateY(-8px) rotate(-45deg);
+
+    }
+}
+
+/*
+.btn{
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: 0 10px;
+    height: 80%;
+    width: 70%;
+    border: 2px solid #fff;
+    border-radius: 3rem;
+    line-height: 1;
+    margin: 0.3rem;
+    transition: 0.3s;
+}
+.btn.signup{
+    background-color: #fff;
+    color: teal;
+}
+*/
+.homebackground{
+    min-height: 100vh;
+    width: 100%;
+    background-image: linear-gradient(rgba(4,9,30,0.7),rgba(4,9,30,0.7)),url(images/homeimage/ChurchInside.jpg);
+    background-position: center;
+    background-size: cover;
+    position: relative;   
+   
+}
+.home_text{
+    width:90%;
+    color: #fff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+}
+.home_text h1{
+    font-size: 62px;
+
+}
+.home_text p{
+    margin: 10px 0 40px;
+    font-size: 20px;
+    color: #fff;
+    text-align: center;
+}
+.homepage_btn{
+    display: inline-block;
+    text-decoration: none;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 12px 34px;
+    font: 13px;
+    background: transparent;
+    position: relative;
+    cursor: pointer;
+}
+.homepage_btn:hover{
+    border: 1px solid teal;
+    background: teal;
+    transition: 0.3s;
+}
+
+
+/*----------BLOG SECTION---------*/
+
+#blogs{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 40px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+
+}
+
+.blog_heading{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.blog_heading span{
+    padding-top: 50px;
+    color: teal;
+    font-size: 25px;
+}
+.blog_heading h3{
+    font-size: 28px;
+    color: black;
+    font-weight:600;
+
+}
+.blog_container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0px;
+   flex-wrap: wrap;
+}
+.blog_box{
+    width: 350px;
+    background-color: white;
+    border: 1px solid #ececec;
+    margin: 20px;
+}
+.blog_image{
+    width: 100%;
+    height: 50vh;
+}
+.blog_image img{
+    width: 100%;
+    height:100%;
+    object-fit: cover;
+    object-position: center;
+}
+.blog_text{
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+}
+.blog_text span{
+    color:teal;
+    font-size: 15px;
+}
+.blog_text .blog_title{
+    font-size: 20px;
+    font-weight: 500;
+    color: black;
+}
+.blog_text .blog_title:hover{
+    color: teal;
+    transition: 0.3s;
+}
+.blog_text p{
+    color: grey;
+    font-size: 15px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 20px 0px;
+}
+.blog_text a {
+    color:black;
+}
+.blog_text a:hover {
+    color:teal;
+    transition: 0.3s;
+}
+
+
+/*-----VIDEOS SECTION-----*/
+
+#videos{
+    display: flex;
+    justify-content: center;
+    align-items: left;
+    flex-direction: column;
+    padding: 40px;
+    border-bottom: 1px solid rgba(0,0,0,0.05);
+
+}
+
+.video_heading{
+    display:flex;
+    justify-content: left;
+    align-items: center;
+    flex-direction: column;
+}
+
+.video_heading h4{
+    font-size: 28px;
+    color: black;
+    font-weight: 600;
+}
+.video_container{
+    display: flex;
+    justify-content: left;
+    align-items: left;
+    margin: 20px 0px;
+    flex-wrap: wrap;
+}
+
+.video_box{
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ececec;
+    margin: 20px;
+}
+.video_tag{
+    width: 100%;
+    height: 60vh;
+}
+.video_text{
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    text-align: bottom;
+    margin-top: 10px;
+    
+}
+.video_text p{
+    color: black;
+    font-size: 20px;
+    font-weight: 500;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 20px 0px;
+}
+
+/*-----CONTACT US----*/
+.contact{
+    margin: 100px auto;
+    width: 80%;
+    background-image:linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7)),url(images/contactus.jpg) ;
+    background-position: center;
+    background-size: cover;
+    border-radius: 10px;
+    text-align: center;
+    padding: 100px 0;
+}
+.contact h6{
+    color: #fff;
+    margin-bottom: 50px;
+    padding: 0;
+    font-size: 50px;
+}
+
+@media(max-width:700px){
+    .contact h6{
+        font-size: 30px;
+    }
+}
+
+
+/*------ABOUT-------*/
+
+.about {
+    width: 100%;
+    text-align: center;
+    padding: 30px 0;
+}
+.about h5{
+    margin-bottom: 25px;
+    margin-top: 20px;
+    font-weight: 600;
+}
+.icons .fa{
+    color: teal;
+    margin: 0 13px; 
+    cursor: pointer;
+    padding: 18px 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*------LOGIN HTML -------
+.box{
+    width: 300px;
+    padding: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background: grey;
+    text-align: center;
+}
+.box h1{
+    color: white;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.box input[type="text"], .box input[type="password"]{
+    border: 0;
+    background:none;
+    display: block;
+    margin: 20px auto;
+    text-align:center;
+    border:2px solid red;
+    padding: 14px 10px;
+    width: 200px;
+    outline: none;
+    color: white;
+    border-radius: 24px;
+    transition: 0.3s;
+}
+.box input[type="text"]:focus, .box input[type="password"]:focus{
+    width: 280px;
+    border-color: orange;
+}
+
+.box input[type="submit"]{
+    border: 0;
+    background:none;
+    display: block;
+    margin: 20px auto;
+    text-align:center;
+    border:2px solid orange;
+    padding: 14px 40px;
+    width: 200px;
+    outline: none;
+    color: white;
+    border-radius: 24px;
+    transition: 0.3s;
+    cursor: pointer;
+
+}
+.box input[type="submit"]:hover{
+    background:orange;
+}*/
