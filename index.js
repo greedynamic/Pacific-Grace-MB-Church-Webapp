@@ -39,12 +39,6 @@ app.use('/blog', authAmdin(), blogRoute);
 
 
 app.get('/', (req,res) => {
-  if(req.session.user){
-    res.render('pages/homepage', {user:req.session.user});
-  } else {
-    res.render('pages/homepage', {user:null});
-  }
-
   // Post recent blogs on homepage
   pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
     if(error)
