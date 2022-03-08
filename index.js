@@ -38,6 +38,7 @@ app.get('/database', async (req, res) => {
     res.send(err);
   }
 });
+app.get('/', (req,res) => res.render('pages/homepage'));
 
 app.get('/signup', (req,res) => res.render('pages/signup'));
 
