@@ -24,6 +24,7 @@ router.get('/', (req, res) => {
     })
 })
 
+
 router.get('/homepage', (req, res) => {
   pool.query('SELECT * FROM blog;', (error, result) => {
       if(error)
@@ -38,19 +39,6 @@ router.get('/homepage', (req, res) => {
 /** Create New Blog page via '/blog/new' */
 router.get('/new', (req,res) => res.render('pages/newBlog'));
 
-/** Show content of a blog via '/blog/:title' */
-router.get('/:title', (req,res) => {
-    var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
-    pool.query(getBlogQuery, (error, result) =>{
-        if(error)
-            res.send(error);
-        else{
-            var results = {'blogs': result.rows};
-            res.render('pages/showBlog', results);
-        }
-    })
-})
-
 /** Get blog components in the blog table
  *  Redirect to /allBlogs page or homepage 
  */
@@ -64,7 +52,8 @@ router.post('/', (req,res) => {
           console.log(error);
         }  
         else{
-          res.redirect('/blog/');
+          var results = {'blogs' : result.rows};
+          res.redirect('/');
         }
     });
 });
@@ -104,7 +93,8 @@ router.post('/edit/:title', (req,res) => {
         if(error)
           res.send(error);
         else{
-          res.redirect('/blog');
+          var results = {'blogs': result.rows};
+          res.redirect('pages/showBlog', results);
         }
     })
 })

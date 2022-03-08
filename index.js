@@ -17,15 +17,26 @@ var app = express();
 const flash = require('express-flash')
 const session = require('express-session')
 const bcrypt = require('bcrypt')
-const passport = require('passport')
+const passport = require('passport');
+const authAmdin = require('./routes/middleware');
 const users = [];
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
-app.use('/blog', blogRoute);
+
+app.use(session({
+  name: "session",
+  secret: "zordon resurrection",
+  resave: false,
+  saveUninitialized: false,
+}))
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
+
+app.use('/blog', authAmdin(), blogRoute);
+
 
 app.get('/', (req,res) => {
   // testing
@@ -34,7 +45,18 @@ app.get('/', (req,res) => {
   } else {
     ("guest").display = "none";
   }
-  res.render('pages/homepage');
+
+  // Post recent blogs on homepage
+  pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
+    if(error)
+      res.send(error);
+    else{
+      var results = {'blogs' : result.rows};
+      res.render('pages/homepage', results);
+    }
+})
+//res.render('pages/homepage');
+  
 });
 
 app.get('/database', async (req, res) => {
@@ -124,10 +146,22 @@ app.post('/login', async (req,res) => {
 });
 
 // alter button to post via form method=post or smt
-app.post('/logout', (req,res) => {
+app.get('/logout', (req,res) => {
   req.session.destroy();
   res.redirect('/');
 })
 
+
+app.get('/:title', (req,res) => {
+  var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
+  pool.query(getBlogQuery, (error, result) =>{
+      if(error)
+          res.send(error);
+      else{
+          var results = {'blogs': result.rows};
+          res.render('pages/showBlog', results);
+      }
+  })
+})
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
