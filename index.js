@@ -97,7 +97,7 @@ app.post('/login', async (req,res) => {
         // Change: send user to home page
         res.redirect("/database");
       } else {
-        errors.push({message: "Invalid email or password"});
+        errors.push({message: "Invalid emaile or password"});
         res.render('pages/login', {errors});
       }
     }
