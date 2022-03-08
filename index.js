@@ -15,15 +15,21 @@ var app = express();
 
 const flash = require('express-flash')
 const session = require('express-session')
-const users = [];
-
 const bcrypt = require('bcrypt')
 const passport = require('passport')
+const users = [];
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use('/blog', blogRoute);
+app.use(session({
+  name: "session",
+  secret: "secret",
+  resave: false,
+  saveUninitialized: false
+}))
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
@@ -39,21 +45,26 @@ app.get('/database', async (req, res) => {
   }
 });
 
-app.get('/signup', (req,res) => res.render('pages/signup'));
+app.get('/signup', (req,res) => {
+  if(req.session.user){
+    res.redirect("/database"); // homepage
+  } else {
+    res.render('pages/signup');
+  }
+});
 
-//needs testing
 app.post('/signup', async (req,res) => {
   try {
-    var firstName = req.body.fName;
-    var lastName  = req.body.lName;
-    var email = req.body.email;
-    var password = req.body.password;
+    const firstName = req.body.fName;
+    const lastName  = req.body.lName;
+    const email = req.body.email;
+    const password = req.body.password;
     let errors = [];
 
     const client = await pool.connect();
     //check if email is in database
-    var loginQuery = `select * from usr where email='${email}'`;
-    const result = await client.query(loginQuery);
+    const emailQuery = `select * from usr where email='${email}'`;
+    const result = await client.query(emailQuery);
 
       if(result.rows.length > 0) {
         errors.push({message: "Email in use; please use a different email"})
@@ -64,24 +75,21 @@ app.post('/signup', async (req,res) => {
 
       if(errors.length == 0) {
         // adds account to database, creating account
-        var registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
+        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
         await client.query(registerQuery); 
-        res.redirect("/database");
+        res.redirect("/login");
         client.release();
       } else {
         res.render('pages/signup', {errors});
       }
-  
-
   } catch (err) {
     res.send(err);
   }
 })
 
 app.get('/login', (req,res) => {
-  // user signed in
   if(req.session.user){
-    res.redirect('/database');
+    res.redirect('/database'); // homepage
   } else {
     res.render('pages/login');
   }
@@ -89,24 +97,21 @@ app.get('/login', (req,res) => {
 
 app.post('/login', async (req,res) => {
   try {
-    var email = req.body.email;
-    var password = req.body.password;
+    const email = req.body.email;
+    const password = req.body.password;
+    const loginQuery = `select * from usr where email='${email}' and password='${password}'`;
     let errors = [];
-    var loginQuery = `select * from usr where email='${email}'`;
-   
+
     const client = await pool.connect();
     const result = await client.query(loginQuery);
-    if(result.rows.length == 0) {
+    if (result.rowCount == 1) {
+      const userResult = result.rows[0];
+      req.session.user = {fname:userResult.fname, lname:userResult.lname,
+        email:userResult.email, password:userResult.password, admin:userResult.admin};;
+      res.redirect("/database"); // homepage
+    } else {
       errors.push({message: "Invalid email or password"});
       res.render('pages/login', {errors});
-    } else {
-      if (result.rows[0].password == password) {
-        // Change: send user to home page
-        res.redirect("/database");
-      } else {
-        errors.push({message: "Invalid email or password"});
-        res.render('pages/login', {errors});
-      }
     }
     client.release();
   } catch (err) {
@@ -114,10 +119,9 @@ app.post('/login', async (req,res) => {
   }
 });
 
-app.get('/logout', (req,res) => {
-  if(req.session.user){
-    req.session.destroy();
-  }
+// alter button to post
+app.post('/logout', (req,res) => {
+  req.session.destroy();
   res.redirect('/logout');
 })
 
