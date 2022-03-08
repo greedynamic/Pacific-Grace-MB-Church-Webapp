@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" type="text/css" href="/stylesheets/login.css">
+        <link rel="stylesheet" type="text/css" href="/stylesheets/login.css">  
         <script src="../../index.js" defer></script>
         <title>Register an Account</title>
     </head>
@@ -13,7 +13,6 @@
             <div id="topContent">
                 <a href="/"><img src="/images/logo.png" alt="logo"></a>
             </div>
-
             <div id="loginContent">
                 <ul>
                     <% if(typeof errors != 'undefined') { %> <% errors.forEach(error=>{ %>
@@ -24,7 +23,7 @@
                     <input type="text" placeholder="First Name" name="fName" minlength="1" maxlength="100" required><br>
                     <input type="text" placeholder="Last Name" name="lName" minlength="1" maxlength="100" required><br>
                     <input type="text" placeholder="Email" name="email" minlength="1" maxlength="100" required><br>
-                    <input type="password" placeholder="Password" name="password" minglength="1" maxlength="20" required><br>
+                    <input type="password" placeholder="Password" name="password" minlength="1" maxlength="20" required><br>
                     <input type="submit" value="Register">
                 </form>
             </div>
