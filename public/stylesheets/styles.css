@@ -76,7 +76,7 @@
 
 @media screen and (max-width: 950px){
     .header_container{
-        display: felx;
+        display: flex;
         justify-content: space-between;
         height:80px;
         z-index: 1;
@@ -254,13 +254,14 @@
     justify-content: center;
     align-items: center;
     margin: 20px 0px;
-   flex-wrap: wrap;
+    flex-wrap: wrap;
 }
 .blog_box{
-    width: 350px;
+    width: 30%;
     background-color: white;
     border: 1px solid #ececec;
     margin: 20px;
+    display:  inline-block;
 }
 .blog_image{
     width: 100%;
