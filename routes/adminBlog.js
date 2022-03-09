@@ -88,6 +88,7 @@ router.get('/edit/:title', (req,res) => {
 router.post('/edit/:title', (req,res) => {
     const{title, summary, content} = req.body;
     const updated_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    
     var editQuery = `UPDATE blog SET title='${title}', summary='${summary}', content='${content}', updated_at='${updated_at}' WHERE title='${req.params.title}';`;
     pool.query(editQuery, (error, result) =>{
         if(error)
