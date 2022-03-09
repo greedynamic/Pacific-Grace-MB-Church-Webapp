@@ -93,8 +93,7 @@ router.post('/edit/:title', (req,res) => {
         if(error)
           res.send(error);
         else{
-          var results = {'blogs': result.rows};
-          res.redirect('pages/showBlog', results);
+          res.redirect('/');
         }
     })
 })
