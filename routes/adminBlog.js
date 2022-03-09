@@ -94,7 +94,7 @@ router.post('/edit/:title', (req,res) => {
         if(error)
           res.send(error);
         else{
-          res.redirect('/');
+          res.redirect('/blog');
         }
     })
 })
