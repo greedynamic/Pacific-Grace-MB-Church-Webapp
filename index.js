@@ -18,13 +18,12 @@ const flash = require('express-flash')
 const session = require('express-session')
 const bcrypt = require('bcrypt')
 const passport = require('passport');
-const authAmdin = require('./routes/middleware');
+const {authUser, authAmdin} = require('./routes/middleware');
 const users = [];
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
-
 app.use(session({
   name: "session",
   secret: "zordon resurrection",
@@ -38,22 +37,17 @@ app.set('view engine', 'ejs');
 app.use('/blog', authAmdin(), blogRoute);
 
 
-app.get('/', async (req,res) => {
-  if(req.session.user){
-    res.render('pages/homepage', {user:req.session.user});
-  } else {
-    res.render('pages/homepage', {user:null});
-  }
-
+app.get('/', (req,res) => {
   // Post recent blogs on homepage
-  // pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
-  //   if(error)
-  //     res.send(error);
-  //   else{
-  //     var results = {'blogs' : result.rows};
-  //     res.render('pages/homepage', results);
-  //   }
-  // })
+  pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
+    if(error)
+      res.send(error);
+    else{
+      res.render('pages/homepage', {'blogs' : result.rows, user: req.session.user});
+    }
+})
+//res.render('pages/homepage');
+  
 });
 
 app.get('/database', async (req, res) => {
@@ -168,3 +162,4 @@ app.get('/:title', (req,res) => {
 })
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
