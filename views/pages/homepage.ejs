@@ -14,24 +14,42 @@
 </head>
 <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous"></script>
 <body>
- <nav class="header">
+    <nav class="header">
         <div class="header_container">
-            <a href="/" id="headerlogo"> <i class="fa-solid fa-church"></i>Pacific Church</a>
+            <a href="/" id="headerlogo"><i class="fa-solid fa-church"></i>Pacific Church</a>
             <div class="header_toggle" id="mobile_menu">
                 <span class="bar"></span>
                 <span class="bar"></span>
                 <span class="bar"></span>
             </div>
-
             <ul class="header_menu">
                 <li class = "header_item">
                     <a href="/" class="header_links">HOME</a></li>
                 <li class = "header_item">
                     <a href="#videos" class="header_links">VIDEOS<i class="fa-solid fa-sort-down"></i></a></li>
                 <li class = "header_item">
-                    <a href="#blog" class="header_links">BLOG</a></li>
-            
-                
+                    <a href="#blog" class="header_links">BLOG</a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/blog" class="header_link">All Blogs</a></li>
+                            <li><a href="/blog/new" class="header_link">New Blog</a></li>
+                        </ul>
+                    <% } %>
+                <% if(user) { %>
+                    <div id="user">
+                        <li class = "header_item">
+                            <a href="/account" class="header_links"><%= user.email %></a></li>
+                        <li class = "header_item">
+                            <a href="/logout"class="header_links">LOGOUT</a></li>
+                    </div>
+                <% } else { %>
+                    <div id="guest">
+                        <li class = "header_item">
+                            <a href="/login" class="header_links">LOGIN</a></li>
+                        <li class = "header_item">
+                            <a href="/signup" class="header_links">SIGNUP</a></li>
+                    </div>
+                <% } %>
             </ul>
         </div>
     </nav>    
@@ -56,44 +74,24 @@
         <span>Our Recent posts</span>
         <h3>Blogs</h3>
     </div>
-
-    <div class="blog_container">
-        <!------BLOG 1-------->
-        <div class="blog_box">
-            <div class="blog_image">
-                <img src="images/homeimage/ChurchBlog1.jpg" alt="Blog">
-            </div>
-            <div class="blog_text">
-                <span>1 January 2022</span>
-                <a href="#" class="blog_title">This is the First Blog.</a>
-                <p>This is how I write my First Blog</p>
-                <a href="#">Read more</a>
-            </div>
-        </div>
-        <!--BLOG 2-->
-        <div class="blog_box">
-            <div class="blog_image">
-                <img src="images/homeimage/ChurchBlog2.jpg" alt="Blog">
-            </div>
-            <div class="blog_text">
-                <span>1 January 2022</span>
-                <a href="#" class="blog_title">This is the Second Blog.</a>
-                <p>This is how I write my Second Blog</p>
-                <a href="#">Read more</a>
-            </div>
-        </div>
-        <!--BLOG 3-->
-        <div class="blog_box">
-            <div class="blog_image">
-                <img src="images/homeimage/ChurchBlog3.jpg" alt="Blog">
-            </div>
-            <div class="blog_text">
-                <span>1 January 2022</span>
-                <a href="#" class="blog_title">This is the Third Blog.</a>
-                <p>This is how I write my Third Blog</p>
-                <a href="#">Read more</a>
-            </div>
-        </div>
+    <div class="blog-container">
+        <% if(blogs.length) { 
+            for(var i=0; i < blogs.length; i++) { %> 
+                <div class="blog_box">
+                    <div class="blog_image">
+                        <img src="images/homeimage/ChurchBlog1.jpg" alt="Blog">
+                    </div>
+                    <div>
+                    <div class="blog_text">
+                        <span><%= blogs[i].title %></span>
+                        <div><%= blogs[i].published_at.toLocaleDateString() %></div>
+                        <div><%- blogs[i].summary %></div>
+                            <a href="/<%= blogs[i].title %>">Read More</a>
+                        </div>
+                    </div>
+                </div>          
+            <% }
+        } %> 
     </div>
 </section>
 

@@ -1,3 +1,13 @@
+function authUser(){
+    return (req, res, next) => {
+      if(req.session.user)
+        next();
+      else{
+        res.redirect('/login');
+      }
+    }
+  }
+
 function authAmdin (){
     return (req, res, next) => {
         if(req.session.user){
@@ -14,4 +24,4 @@ function authAmdin (){
     }
 }
 
-module.exports = authAmdin;
+module.exports = {authUser, authAmdin} ;

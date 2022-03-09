@@ -18,13 +18,12 @@ const flash = require('express-flash')
 const session = require('express-session')
 const bcrypt = require('bcrypt')
 const passport = require('passport');
-const authAmdin = require('./routes/middleware');
+const {authUser, authAmdin} = require('./routes/middleware');
 const users = [];
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
-
 app.use(session({
   name: "session",
   secret: "zordon resurrection",
@@ -39,22 +38,16 @@ app.use('/blog', authAmdin(), blogRoute);
 
 
 app.get('/', (req,res) => {
-  // if(req.session.user){
-  //   res.render('pages/homepage', {user:req.session.user});
-  // } else {
-  //   res.render('pages/homepage', {user:null});
-  // }
-
   // Post recent blogs on homepage
   pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
     if(error)
       res.send(error);
     else{
-      var results = {'blogs' : result.rows};
-      
-      res.render('pages/homepage', results);
+      res.render('pages/homepage', {'blogs' : result.rows, user: req.session.user});
     }
-  })
+})
+//res.render('pages/homepage');
+  
 });
 
 app.get('/database', async (req, res) => {
@@ -131,7 +124,7 @@ app.post('/login', async (req,res) => {
     if (result.rowCount == 1) {
       const userResult = result.rows[0];
       req.session.user = {fname:userResult.fname, lname:userResult.lname,
-        email:userResult.email, password:userResult.password, admin:userResult.admin};;
+        email:userResult.email, password:userResult.password, admin:userResult.admin};
       res.redirect("/");
     } else {
       errors.push({message: "Invalid email or password"});
@@ -148,6 +141,13 @@ app.get('/logout', (req,res) => {
   res.redirect('/');
 })
 
+app.get('/account', (req,res) => {
+  if(req.session.user){
+    res.render('pages/account', {user:req.session.user});
+  } else {
+    res.redirect('/login');
+  }
+})
 
 app.get('/:title', (req,res) => {
   var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
@@ -162,3 +162,4 @@ app.get('/:title', (req,res) => {
 })
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
