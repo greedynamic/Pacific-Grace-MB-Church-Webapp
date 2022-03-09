@@ -1,0 +1,21 @@
+#accountDetails {
+    margin-top: 3vh;
+    margin-left: 15vw;
+}
+
+body {
+    background-color: aliceblue;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 18px;
+    padding: 15px;
+    width: 25vw;
+}

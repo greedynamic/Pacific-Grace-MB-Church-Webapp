@@ -38,23 +38,22 @@ app.set('view engine', 'ejs');
 app.use('/blog', authAmdin(), blogRoute);
 
 
-app.get('/', (req,res) => {
-  // if(req.session.user){
-  //   res.render('pages/homepage', {user:req.session.user});
-  // } else {
-  //   res.render('pages/homepage', {user:null});
-  // }
+app.get('/', async (req,res) => {
+  if(req.session.user){
+    res.render('pages/homepage', {user:req.session.user});
+  } else {
+    res.render('pages/homepage', {user:null});
+  }
 
   // Post recent blogs on homepage
-  pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
-    if(error)
-      res.send(error);
-    else{
-      var results = {'blogs' : result.rows};
-      
-      res.render('pages/homepage', results);
-    }
-  })
+  // pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
+  //   if(error)
+  //     res.send(error);
+  //   else{
+  //     var results = {'blogs' : result.rows};
+  //     res.render('pages/homepage', results);
+  //   }
+  // })
 });
 
 app.get('/database', async (req, res) => {
@@ -131,7 +130,7 @@ app.post('/login', async (req,res) => {
     if (result.rowCount == 1) {
       const userResult = result.rows[0];
       req.session.user = {fname:userResult.fname, lname:userResult.lname,
-        email:userResult.email, password:userResult.password, admin:userResult.admin};;
+        email:userResult.email, password:userResult.password, admin:userResult.admin};
       res.redirect("/");
     } else {
       errors.push({message: "Invalid email or password"});
@@ -148,6 +147,13 @@ app.get('/logout', (req,res) => {
   res.redirect('/');
 })
 
+app.get('/account', (req,res) => {
+  if(req.session.user){
+    res.render('pages/account', {user:req.session.user});
+  } else {
+    res.redirect('/login');
+  }
+})
 
 app.get('/:title', (req,res) => {
   var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
