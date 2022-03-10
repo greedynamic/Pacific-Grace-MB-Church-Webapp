@@ -79,10 +79,10 @@ app.post('/signup', async (req,res) => {
     let errors = [];
 
     const client = await pool.connect();
-    //check if email is in database
     const emailQuery = `select * from usr where email='${email}'`;
     const result = await client.query(emailQuery);
-
+    
+      //check if email is in database
       if(result.rows.length > 0) {
         errors.push({message: "Email in use; please use a different email"})
       }
