@@ -24,6 +24,7 @@ router.get('/', (req, res) => {
     })
 })
 
+
 router.get('/homepage', (req, res) => {
   pool.query('SELECT * FROM blog;', (error, result) => {
       if(error)
@@ -38,19 +39,6 @@ router.get('/homepage', (req, res) => {
 /** Create New Blog page via '/blog/new' */
 router.get('/new', (req,res) => res.render('pages/newBlog'));
 
-/** Show content of a blog via '/blog/:title' */
-router.get('/:title', (req,res) => {
-    var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
-    pool.query(getBlogQuery, (error, result) =>{
-        if(error)
-            res.send(error);
-        else{
-            var results = {'blogs': result.rows};
-            res.render('pages/showBlog', results);
-        }
-    })
-})
-
 /** Get blog components in the blog table
  *  Redirect to /allBlogs page or homepage 
  */
@@ -64,7 +52,8 @@ router.post('/', (req,res) => {
           console.log(error);
         }  
         else{
-          res.redirect('/blog/');
+          var results = {'blogs' : result.rows};
+          res.redirect('/');
         }
     });
 });
@@ -99,6 +88,7 @@ router.get('/edit/:title', (req,res) => {
 router.post('/edit/:title', (req,res) => {
     const{title, summary, content} = req.body;
     const updated_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    
     var editQuery = `UPDATE blog SET title='${title}', summary='${summary}', content='${content}', updated_at='${updated_at}' WHERE title='${req.params.title}';`;
     pool.query(editQuery, (error, result) =>{
         if(error)

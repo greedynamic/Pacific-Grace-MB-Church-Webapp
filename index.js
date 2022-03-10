@@ -5,6 +5,7 @@ const blogRoute = require('./routes/adminBlog');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
+const req = require('express/lib/request');
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL || 'postgres://wwiwookhmzbgif:b99fe28f9a5e30cdca56d64ce4165e8c1bf3f8a4fc1895b437043db9fa4ed35a@ec2-34-230-110-100.compute-1.amazonaws.com:5432/d329ha74afil4s',
     ssl: {
@@ -16,31 +17,37 @@ var app = express();
 const flash = require('express-flash')
 const session = require('express-session')
 const bcrypt = require('bcrypt')
-const passport = require('passport')
+const passport = require('passport');
+const {authUser, authAmdin} = require('./routes/middleware');
 const users = [];
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
-app.use('/blog', blogRoute);
 app.use(session({
   name: "session",
-  secret: "secret",
+  secret: "zordon resurrection",
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
 }))
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
+app.use('/blog', authAmdin(), blogRoute);
+
+
 app.get('/', (req,res) => {
-  // testing
-  if(req.session.user){
-    ("guest").display = "block";
-  } else {
-    ("guest").display = "none";
-  }
-  res.render('pages/homepage');
+  // Post recent blogs on homepage
+  pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
+    if(error)
+      res.send(error);
+    else{
+      res.render('pages/homepage', {'blogs' : result.rows, user: req.session.user});
+    }
+})
+//res.render('pages/homepage');
+  
 });
 
 app.get('/database', async (req, res) => {
@@ -117,7 +124,7 @@ app.post('/login', async (req,res) => {
     if (result.rowCount == 1) {
       const userResult = result.rows[0];
       req.session.user = {fname:userResult.fname, lname:userResult.lname,
-        email:userResult.email, password:userResult.password, admin:userResult.admin};;
+        email:userResult.email, password:userResult.password, admin:userResult.admin};
       res.redirect("/");
     } else {
       errors.push({message: "Invalid email or password"});
@@ -129,11 +136,30 @@ app.post('/login', async (req,res) => {
   }
 });
 
-// alter button to post via form method=post or smt
-app.post('/logout', (req,res) => {
+app.get('/logout', (req,res) => {
   req.session.destroy();
   res.redirect('/');
 })
 
+app.get('/account', (req,res) => {
+  if(req.session.user){
+    res.render('pages/account', {user:req.session.user});
+  } else {
+    res.redirect('/login');
+  }
+})
+
+app.get('/:title', (req,res) => {
+  var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
+  pool.query(getBlogQuery, (error, result) =>{
+      if(error)
+          res.send(error);
+      else{
+          var results = {'blogs': result.rows};
+          res.render('pages/showBlog', results);
+      }
+  })
+})
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
