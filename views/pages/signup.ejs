@@ -1,12 +1,5 @@
 <!DOCTYPE html>
 <html>
-    <script>
-        let register = document.getElementById('registerBtn');
-        register.addEventListener('click', function(){
-            console.log('test validation');
-        });
-        
-    </script>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,10 +20,10 @@
                     <% }) %><% } %>
                 </ul>
                 <form id="loginForm" method="post">
-                    <input type="text" placeholder="First Name" name="fName" minlength="1" maxlength="100" required><br>
-                    <input type="text" placeholder="Last Name" name="lName" minlength="1" maxlength="100" required><br>
-                    <input type="text" placeholder="Email" name="email" minlength="1" maxlength="100" required><br>
-                    <input type="password" placeholder="Password" name="password" minlength="1" maxlength="20" required><br>
+                    <input type="text" placeholder="First Name" name="fName" minlength="1" maxlength="100" ><br>
+                    <input type="text" placeholder="Last Name" name="lName" minlength="1" maxlength="100" ><br>
+                    <input type="text" placeholder="Email" name="email" minlength="1" maxlength="100" ><br>
+                    <input type="password" placeholder="Password" name="password" minlength="1" maxlength="20" ><br>
                     <input type="submit" value="Register" id="registerBtn">
                 </form>
             </div>
@@ -42,4 +35,10 @@
             </div>
         </div>
     </body>
+    <script>
+        let register = document.getElementById('registerBtn');
+        register.addEventListener('click', function(){
+            console.log('Newewew test');
+        });
+    </script>
 </html>

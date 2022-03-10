@@ -6,6 +6,5 @@ const menulinks = document.querySelector('.header_menu')
 menu.addEventListener('click', function(){
   menu.classList.toggle('is-active');
   menulinks.classList.toggle('active');
-
 });
 
