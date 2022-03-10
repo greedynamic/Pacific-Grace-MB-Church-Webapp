@@ -84,10 +84,21 @@ app.post('/signup', async (req,res) => {
     
       //check if email is in database
       if(result.rows.length > 0) {
-        errors.push({message: "Email in use; please use a different email"})
+        errors.push({message: "Email in use. Please use a different email"})
+      }
+      // validate email format
+      const validateEmail = (email) => {
+        return String(email)
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+      };
+      if (!validateEmail(email)) {
+        errors.push({message: "Email is invalid."});
       }
       if(password.length < 8) {
-        errors.push({message: "Password minimum length 8 characters"});
+        errors.push({message: "Password minimum length 8 characters."});
       }
 
       if(errors.length == 0) {
