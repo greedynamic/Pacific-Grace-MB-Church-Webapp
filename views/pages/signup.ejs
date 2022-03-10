@@ -1,5 +1,17 @@
 <!DOCTYPE html>
 <html>
+    <script>
+        let register = document.getElementById('registerBtn');
+        register.addEventListener('click', validateEmail);
+        console.log('test validation');
+        const validateEmail = (email) => {
+            return String(email)
+            .toLowerCase()
+            .match(
+                /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
+        };
+    </script>
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,7 +36,7 @@
                     <input type="text" placeholder="Last Name" name="lName" minlength="1" maxlength="100" required><br>
                     <input type="text" placeholder="Email" name="email" minlength="1" maxlength="100" required><br>
                     <input type="password" placeholder="Password" name="password" minlength="1" maxlength="20" required><br>
-                    <input type="submit" value="Register">
+                    <input type="submit" value="Register" id="registerBtn">
                 </form>
             </div>
             <div id="signupContent">
