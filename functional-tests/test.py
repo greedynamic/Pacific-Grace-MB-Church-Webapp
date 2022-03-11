@@ -23,20 +23,27 @@ def test_church_app():
     chromeOptions.add_argument("disable-infobars")
     # chromeOptions.add_argument(r"user-data-dir=.\cookies\\test") 
 
-    driver = webdriver.Chrome(chrome_options=chromeOptions) 
-    driver.get("https://church276.herokuapp.com/") 
+    driver = webdriver.Chrome(options=chromeOptions) 
+    driver.get("http://localhost:5000/") 
     time.sleep(2) 
-    search_box = driver.find_element_by_name('login')
-    search_box.send_keys('ChromeDriver')
-    search_box.submit()
+
+    # test login button will direct to login page
+    loginButton = driver.find_element_by_class_name('loginBtn')
+    loginButton.click()
     title = "Login"
     assert title == driver.title
-    time.sleep(5) 
+
+    # test signup button will direct to signup page
+    driver.get("http://localhost:5000/") 
+    signUpButton = driver.find_element_by_class_name('signUpBtn')
+    signUpButton.click()
+    title = "Register an Account"
+    assert title == driver.title
     driver.quit()
     # driver = webdriver.Chrome()
     # driver.get('https://church276.herokuapp.com/')
     # driver.maximize_window()
-    # driver.find_element_by_name("login").click()
+    # driver.find_element_by_name("li").click()
     # # driver.find_element_by_name("li2").click()
     # title = "Login"
     # assert title == driver.title
