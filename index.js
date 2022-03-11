@@ -95,7 +95,7 @@ app.post('/signup', async (req,res) => {
           );
       };
       if (!validateEmail(email)) {
-        errors.push({message: "Email is invalid."});
+        errors.push({message: "Email address is invalid."});
       }
       if(password.length < 8) {
         errors.push({message: "Password minimum length 8 characters."});
