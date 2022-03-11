@@ -24,7 +24,7 @@ def test_church_app():
     # chromeOptions.add_argument(r"user-data-dir=.\cookies\\test") 
 
     driver = webdriver.Chrome(chrome_options=chromeOptions) 
-    driver.get("https://google.com/") 
+    driver.get("https://church276.herokuapp.com/") 
     time.sleep(2) # Let the user actually see something!
     search_box = driver.find_element_by_name('q')
     search_box.send_keys('ChromeDriver')
