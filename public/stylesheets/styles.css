@@ -255,7 +255,8 @@
     font-size: 28px;
     color: teal;
     font-weight:600;
-
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
 .blog_container{
     display: flex;
@@ -341,13 +342,8 @@
     font-size: 28px;
     color: teal;
     font-weight: 600;
-}
-.video_container{
-    display: flex;
-    justify-content: left;
-    align-items: left;
-    margin: 20px 0px;
-    flex-wrap: wrap;
+    margin-top: 30px;
+    margin-bottom: 30px;
 }
 
 .video_tag{
