@@ -25,11 +25,13 @@ def test_church_app():
 
     driver = webdriver.Chrome(chrome_options=chromeOptions) 
     driver.get("https://church276.herokuapp.com/") 
-    time.sleep(2) # Let the user actually see something!
-    search_box = driver.find_element_by_name('q')
+    time.sleep(2) 
+    search_box = driver.find_element_by_name('login')
     search_box.send_keys('ChromeDriver')
     search_box.submit()
-    time.sleep(5) # Let the user actually see something!
+    title = "Login"
+    assert title == driver.title
+    time.sleep(5) 
     driver.quit()
     # driver = webdriver.Chrome()
     # driver.get('https://church276.herokuapp.com/')
