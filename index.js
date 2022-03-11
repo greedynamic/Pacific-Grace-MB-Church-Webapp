@@ -45,9 +45,7 @@ app.get('/', (req,res) => {
     else{
       res.render('pages/homepage', {'blogs' : result.rows, user: req.session.user});
     }
-})
-//res.render('pages/homepage');
-  
+  })
 });
 
 app.get('/database', async (req, res) => {
@@ -92,7 +90,7 @@ app.post('/signup', async (req,res) => {
 
       if(errors.length == 0) {
         // adds account to database, creating account
-        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
+        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}', false)`;
         await client.query(registerQuery); 
         res.redirect("/login");
         client.release();
@@ -146,6 +144,50 @@ app.get('/account', (req,res) => {
     res.render('pages/account', {user:req.session.user});
   } else {
     res.redirect('/login');
+  }
+})
+
+app.post('/account', async (req,res) =>{
+  var buttonValue = req.body.button;
+
+  if (buttonValue == "delete") {
+    try {
+      const client = await pool.connect();
+      const email = req.session.user.email;
+      await client.query(`delete from usr where email='${email}'`);
+      res.redirect('/logout');
+      client.release();
+    } catch (err) {
+      res.send(err);
+    }
+  } else {
+    res.redirect('/account/edit');
+  }
+})
+
+app.get('/account/edit', (req,res) => {
+  if(req.session.user){
+    res.render('pages/editAccount', {user: req.session.user});
+  } else {
+    res.redirect('/');
+  }
+})
+
+app.post('/account/edit', async (req,res) => {
+  try{
+    const oldEmail = req.session.user.email;
+    const fname = req.body.fName;
+    const lname = req.body.lName;
+    const email = req.body.email;
+    const password = req.body.password;
+    const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}', password='${password}' where email='${oldEmail}'`;
+
+    const client = await pool.connect();
+    await client.query(updateQuery);
+    req.session.user = {fname:fname, lname:lname, email:email, password:password, admin:req.session.user.admin};
+    res.redirect('/account');
+  } catch (err){
+    res.send(err);
   }
 })
 
