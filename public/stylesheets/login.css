@@ -5,6 +5,11 @@ label {
     text-align: left;
 }
 
+ul, li {
+    text-align: left;
+    font-size: 11pt;
+}
+
 body {
     margin: 0;
     height: 100vh;
@@ -36,7 +41,7 @@ img {
 
 #signupContent {
     font-size: 20px;
-    margin-top: 100px;
+    margin-top: 50px;
 }
 
 input {
