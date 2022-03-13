@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- stylesheet -->
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" 
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
+
+    <!-- Script -->
+    <script src="homescript.js"></script>
+    <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous"></script>
+
+    <title>Upload Video</title>  
+</head>
+<body>
+  <nav class="header">
+    <div class="header_container">
+        <a href="/" id="headerlogo"> <i class="fa-solid fa-church"></i>Pacific Church</a>
+        <div class="header_toggle" id="mobile_menu">
+            <span class="bar"></span>
+            <span class="bar"></span>
+            <span class="bar"></span>
+        </div>
+  
+        <ul class="header_menu">
+            <li class = "header_item">
+                <a href="/" class="header_links">HOME</a></li>
+        </ul>
+    </div>
+  </nav>    
+  <div class="container">
+      <div class="row my-4">
+          <div class="col-md-12">
+            <h1>Upload Video</h1>
+                <form action="/video/upload" method="post" enctype="multipart/form-data">
+                    <div class="form-group">
+                        <%= typeof msg != 'undefined' ? msg: '' %>
+                        <label for="video">Select Video</label><br>
+                        <input type="file" name="video" accept="video/*" class="form-control-file" required>
+                    </div><br>
+
+                    <!--<div class="form-group">
+                        <label for="thumbnail">Select Thumbnail</label><br>
+                        <input type="file" name="thumbnail" accept="image/*" class="form-control-file" required>
+                    </div><br>-->
+    
+                    <div class="form-group">
+                        <label for="title">Title</label>
+                        <input required type="text" name="title" id="title" class="form-control"><br>
+                    </div>
+            
+                    <div class="form-group">
+                        <label for="summary">Description</label>
+                        <textarea name="summary" id="summary" rows="6" class="form-control"></textarea><br>
+                    </div>
+            
+                    <div class="form-group">
+                       <label for="tag">Tag</label>
+                       <textarea name="tag" id="tag" class="form-control"></textarea><br>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <a href="/" class="btn btn-secondary">Cancel</a>
+                </form>
+          </div>
+      </div>
+</div>        
+</body>
+</html>
