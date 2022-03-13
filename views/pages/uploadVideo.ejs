@@ -36,8 +36,9 @@
       <div class="row my-4">
           <div class="col-md-12">
             <h1>Upload Video</h1>
-                <form action="/upload" method="post">
+                <form action="/video/upload" method="post" enctype="multipart/form-data">
                     <div class="form-group">
+                        <%= typeof msg != 'undefined' ? msg: '' %>
                         <label for="video">Select Video</label><br>
                         <input type="file" name="video" accept="video/*" class="form-control-file" required>
                     </div><br>
