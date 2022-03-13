@@ -11,6 +11,7 @@
     "test": "nodemon test.js"
   },
   "dependencies": {
+    "@zoomus/websdk": "^2.3.0",
     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.0",
     "ejs": "^3.1.5",
