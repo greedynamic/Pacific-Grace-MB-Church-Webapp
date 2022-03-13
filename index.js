@@ -2,6 +2,7 @@ const express = require('express');
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
+const videoRoute = require('./routes/adminVideo');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
@@ -35,7 +36,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use('/blog', authAmdin(), blogRoute);
-
+app.use('/video', videoRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
@@ -45,9 +46,7 @@ app.get('/', (req,res) => {
     else{
       res.render('pages/homepage', {'blogs' : result.rows, user: req.session.user});
     }
-})
-//res.render('pages/homepage');
-  
+  })
 });
 
 app.get('/database', async (req, res) => {
@@ -79,20 +78,31 @@ app.post('/signup', async (req,res) => {
     let errors = [];
 
     const client = await pool.connect();
-    //check if email is in database
     const emailQuery = `select * from usr where email='${email}'`;
     const result = await client.query(emailQuery);
-
+    
+      //check if email is in database
       if(result.rows.length > 0) {
-        errors.push({message: "Email in use; please use a different email"})
+        errors.push({message: "Email in use. Please use a different email"})
+      }
+      // validate email format
+      const validateEmail = (email) => {
+        return String(email)
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          );
+      };
+      if (!validateEmail(email)) {
+        errors.push({message: "Email is invalid."});
       }
       if(password.length < 8) {
-        errors.push({message: "Password minimum length 8 characters"});
+        errors.push({message: "Password minimum length 8 characters."});
       }
 
       if(errors.length == 0) {
         // adds account to database, creating account
-        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
+        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}', false)`;
         await client.query(registerQuery); 
         res.redirect("/login");
         client.release();
@@ -149,6 +159,50 @@ app.get('/account', (req,res) => {
   }
 })
 
+app.post('/account', async (req,res) =>{
+  var buttonValue = req.body.button;
+
+  if (buttonValue == "delete") {
+    try {
+      const client = await pool.connect();
+      const email = req.session.user.email;
+      await client.query(`delete from usr where email='${email}'`);
+      res.redirect('/logout');
+      client.release();
+    } catch (err) {
+      res.send(err);
+    }
+  } else {
+    res.redirect('/account/edit');
+  }
+})
+
+app.get('/account/edit', (req,res) => {
+  if(req.session.user){
+    res.render('pages/editAccount', {user: req.session.user});
+  } else {
+    res.redirect('/');
+  }
+})
+
+app.post('/account/edit', async (req,res) => {
+  try{
+    const oldEmail = req.session.user.email;
+    const fname = req.body.fName;
+    const lname = req.body.lName;
+    const email = req.body.email;
+    const password = req.body.password;
+    const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}', password='${password}' where email='${oldEmail}'`;
+
+    const client = await pool.connect();
+    await client.query(updateQuery);
+    req.session.user = {fname:fname, lname:lname, email:email, password:password, admin:req.session.user.admin};
+    res.redirect('/account');
+  } catch (err){
+    res.send(err);
+  }
+})
+
 app.get('/:title', (req,res) => {
   var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
   pool.query(getBlogQuery, (error, result) =>{
@@ -162,4 +216,4 @@ app.get('/:title', (req,res) => {
 })
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
-
+ 

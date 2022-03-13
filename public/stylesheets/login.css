@@ -44,12 +44,6 @@ img {
     margin-top: 50px;
 }
 
-input {
-    background-color: white;
-    border-color: darkgrey;
-    margin-bottom: 5px;
-}
-
 input:last-child {
     margin-bottom: 0;
 }
