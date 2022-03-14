@@ -400,3 +400,13 @@
     cursor: pointer;
     padding: 18px 0;
 }
+
+/*------ Comment -------*/
+.comments_text {
+    margin: 0 13px; 
+    padding: 18px 0;
+}
+
+.asterisk {
+    font-size: 20px;
+}
