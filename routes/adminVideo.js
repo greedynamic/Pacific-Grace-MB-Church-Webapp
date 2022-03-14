@@ -39,13 +39,36 @@ const upload = multer({
 
 router.get('/upload', (req,res) => res.render('pages/uploadVideo'));
 
+router.get('/:title', (req, res) =>{
+    var videoQuery = `SELECT * FROM video WHERE title='${req.params.title}';`;
+  pool.query(videoQuery, (error, result) =>{
+      if(error)
+          res.send(error);
+      else{
+          var results = {'videos': result.rows};
+          res.render('pages/viewVideo', results);
+      }
+  })
+})
+
 router.post('/upload', (req,res) => {
     upload(req, res, (err) => {
         if(err)
             res.render('pages/uploadVideo', {msg: err});
         else{
+            const filename = req.file.filename;
+            const {title, description, tag} = req.body;
+            const uploaded_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+            const query = `INSERT INTO video VALUES ('${filename}', '${title}', '${description}', '${tag}', '${uploaded_at}');`;
+            pool.query(query, (error, result) =>{
+                if(error)
+                    res.send(error);
+                else{
+                    res.redirect('/');
+                }
+            })
             console.log(req.file);
-            res.redirect('/');
+           // res.redirect('/');
         }
     })
 })
