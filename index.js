@@ -158,21 +158,17 @@ app.get('/account', (req,res) => {
   }
 })
 
-app.post('/account', async (req,res) =>{
-  var buttonValue = req.body.button;
-
-  if (buttonValue == "delete") {
-    try {
-      const client = await pool.connect();
-      const email = req.session.user.email;
-      await client.query(`delete from usr where email='${email}'`);
-      res.redirect('/logout');
-      client.release();
-    } catch (err) {
-      res.send(err);
-    }
-  } else {
-    res.redirect('/account/edit');
+// Process delete button
+// changing
+app.get('/account/delete', async (req,res) =>{
+  try {
+    const client = await pool.connect();
+    const email = req.session.user.email;
+    await client.query(`delete from usr where email='${email}'`);
+    res.redirect('/logout');
+    client.release();
+  } catch (err) {
+    res.send(err);
   }
 })
 
@@ -191,7 +187,8 @@ app.post('/account/edit', async (req,res) => {
     const lname = req.body.lName;
     const email = req.body.email;
     const password = req.body.password;
-    const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}', password='${password}' where email='${oldEmail}'`;
+    const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}',
+      password='${password}' where email='${oldEmail}'`;
 
     const client = await pool.connect();
     await client.query(updateQuery);

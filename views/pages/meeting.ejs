@@ -4,9 +4,8 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Church Account</title>
+        <title>Virtual Meetings</title>
         <link rel="stylesheet" href="/stylesheets/styles.css">
-        <link rel="stylesheet" href="/stylesheets/account.css">
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
         <script src="index.js" defer></script>
         <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
@@ -33,39 +32,10 @@
                         <a href="/logout"class="header_links">LOGOUT</a></li>
                 </ul>
             </div>
-        </nav>    
-        <section id="accountDetails">
-            <h1>Account Details</h1>
-            <table>
-                <tr>
-                    <th>First Name:</th>
-                    <td><%= user.fname %></td>
-                </tr>
-                <tr>
-                    <th>Last Name:</th>
-                    <td><%= user.lname %></td>
-                </tr>
-                <tr>
-                    <th>Email:</th>
-                    <td><%= user.email %></td>
-                </tr>
-                <tr>
-                    <th>Password:</th>
-                    <td><%= user.password %></td>
-                </tr>
-                <tr>
-                    <th>Has Admin Privileges:</th>
-                    <td><%= user.admin %></td>
-                </tr>
-            </table>
-            <a href="/account/edit">
-                <button>Edit</button>
-            </a>
-            <!-- need new delete button that accepts both confirm / cancel calls -->
-            
-            <!-- <form onsubmit="return confirm('Do you really want to submit the form?');">
-                <button onclick="confirmDelete()">Delete</button> 
-            </form> -->
-        </section>
+        </nav>   
+        <!-- add buttons for new meeting or join existing meeting -->
+        <!-- have public/private meetings -->
+
+
     </body>
 </html>
