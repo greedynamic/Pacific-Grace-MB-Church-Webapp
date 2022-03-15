@@ -212,5 +212,13 @@ app.get('/:title', (req,res) => {
   })
 })
 
+app.get('/meeting', (req,res) => {
+  if(req.session.user){
+    res.redirect("/");
+  } else {
+    res.render('pages/meeting');
+  }
+})
+
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
  
