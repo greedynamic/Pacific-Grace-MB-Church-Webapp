@@ -172,8 +172,10 @@ app.post('/account', async (req,res) =>{
     } catch (err) {
       res.send(err);
     }
-  } else {
+  } else if(buttonValue == "edit") {
     res.redirect('/account/edit');
+  } else {
+    res.render('pages/account', {user:req.session.user});
   }
 })
 

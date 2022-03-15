@@ -11,6 +11,7 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
         <script src="index.js"></script>
+        <script src="accountscript.js" defer></script>
     </head>
     <body>
         <nav class="header">
@@ -62,8 +63,8 @@
             </table>
     
             <form method="post">
-                <button id="formButton" name="button" value="edit">Edit</button> 
-                <button id="formButton" name="button" value="delete">Delete</button> 
+                <button id="editButton" name="button" value="edit">Edit</button> 
+                <button id="deleteButton" name="button" value="" onclick=confirmDeletion()>Delete</button> 
             </form>
         </section>
 
