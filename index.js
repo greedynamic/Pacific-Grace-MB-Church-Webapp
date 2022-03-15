@@ -2,6 +2,7 @@ const express = require('express');
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
+const videoRoute = require('./routes/adminVideo');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
@@ -35,7 +36,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use('/blog', authAmdin(), blogRoute);
-
+app.use('/video', videoRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
