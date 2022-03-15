@@ -10,6 +10,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
         <script src="index.js" defer></script>
         <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
+        <script src="accountscript.js" defer></script>
     </head>
     <body>
         <nav class="header">
@@ -58,14 +59,10 @@
                     <td><%= user.admin %></td>
                 </tr>
             </table>
-            <a href="/account/edit">
-                <button>Edit</button>
-            </a>
-            <!-- need new delete button that accepts both confirm / cancel calls -->
-            
-            <!-- <form onsubmit="return confirm('Do you really want to submit the form?');">
-                <button onclick="confirmDelete()">Delete</button> 
-            </form> -->
+            <form method="post">
+                <button id="editButton" name="button" value="edit">Edit</button> 
+                <button id="deleteButton" name="button" value="" onclick=confirmDeletion()>Delete</button> 
+            </form>
         </section>
     </body>
 </html>

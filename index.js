@@ -159,17 +159,23 @@ app.get('/account', (req,res) => {
   }
 })
 
-// Process delete button
-// changing
-app.get('/account/delete', async (req,res) =>{
-  try {
-    const client = await pool.connect();
-    const email = req.session.user.email;
-    await client.query(`delete from usr where email='${email}'`);
-    res.redirect('/logout');
-    client.release();
-  } catch (err) {
-    res.send(err);
+app.post('/account', async (req,res) =>{
+  var buttonValue = req.body.button;
+
+  if (buttonValue == "delete") {
+    try {
+      const client = await pool.connect();
+      const email = req.session.user.email;
+      await client.query(`delete from usr where email='${email}'`);
+      res.redirect('/logout');
+      client.release();
+    } catch (err) {
+      res.send(err);
+    }
+  } else if(buttonValue == "edit") {
+    res.redirect('/account/edit');
+  } else {
+    res.redirect('/account');
   }
 })
 
