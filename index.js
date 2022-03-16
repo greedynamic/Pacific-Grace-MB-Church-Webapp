@@ -3,6 +3,7 @@ const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
+const meetingRoute = require('./routes/meetingServer.js');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
@@ -37,6 +38,7 @@ app.set('view engine', 'ejs');
 
 app.use('/blog', authAmdin(), blogRoute);
 app.use('/video', videoRoute);
+app.use('/meeting', meetingRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
@@ -216,14 +218,6 @@ app.get('/:title', (req,res) => {
           res.render('pages/showBlog', results);
       }
   })
-})
-
-app.get('/meeting', (req,res) => {
-  if(req.session.user){
-    res.redirect("/");
-  } else {
-    res.render('pages/meeting');
-  }
 })
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
