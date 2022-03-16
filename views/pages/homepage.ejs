@@ -5,8 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Church Website</title>
+    <!--Stylesheets-->
     <link rel="stylesheet" href="/stylesheets/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+<<<<<<< HEAD
+=======
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
+    <script src="homescript.js"></script>
+>>>>>>> 2ba0ed5 (finishing streaming video and deleting video)
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
     <script src="homescript.js" defer></script>
@@ -97,10 +103,21 @@
         <h4>VIDEOS</h4>
     </div>
     <div class="video_tag">
-        <iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0"width="800" height="500" type="text/html" src="https://www.youtube.com/embed/aih2gh734vw?autoplay=0&fs=1&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=1&start=0&end=0&origin=http://youtubeembedcode.com"><div><small><a href="https://youtubeembedcode.com/nl/">youtubeembedcode.com/nl/</a></small></div><div><small><a href="https://britecasinoutansvensklicens.se/">https://britecasinoutansvensklicens.se/</a></small></div><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://sportbethorseracing.com/">https://sportbethorseracing.com/</a></small></div></iframe>
+        <% if(videos.length) { 
+            for (var i=0; i < videos.length; i++){ %>
+                <div class="show_video">
+                    <video src="videos/<%= videos[i].filename%>" controls type="video/*" width='800' height='500' ></video>
+                </div>
+                <div class="video_text" >
+                    <h3><%= videos[i].title %></h3>
+                    <p><%= videos[i].description %></p>
+                </div>
+            <% }
+        } %>
+        <br>
+        <!--<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0"width="800" height="500" type="text/html" src="https://www.youtube.com/embed/aih2gh734vw?autoplay=0&fs=1&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=1&start=0&end=0&origin=http://youtubeembedcode.com"><div><small><a href="https://youtubeembedcode.com/nl/">youtubeembedcode.com/nl/</a></small></div><div><small><a href="https://britecasinoutansvensklicens.se/">https://britecasinoutansvensklicens.se/</a></small></div><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://sportbethorseracing.com/">https://sportbethorseracing.com/</a></small></div></iframe>-->
     </div>
-
-</section>
+</section><br>
 
 <!--CONTACT US-->
 <section class="contact">

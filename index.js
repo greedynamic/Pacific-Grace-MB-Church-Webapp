@@ -4,6 +4,8 @@ const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
 const meetingRoute = require('./routes/meetingServer.js');
+const fs = require('fs');
+
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
@@ -21,6 +23,7 @@ const session = require('express-session')
 const bcrypt = require('bcrypt')
 const passport = require('passport');
 const {authUser, authAmdin} = require('./routes/middleware');
+const { database } = require('pg/lib/defaults');
 const users = [];
 
 app.use(express.static(path.join(__dirname, 'public')));
@@ -42,14 +45,17 @@ app.use('/meeting', meetingRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
-  pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
+  var query = "SELECT * FROM blog ORDER BY published_at DESC; SELECT * FROM video ORDER BY uploaded_at DESC LIMIT 1;";
+
+  pool.query(query, (error, result) => {
     if(error)
       res.send(error);
     else{
-      res.render('pages/homepage', {'blogs' : result.rows, user: req.session.user});
+      res.render('pages/homepage', {'blogs' : result[0].rows, 'videos' : result[1].rows, user: req.session.user});
     }
   })
 });
+
 
 app.get('/database', async (req, res) => {
   try {
@@ -219,6 +225,19 @@ app.get('/:title', (req,res) => {
       }
   })
 })
+
+app.get('/video/:title', (req, res) =>{
+  var videoQuery = `SELECT * FROM video WHERE title='${req.params.title}';`;
+  pool.query(videoQuery, (error, result) =>{
+    if(error)
+        res.send(error);
+    else{
+        var results = {'videos': result.rows};
+        res.render('pages/viewVideo', results);
+    }
+  })
+})
+
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
  
