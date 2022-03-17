@@ -40,9 +40,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use('/blog', authAmdin(), blogRoute);
-app.use('/video', authAmdin(), videoRoute);
+app.use('/video', videoRoute);
 app.use('/meeting', meetingRoute);
-app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
@@ -227,31 +226,6 @@ app.get('/:title', (req,res) => {
   })
 })
 
-app.get('/videos/:title', (req, res) =>{
-  var videoQuery = `SELECT * FROM video WHERE title='${req.params.title}';`;
-  pool.query(videoQuery, (error, result) =>{
-    if(error)
-        res.send(error);
-    else{
-        var results = {'videos': result.rows};
-        console.log(result.rows);
-        res.render('pages/viewVideo', results);
-    }
-  })
-})
-
-// Get all videos uploaded
-app.get('/archivedVideo', (req, res) => {
-  pool.query('SELECT * FROM video ORDER BY uploaded_at DESC;', (error, result) => {
-    if(error)
-      res.send(error);
-    else{
-      res.render('pages/archivedVideos', {'videos' : result.rows});
-    }
-  })
-})
-
-app.get('/success', (req, res) => res.send('Hello'));
-
+app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
  
