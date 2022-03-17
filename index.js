@@ -233,6 +233,7 @@ app.get('/video/:title', (req, res) =>{
         res.send(error);
     else{
         var results = {'videos': result.rows};
+        console.log(result.rows);
         res.render('pages/viewVideo', results);
     }
   })

@@ -48,11 +48,15 @@
                     <div class="card-subtitle text-muted mb-2 "><%= videos[i].uploaded_at.toLocaleDateString() %></div>
                     <div class="primary-button">
                         <a href="/video/<%= videos[i].title %>">Watch Video</a>
-                        <video style="display: block;" src="videos/<%= videos[i].filename%>"  type="video/*" width='300' height='300' ></video>
-                        <form action="/video/del/<%= videos[i].title %>" method="post" class="d-inline">
-                            <button type="submit">Delete</button>
-                        </form>
+                        <% if(videos[i].filename != 'undefined'){ %>
+                            <video src="videos/<%= videos[i].filename%>" style="display: block;" type="video/*" width='300' height='300' ></video>
+                        <%} else{ %> 
+                            <iframe src="<%= videos[i].url %>"  style="display: block;" width="300" height="300"></iframe>
+                        <% } %>
                     </div>
+                    <form action="/video/del/<%= videos[i].title %>" method="post">
+                        <button type="submit">Delete</button>
+                    </form>
                 </div>
             </div>
         <% }

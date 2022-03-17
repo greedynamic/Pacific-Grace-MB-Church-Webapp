@@ -47,11 +47,16 @@ router.post('/upload', (req,res) => {
         if(err)
             res.render('pages/uploadVideo', {msg: err});
         else{
-            const filename = req.file.filename;
-            const filepath = req.file.path;
-            const {title, description, tag} = req.body;
+            if(req.file){
+                var filename = req.file.filename;
+                var filepath = req.file.path;
+            }
+            const {url, title, description, tag} = req.body;
+            var url_parts = url.split('/');
+            var video_id = url_parts[3];
+            const embed_url ="https://www.youtube.com/embed/" + video_id;
             const uploaded_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-            const query = `INSERT INTO video VALUES ('${filename}', '${title}', '${description}', '${tag}', '${uploaded_at}', '${filepath}');`;
+            const query = `INSERT INTO video VALUES ('${filename}', '${title}', '${description}', '${tag}', '${uploaded_at}', '${filepath}', '${embed_url}');`;
             pool.query(query, (error, result) =>{
                 if(error)
                     res.send(error);
@@ -82,9 +87,9 @@ router.post('/del/:title', (req,res) => {
           res.send(error);
         }  
         else{
-          const filepath = result.rows[0].filepath;
-          console.log(filepath);
-          fs.unlinkSync(filepath);
+          if(result.rows[0].filepath != 'undefined'){
+            fs.unlinkSync(result.rows[0].filepath);
+          };
           pool.query(`DELETE FROM video WHERE title='${req.params.title}';`, (err)=>{
               if(err)
                 res.send(err);

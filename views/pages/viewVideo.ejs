@@ -44,7 +44,11 @@
             <div class="card-subtitle text-muted mb-2" style="padding-left: 30px">
                 Uploaded_At: <%= videos[i].uploaded_at.toLocaleDateString() %>
             </div>
-            <video style="padding: 0 20px 0 30px ; float: left;" src="videos/<%= videos[i].filename%>" controls type="video/*" width='800' height='500'autoplay ></video>
+           <% if(videos[i].filename != 'undefined'){ %>
+                <video style="padding: 0 20px 0 30px ; float: left;" src="videos/<%= videos[i].filename%>" controls type="video/*" width='800' height='500' ></video>
+            <%} else{ %> 
+                <iframe  style="padding: 0 20px 0 30px ; float: left;" src="<%= videos[i].url %>"></iframe>
+            <% } %>
             <div class="mt-2" style="padding-top: 15%">
                <%= videos[i].description %>
             </div>                   
