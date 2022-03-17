@@ -1,13 +1,11 @@
-const res = require("express/lib/response");
-
-const socket = io();
+const socket = io('/');
 const videoGrid = document.getElementById('video-grid');
 const myVideo = document.createElement('video');
 myVideo.muted = true;
-
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
-    port: process.env.PORT || 5000
+    host: '/',
+    port: 'process.env.PORT || 5000'
 })
 const peers = {};
 
@@ -116,3 +114,6 @@ function setStopVideo() {
     `;
     document.querySelector('.main-video-button').innerHTML = html;
 }
+
+document.querySelector('.main-mute-button').addEventListener("click", muteUnmute);
+document.querySelector('.main-video-button').addEventListener("click", playStop);

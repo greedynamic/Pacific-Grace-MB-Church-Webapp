@@ -8,6 +8,9 @@
         <link rel="stylesheet" href="/stylesheets/styles.css">
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
         <script src="index.js" defer></script>
+        
+        <script src="/public/meetingScript.js" defer></script>
+
         <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
     </head>
     <body>
@@ -37,9 +40,9 @@
         <!-- have public (displayed in table?) / private meetings -->
 
         <!-- create new room -->
-        <form action="/meeting/room">
-            <input type="submit" value="Create New Room">
-        </form>
+        <a href="/meeting/room">
+            <button>Create New Room</button>
+        </a>
 
         <!-- join room via roomId? (meeting code) -->
         <input type="text" id="roomId" placeholder="Enter code here...">
