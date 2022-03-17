@@ -357,7 +357,11 @@
 }
 
 .video_tag .video_text {
-    padding: 15% 0;
+    padding: 15% 0 0 0;
+}
+
+.video_tag .video_text h3{
+    text-align: center;
 }
 
 /*-----CONTACT US----*/

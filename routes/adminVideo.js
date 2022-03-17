@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const {authUser, authAmdin} = require('./middleware');
 const moment = require('moment');
 const multer = require('multer');
 const fs = require('fs');
@@ -40,18 +41,23 @@ const upload = multer({
 
 
 // Render upload video form
-router.get('/upload', (req,res) => res.render('pages/uploadVideo'));
+router.get('/upload', authAmdin(), (req,res) => res.render('pages/uploadVideo'));
 
-router.post('/upload', (req,res) => {
+router.post('/upload', authAmdin(), (req,res) => {
     upload(req, res, (err) => {
         if(err)
             res.render('pages/uploadVideo', {msg: err});
         else{
-            const filename = req.file.filename;
-            const filepath = req.file.path;
-            const {title, description, tag} = req.body;
+            if(req.file){
+                var filename = req.file.filename;
+                var filepath = req.file.path;
+            }
+            const {url, title, description, tag} = req.body;
+            var url_parts = url.split('/');
+            var video_id = url_parts[3];
+            const embed_url ="https://www.youtube.com/embed/" + video_id;
             const uploaded_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-            const query = `INSERT INTO video VALUES ('${filename}', '${title}', '${description}', '${tag}', '${uploaded_at}', '${filepath}');`;
+            const query = `INSERT INTO video VALUES ('${filename}', '${title}', '${description}', '${tag}', '${uploaded_at}', '${filepath}', '${embed_url}');`;
             pool.query(query, (error, result) =>{
                 if(error)
                     res.send(error);
@@ -64,7 +70,7 @@ router.post('/upload', (req,res) => {
 })
 
 // Get all videos uploaded
-router.get('/', (req, res) => {
+router.get('/', authAmdin(), (req, res) => {
     pool.query('SELECT * FROM video ORDER BY uploaded_at DESC;', (error, result) => {
         if(error)
             res.send(error);
@@ -75,16 +81,16 @@ router.get('/', (req, res) => {
 })
 
 // Delete videos
-router.post('/del/:title', (req,res) => {
+router.post('/del/:title', authAmdin(), (req,res) => {
     var query = `SELECT * FROM video WHERE title='${req.params.title}';`;
     pool.query(query, (error,result) => {
         if(error){
           res.send(error);
         }  
         else{
-          const filepath = result.rows[0].filepath;
-          console.log(filepath);
-          fs.unlinkSync(filepath);
+          if(result.rows[0].filepath != 'undefined'){
+            fs.unlinkSync(result.rows[0].filepath);
+          };
           pool.query(`DELETE FROM video WHERE title='${req.params.title}';`, (err)=>{
               if(err)
                 res.send(err);
@@ -95,6 +101,16 @@ router.post('/del/:title', (req,res) => {
         }  
     })
 })
+
+router.get('/archivedVideo', (req, res) => {
+    pool.query('SELECT * FROM video ORDER BY uploaded_at DESC;', (error, result) => {
+      if(error)
+        res.send(error);
+      else{
+        res.render('pages/archivedVideos', {'videos' : result.rows});
+      }
+    })
+});
 
 module.exports = router;
 

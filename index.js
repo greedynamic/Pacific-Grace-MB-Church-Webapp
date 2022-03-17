@@ -1,10 +1,7 @@
 const express = require('express');
-const res = require('express/lib/response');
-const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
 const meetingRoute = require('./routes/meetingServer.js');
-const fs = require('fs');
 
 const path = require('path');
 const PORT = process.env.PORT || 5000;
@@ -26,9 +23,12 @@ const {authUser, authAmdin} = require('./routes/middleware');
 const { database } = require('pg/lib/defaults');
 const users = [];
 
+app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
+
+app.set('trust proxy', 1);
 app.use(session({
   name: "session",
   secret: "zordon resurrection",
@@ -226,18 +226,6 @@ app.get('/:title', (req,res) => {
   })
 })
 
-app.get('/video/:title', (req, res) =>{
-  var videoQuery = `SELECT * FROM video WHERE title='${req.params.title}';`;
-  pool.query(videoQuery, (error, result) =>{
-    if(error)
-        res.send(error);
-    else{
-        var results = {'videos': result.rows};
-        res.render('pages/viewVideo', results);
-    }
-  })
-})
-
-
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
  

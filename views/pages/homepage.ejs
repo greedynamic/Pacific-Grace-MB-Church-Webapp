@@ -8,11 +8,8 @@
     <!--Stylesheets-->
     <link rel="stylesheet" href="/stylesheets/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<<<<<<< HEAD
-=======
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
     <script src="homescript.js"></script>
->>>>>>> 2ba0ed5 (finishing streaming video and deleting video)
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
     <script src="homescript.js" defer></script>
@@ -31,15 +28,30 @@
                 <li class = "header_item">
                     <a href="/" class="header_links">HOME</a></li>
                 <li class = "header_item">
-                    <a href="#videos" class="header_links">VIDEOS</i></a></li>
+                    <a href="#videos" class="header_links">VIDEOS</i></a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/video" class="header_links">All Videos</a></li>
+                            <li><a href="/video/upload" class="header_links">Upload Video</a></li>
+                        </ul>
+                    <% } else{ %>
+                        <ul>
+                            <li><a href="/video/archivedVideo" class="header_links">Archived Videos</a></li>
+                        </ul>    
+                    <% } %>
+                    
+                    
+
+                </li>
                 <li class = "header_item">
                     <a href="#blog" class="header_links">BLOG</a>
                     <% if(user && user.admin){ %> 
                         <ul>
-                            <li><a href="/blog" class="header_link">All Blogs</a></li>
-                            <li><a href="/blog/new" class="header_link">New Blog</a></li>
+                            <li><a href="/blog" class="header_links">All Blogs</a></li>
+                            <li><a href="/blog/new" class="header_links">New Blog</a></li>
                         </ul>
                     <% } %>
+                </li>
                 <% if(user) { %>
                     <li class = "header_item">
                         <a href="/account" class="header_links">ACCOUNT</a></li>
@@ -106,7 +118,11 @@
         <% if(videos.length) { 
             for (var i=0; i < videos.length; i++){ %>
                 <div class="show_video">
-                    <video src="videos/<%= videos[i].filename%>" controls type="video/*" width='800' height='500' ></video>
+                    <% if(videos[i].filename != 'undefined') {%>
+                        <video src="videos/<%= videos[i].filename%>" controls type="video/*" width='800' height='500' ></video>
+                    <%} else{ %> 
+                        <iframe src="<%= videos[i].url %>" width="800" height="500"></iframe>
+                    <% } %>
                 </div>
                 <div class="video_text" >
                     <h3><%= videos[i].title %></h3>
@@ -115,7 +131,6 @@
             <% }
         } %>
         <br>
-        <!--<iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0"width="800" height="500" type="text/html" src="https://www.youtube.com/embed/aih2gh734vw?autoplay=0&fs=1&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=1&start=0&end=0&origin=http://youtubeembedcode.com"><div><small><a href="https://youtubeembedcode.com/nl/">youtubeembedcode.com/nl/</a></small></div><div><small><a href="https://britecasinoutansvensklicens.se/">https://britecasinoutansvensklicens.se/</a></small></div><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://sportbethorseracing.com/">https://sportbethorseracing.com/</a></small></div></iframe>-->
     </div>
 </section><br>
 
