@@ -1,10 +1,7 @@
 const express = require('express');
-const res = require('express/lib/response');
-const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
 const meetingRoute = require('./routes/meetingServer.js');
-const fs = require('fs');
 
 const path = require('path');
 const PORT = process.env.PORT || 5000;
@@ -26,9 +23,12 @@ const {authUser, authAmdin} = require('./routes/middleware');
 const { database } = require('pg/lib/defaults');
 const users = [];
 
+app.use(express.static("public"));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
+
+app.set('trust proxy', 1);
 app.use(session({
   name: "session",
   secret: "zordon resurrection",
@@ -40,8 +40,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use('/blog', authAmdin(), blogRoute);
-app.use('/video', videoRoute);
+app.use('/video', authAmdin(), videoRoute);
 app.use('/meeting', meetingRoute);
+app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
@@ -226,7 +227,7 @@ app.get('/:title', (req,res) => {
   })
 })
 
-app.get('/video/:title', (req, res) =>{
+app.get('/videos/:title', (req, res) =>{
   var videoQuery = `SELECT * FROM video WHERE title='${req.params.title}';`;
   pool.query(videoQuery, (error, result) =>{
     if(error)
@@ -239,6 +240,18 @@ app.get('/video/:title', (req, res) =>{
   })
 })
 
+// Get all videos uploaded
+app.get('/archivedVideo', (req, res) => {
+  pool.query('SELECT * FROM video ORDER BY uploaded_at DESC;', (error, result) => {
+    if(error)
+      res.send(error);
+    else{
+      res.render('pages/archivedVideos', {'videos' : result.rows});
+    }
+  })
+})
 
-app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+app.get('/success', (req, res) => res.send('Hello'));
+
+
  

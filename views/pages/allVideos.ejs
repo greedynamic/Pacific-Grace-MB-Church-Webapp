@@ -19,7 +19,7 @@
     <script src="homescript.js"></script>
     <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous"></script>
 
-    <title>Upload Video</title>  
+    <title>All Videos</title>  
 </head>
 <body>
   <nav class="header">
@@ -47,7 +47,7 @@
                     <h4><%= videos[i].title %></h4>
                     <div class="card-subtitle text-muted mb-2 "><%= videos[i].uploaded_at.toLocaleDateString() %></div>
                     <div class="primary-button">
-                        <a href="/video/<%= videos[i].title %>">Watch Video</a>
+                        <a href="/videos/<%= videos[i].title %>">Watch Video</a>
                         <% if(videos[i].filename != 'undefined'){ %>
                             <video src="videos/<%= videos[i].filename%>" style="display: block;" type="video/*" width='300' height='300' ></video>
                         <%} else{ %> 
