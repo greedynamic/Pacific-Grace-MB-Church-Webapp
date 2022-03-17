@@ -102,6 +102,7 @@ router.post('/del/:title', authAmdin(), (req,res) => {
     })
 })
 
+// See all archived videos
 router.get('/archivedVideo', (req, res) => {
     pool.query('SELECT * FROM video ORDER BY uploaded_at DESC;', (error, result) => {
       if(error)
