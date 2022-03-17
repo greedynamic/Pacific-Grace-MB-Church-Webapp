@@ -7,7 +7,7 @@ myVideo.muted = true;
 
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
-    port: process.env.PORT || 5000
+    port: process.env.PORT || 9000
 })
 const peers = {};
 
