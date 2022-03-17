@@ -19,7 +19,7 @@
     <script src="homescript.js"></script>
     <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous"></script>
 
-    <title>Upload Video</title>  
+    <title>All Videos</title>  
 </head>
 <body>
   <nav class="header">
@@ -42,26 +42,27 @@
     <div class="primary-button" style="padding-left: 20px"><a href="/video/upload">Upload Video</a></div>
     <% if(videos.length) { 
         for(var i=0; i < videos.length; i++) { %> 
-            <div class="card mt-4" style="margin: 0 20px 0 20px; display: inline-block;">
+            <div class="card mt-4" style="margin: 0 20px 0 20px;">
                 <div class="card-body">
-                    <h4><%= videos[i].title %></h4>
-                    <div class="card-subtitle text-muted mb-2 "><%= videos[i].uploaded_at.toLocaleDateString() %></div>
                     <div class="primary-button">
-                        <a href="/video/<%= videos[i].title %>">Watch Video</a>
+                        <h4><%= videos[i].title %></h4>
+                        <div class="card-subtitle text-muted"><%= videos[i].uploaded_at.toLocaleDateString() %></div>
                         <% if(videos[i].filename != 'undefined'){ %>
-                            <video src="videos/<%= videos[i].filename%>" style="display: block;" type="video/*" width='300' height='300' ></video>
+                            <video src="videos/<%= videos[i].filename%>" style="clear:left; float: left; padding-right: 20px;" controls type="video/*" width='500' height='300' ></video><br>
                         <%} else{ %> 
-                            <iframe src="<%= videos[i].url %>"  style="display: block;" width="300" height="300"></iframe>
+                            <iframe src="<%= videos[i].url %>" style="clear:left; float: left; padding: 20px; padding-left: 0;" width="500" height="300"></iframe>
                         <% } %>
+                        <div><%= videos[i].description %></div><br>
+                        <form action="/video/del/<%= videos[i].title %>" method="post">
+                            <button type="submit">Delete</button>
+                        </form>
                     </div>
-                    <form action="/video/del/<%= videos[i].title %>" method="post">
-                        <button type="submit">Delete</button>
-                    </form>
                 </div>
             </div>
         <% }
     } %> 
   </div>
+
  <!--ABOUT US-->
 <section class="about">
     <h5>ABOUT US</h5>

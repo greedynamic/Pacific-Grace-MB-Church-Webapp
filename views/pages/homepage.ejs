@@ -28,15 +28,30 @@
                 <li class = "header_item">
                     <a href="/" class="header_links">HOME</a></li>
                 <li class = "header_item">
-                    <a href="#videos" class="header_links">VIDEOS</i></a></li>
+                    <a href="#videos" class="header_links">VIDEOS</i></a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/video" class="header_links">All Videos</a></li>
+                            <li><a href="/video/upload" class="header_links">Upload Video</a></li>
+                        </ul>
+                    <% } else{ %>
+                        <ul>
+                            <li><a href="/video/archivedVideo" class="header_links">Archived Videos</a></li>
+                        </ul>    
+                    <% } %>
+                    
+                    
+
+                </li>
                 <li class = "header_item">
                     <a href="#blog" class="header_links">BLOG</a>
                     <% if(user && user.admin){ %> 
                         <ul>
-                            <li><a href="/blog" class="header_link">All Blogs</a></li>
-                            <li><a href="/blog/new" class="header_link">New Blog</a></li>
+                            <li><a href="/blog" class="header_links">All Blogs</a></li>
+                            <li><a href="/blog/new" class="header_links">New Blog</a></li>
                         </ul>
                     <% } %>
+                </li>
                 <% if(user) { %>
                     <li class = "header_item">
                         <a href="/account" class="header_links">ACCOUNT</a></li>

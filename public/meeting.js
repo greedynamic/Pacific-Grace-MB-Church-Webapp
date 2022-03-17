@@ -1,66 +1,64 @@
-const res = require("express/lib/response");
-
-const socket = io();
+const socket = io("/room"); // uses "meeting" namespace
 const videoGrid = document.getElementById('video-grid');
 const myVideo = document.createElement('video');
 myVideo.muted = true;
 
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
-    port: process.env.PORT || 9000
+    host: '/',
+    port: 'process.env.PORT' || '5000'
 })
-const peers = {};
+const peers = {}
 
-let myVideoStream;
+let myVideoStream
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
-    myVideoStream = stream;
-    addVideoStream(myVideo, stream);
+    myVideoStream = stream
+    addVideoStream(myVideo, stream)
     // Receive calls
     myPeer.on('call', call => {
-        call.answer(stream);
-        const video = document.createElement('video');
+        call.answer(stream)
+        const video = document.createElement('video')
         call.on('stream', userVideoStream => {  
-            addVideoStream(video, userVideoStream);
-        });
-    });
-
+            addVideoStream(video, userVideoStream)
+        })
+    })
     socket.on('user-connected', userId => {
-        connectToNewUser(userId, stream);
-    });
-});
+        connectToNewUser(userId, stream)
+    })
+})
 
 socket.on('user-disconnected', userId => {
     if (peers[userId]) {
-        peers[userId].close();
+        peers[userId].close()
     }
-});
+})
 
 myPeer.on('open', id => {
     socket.emit('join-room', ROOM_ID, id);
-});
+})
 
 // Make calls when new users connect to room
 function connectToNewUser(userId, stream) {
-    const call = myPeer.call(userId, stream);
-    const video = document.createElement('video');
+    const call = myPeer.call(userId, stream)
+    const video = document.createElement('video')
     call.on('stream', userVideoStream => {
-        addVideoStream(video, userVideoStream);
-    });
+        addVideoStream(video, userVideoStream)
+    })
     call.on('close', () => {
-        video.remove();
-    });
-    peers[userId] = call;
+        video.remove()
+    })
+    peers[userId] = call
 }
 
 function addVideoStream(video, stream) {
-    video.srcObject = stream;
+    video.srcObject = stream
     video.addEventListener('loadedmetadata', () => {
-        video.play();
-    });
-    videoGrid.append(video);
+        video.play()
+    })
+    videoGrid.append(video)
 }
 
 function muteUnmute() {
@@ -78,7 +76,7 @@ function setMuteButton() {
     const html = `
         <i class="fa-solid fa-microphone"></i>
         <span>Mute</span>
-    `;
+    `
     document.querySelector('.main-mute-button').innerHTML = html;
 }
 
@@ -86,7 +84,7 @@ function setUnmuteButton() {
     const html = `
         <i class="unmute fa-solid fa-microphone-slash"></i>
         <span>Mute</span>
-    `;
+    `
     document.querySelector('.main-mute-button').innerHTML = html;
 }
 
@@ -105,7 +103,7 @@ function setPlayVideo() {
     const html = `
         <i class="stop fa-solid fa-video-slash"></i>
         <span>Play Video</span>
-    `;
+    `
     document.querySelector('.main-video-button').innerHTML = html;
 }
 
@@ -113,6 +111,9 @@ function setStopVideo() {
     const html = `
         <i class="fa-solid fa-video"></i>
         <span>Play Video</span>
-    `;
+    `
     document.querySelector('.main-video-button').innerHTML = html;
 }
+
+document.querySelector('.main-mute-button').addEventListener("click", muteUnmute);
+document.querySelector('.main-video-button').addEventListener('click', playStop);

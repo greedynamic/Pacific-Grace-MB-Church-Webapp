@@ -1,11 +1,9 @@
 const express = require('express');
+const app = express();
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
-const meetingRoute = require('./routes/meetingServer.js');
-const fs = require('fs');
-
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
@@ -16,8 +14,6 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 });
-var app = express();
-
 const flash = require('express-flash')
 const session = require('express-session')
 const bcrypt = require('bcrypt')
@@ -26,9 +22,11 @@ const {authUser, authAmdin} = require('./routes/middleware');
 const { database } = require('pg/lib/defaults');
 const users = [];
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
+
+app.set('trust proxy', 1);
 app.use(session({
   name: "session",
   secret: "zordon resurrection",
@@ -41,7 +39,6 @@ app.set('view engine', 'ejs');
 
 app.use('/blog', authAmdin(), blogRoute);
 app.use('/video', videoRoute);
-app.use('/meeting', meetingRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
@@ -226,19 +223,40 @@ app.get('/:title', (req,res) => {
   })
 })
 
-app.get('/video/:title', (req, res) =>{
-  var videoQuery = `SELECT * FROM video WHERE title='${req.params.title}';`;
-  pool.query(videoQuery, (error, result) =>{
-    if(error)
-        res.send(error);
-    else{
-        var results = {'videos': result.rows};
-        console.log(result.rows);
-        res.render('pages/viewVideo', results);
-    }
+// Meeting temporary spot
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const { v4: uuidV4 } = require('uuid');
+const { ExpressPeerServer } = require('peer');
+const peerServer = ExpressPeerServer(server, {
+    debug: true
+});
+
+app.use('/peerjs', peerServer);
+
+app.get('/meeting', (req,res) => {
+  res.render('pages/meeting');
+})
+
+app.get('/meeting/room', (req,res) => {
+  res.redirect(`/meeting/room/${uuidV4()}`);
+})
+
+app.get('/meeting/room/:room', (req,res) => {
+  res.render('pages/room', {roomId: req.params.room});
+})
+
+io.of("/room").on('connection', socket => {
+  socket.on('join-room', (roomId, userId) => {
+    socket.join(roomId);
+    socket.to(roomId).emit('user-connected', userId);
+    socket.on('disconnect', () => {
+      socket.to(roomId).emit('user-disconnected', userId);
+    })
   })
 })
 
 
-app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
  
