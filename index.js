@@ -19,11 +19,14 @@ const session = require('express-session')
 const bcrypt = require('bcrypt')
 const passport = require('passport');
 const {authUser, authAmdin} = require('./routes/middleware');
+const { database } = require('pg/lib/defaults');
 const users = [];
 
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
+
+app.set('trust proxy', 1);
 app.use(session({
   name: "session",
   secret: "zordon resurrection",
@@ -39,14 +42,17 @@ app.use('/video', videoRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
-  pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
+  var query = "SELECT * FROM blog ORDER BY published_at DESC; SELECT * FROM video ORDER BY uploaded_at DESC LIMIT 1;";
+
+  pool.query(query, (error, result) => {
     if(error)
       res.send(error);
     else{
-      res.render('pages/homepage', {'blogs' : result.rows, user: req.session.user});
+      res.render('pages/homepage', {'blogs' : result[0].rows, 'videos' : result[1].rows, user: req.session.user});
     }
   })
 });
+
 
 app.get('/database', async (req, res) => {
   try {
@@ -252,4 +258,5 @@ io.of("/room").on('connection', socket => {
 
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
  
