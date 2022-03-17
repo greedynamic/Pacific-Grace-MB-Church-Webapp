@@ -21,7 +21,7 @@ const passport = require('passport');
 const {authUser, authAmdin} = require('./routes/middleware');
 const users = [];
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 app.use(session({
@@ -240,7 +240,7 @@ app.get('/meeting/room/:room', (req,res) => {
   res.render('pages/room', {roomId: req.params.room});
 })
 
-io.on('connection', socket => {
+io.of("/room").on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {
     socket.join(roomId);
     socket.to(roomId).emit('user-connected', userId);
