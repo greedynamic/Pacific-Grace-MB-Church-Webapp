@@ -22,7 +22,7 @@ navigator.mediaDevices.getUserMedia({
         })
     })
     socket.on('user-connected', userId => {
-        connectToNewUser(userId, stream)
+        setTimeout(connectToNewUser,1000,userId,stream)
     })
     socket.on('user-disconnected', userId => {
         if (peers[userId]) {

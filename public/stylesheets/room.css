@@ -4,8 +4,8 @@ body {
 }
 
 #video-grid {
-    display: flex;
-    grid-template-columns: repeat(auto-fill, 300px);
+    display: grid;
+    grid-template-columns: auto auto auto auto;
     grid-auto-rows: 300px;
 }
 
