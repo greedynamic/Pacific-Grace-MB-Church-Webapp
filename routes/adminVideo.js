@@ -52,10 +52,13 @@ router.post('/upload', authAmdin(), (req,res) => {
                 var filename = req.file.filename;
                 var filepath = req.file.path;
             }
-            const {url, title, description, tag} = req.body;
-            var url_parts = url.split('/');
-            var video_id = url_parts[3];
-            const embed_url ="https://www.youtube.com/embed/" + video_id;
+            const {title, description, tag} = req.body;
+            if(req.body.url){
+                var url = req.body.url;
+                var url_parts = url.split('/');
+                var video_id = url_parts[3];
+                var embed_url ="https://www.youtube.com/embed/" + video_id;
+            }
             const uploaded_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
             const query = `INSERT INTO video VALUES ('${filename}', '${title}', '${description}', '${tag}', '${uploaded_at}', '${filepath}', '${embed_url}');`;
             pool.query(query, (error, result) =>{

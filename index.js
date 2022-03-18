@@ -210,7 +210,7 @@ app.post('/account/edit', async (req,res) => {
   }
 })
 
-app.get('/:title', (req,res) => {
+app.get('/blogs/:title', (req,res) => {
   var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
   pool.query(getBlogQuery, (error, result) =>{
       if(error)
