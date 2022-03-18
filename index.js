@@ -238,10 +238,12 @@ app.get('/meeting', (req,res) => {
   res.render('pages/meeting');
 })
 
+// Redirect to a unique room
 app.get('/meeting/room', (req,res) => {
   res.redirect(`/meeting/room/${uuidV4()}`);
 })
 
+// Render unique room
 app.get('/meeting/room/:room', (req,res) => {
   res.render('pages/room', {roomId: req.params.room});
 })
