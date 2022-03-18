@@ -210,6 +210,18 @@ app.post('/account/edit', async (req,res) => {
   }
 })
 
+app.get('/blogs/:title', (req,res) => {
+  var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
+  pool.query(getBlogQuery, (error, result) =>{
+      if(error)
+          res.send(error);
+      else{
+          var results = {'blogs': result.rows};
+          res.render('pages/showBlog', results);
+      }
+  })
+})
+
 // Meeting temporary spot
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
@@ -245,19 +257,6 @@ io.of("/room").on('connection', socket => {
 
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
-
-app.get('/:title', (req,res) => {
-  var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
-  pool.query(getBlogQuery, (error, result) =>{
-      if(error)
-          res.send(error);
-      else{
-          var results = {'blogs': result.rows};
-          res.render('pages/showBlog', results);
-      }
-  })
-})
-
 
 
  
