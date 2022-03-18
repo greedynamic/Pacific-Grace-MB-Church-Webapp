@@ -40,30 +40,34 @@
                     <div class="form-group">
                         <%= typeof msg != 'undefined' ? msg: '' %>
                         <label for="video">Select Video</label><br>
-                        <input type="file" name="video" accept="video/*" class="form-control-file">
+                        <input id="video_file" type="file" name="video" accept="video/*" class="form-control-file" required>
                     </div><br>
 
                     <div class="form-group">
-                        <label>URL (If video is not stored locally)</label><br>
-                        <input type="text" name="url" class="form-control">
+                        <label>URL</label>
+                        <p class="text-muted" style="display: inline">(If video is not stored locally)</p>
+                        <input required id="url" type="text" name="url" class="form-control">
+                        <p id="alert" class="text-danger" style="display: none;">Onply support Youtube URL</p>
                     </div><br>
     
                     <div class="form-group">
                         <label for="title">Title</label>
-                        <input required type="text" name="title" id="title" class="form-control"><br>
+                        <input type="text" name="title" id="title" class="form-control"><br>
                     </div>
             
                     <div class="form-group">
                         <label for="description">Description</label>
+                        <p class="text-muted" style="display: inline;">(Optional)</p>
                         <textarea style="white-space: pre-wrap;" name="description" id="description" rows="6" class="form-control"></textarea><br>
                     </div>
             
                     <div class="form-group">
                        <label for="tag">Tag</label>
+                       <p class="text-muted" style="display: inline;">(Optional)</p>
                        <textarea name="tag" id="tag" class="form-control"></textarea><br>
                     </div>
                     
-                    <button type="submit" class="btn btn-primary">Upload</button>
+                    <button id="upload" type="submit" class="btn btn-primary">Upload</button>
                     <a href="/" class="btn btn-secondary">Cancel</a>
                 </form>
           </div>
@@ -72,5 +76,43 @@
 </body>
 </html>
 <script>
-    
+    // Handle input for video_file and url, if video_file is uploaded, cannot past 
+    var inp1 = document.getElementById("video_file");
+    inp1.onchange = function () {
+        if (this.value != "" || this.value.length > 0) {
+            document.getElementById("url").disabled = true;
+        }
+        else{
+            document.getElementById("url").disabled = false;
+        }
+    }
+
+    var inp2 = document.getElementById("url");
+    inp2.onchange = function () {
+        if (this.value.length > 0) {
+            document.getElementById("video_file").disabled = true;
+        }
+        else{
+            document.getElementById("video_file").disabled = false;
+        }
+    }
+
+
+    const upload = document.getElementById("upload");
+    upload.addEventListener('click', validateYouTubeUrl);
+    function validateYouTubeUrl(e){
+        let valid = true;
+        var url = document.getElementById('url').value;
+        if (url != '') {
+            var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+            var match = url.match(regExp);
+            if (!match){
+                e.preventDefault();
+                document.getElementById('alert').style.display = 'block';
+            }   
+        }
+        return valid;
+    }
+
+
 </script>

@@ -34,14 +34,7 @@
                             <li><a href="/video" class="header_links">All Videos</a></li>
                             <li><a href="/video/upload" class="header_links">Upload Video</a></li>
                         </ul>
-                    <% } else{ %>
-                        <ul>
-                            <li><a href="/video/archivedVideo" class="header_links">Archived Videos</a></li>
-                        </ul>    
                     <% } %>
-                    
-                    
-
                 </li>
                 <li class = "header_item">
                     <a href="#blog" class="header_links">BLOG</a>
@@ -99,7 +92,7 @@
                         <span><%= blogs[i].title %></span>
                         <div><%= blogs[i].published_at.toLocaleDateString() %></div>
                         <div><%- blogs[i].summary %></div>
-                            <a href="/<%= blogs[i].title %>">Read More</a>
+                            <a href="/blogs/<%= blogs[i].title %>">Read More</a>
                         </div>
                     </div>
                 </div>          
@@ -112,7 +105,8 @@
 
 <section id="videos">
     <div class="video_heading">
-        <h4>VIDEOS</h4>
+        <h4 style="margin-bottom: 0;">VIDEOS</h4>
+        <a style="float: right; font-size: large;" href="/video/archivedVideo">More Videos</a><br>
     </div>
     <div class="video_tag">
         <% if(videos.length) { 
@@ -133,7 +127,6 @@
         <br>
     </div>
 </section><br>
-
 <!--CONTACT US-->
 <section class="contact">
     <h6>Have any questions?<br> Feel free to ask us</h6>
