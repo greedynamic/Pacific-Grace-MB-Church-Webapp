@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <script src="https://apis.google.com/js/platform.js" async defer></script>
-        <meta name="google-signin-client_id" content="376022680662-erhesikupeertlbactlhletjei5qvktc.apps.googleusercontent.com">
+        <meta name="google-signin-client_id" content="376022680662-nh9ojhptesh79cstivj8u2f0stfrs2k2.apps.googleusercontent.com">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="/stylesheets/login.css">
         <script src="../../index.js" defer></script>
@@ -31,7 +31,27 @@
                     <a href="/signup">Create one</a>
                 </form>
             </div>
-            <div class="g-signin2" data-onsuccess="onSignIn"></div>
+            <br>
+            <div class="g-signin2" data-onsuccess="onSignIn" style="float:right; padding-right: 185px;"></div>
+            <br>
+            <br>
+            <br>
+            <div><a href="#" onclick="signOut();" style="float:right; padding-right: 125px;">Google Account Sign out</a></div>
         </div>
+        <script>
+            function onSignIn(googleUser) {
+                var profile = googleUser.getBasicProfile();
+                console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
+                console.log('Name: ' + profile.getName());
+                console.log('Image URL: ' + profile.getImageUrl());
+                console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+            }
+            function signOut() {
+                var auth2 = gapi.auth2.getAuthInstance();
+                auth2.signOut().then(function () {
+                console.log('User signed out.');
+                });
+            }
+        </script>
     </body>
 </html>
