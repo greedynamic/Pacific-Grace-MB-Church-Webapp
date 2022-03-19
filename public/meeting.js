@@ -112,5 +112,23 @@ function setStopVideo() {
     document.querySelector('.main-video-button').innerHTML = html;
 }
 
-document.querySelector('.main-mute-button').addEventListener("click", muteUnmute);
+function toggleChat() {
+    try{ 
+        document.querySelector(".main-left").setAttribute("class", "main-left-alt");
+        document.querySelector(".main-right").setAttribute("class", "main-right-alt"); 
+    } catch (exception) {
+        document.querySelector(".main-left-alt").setAttribute("class", "main-left");
+        document.querySelector(".main-right-alt").setAttribute("class", "main-right");
+    }
+}
+
+function leaveMeeting() {
+    window.location.href = "/";
+}
+
+document.querySelector('.main-mute-button').addEventListener('click', muteUnmute);
 document.querySelector('.main-video-button').addEventListener('click', playStop);
+document.querySelector('.main-chat-button').addEventListener('click', toggleChat);
+document.querySelector('.main-leave-button').addEventListener('click', leaveMeeting);
+
+

@@ -1,0 +1,45 @@
+body {
+    background-color: aliceblue;
+}
+
+.main {
+    font-size: 24px;
+    height: 20vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mainLeft, .mainRight {
+    flex-direction: column;
+    margin-bottom: auto;
+    padding: 50px;
+}
+
+button, input {
+    height: 5vh;
+    width: 100%;
+    margin-top: 2vh;
+    font-size: 18px;
+}
+
+button, input[type="submit"] {
+    background-color: black;
+    color: white;
+}
+
+button:hover, input[type="submit"]:hover {
+    background-color: rgb(80, 80, 80);
+    color: teal;
+    transition: 0.3s;
+}
+
+form {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+#submit {
+    width: 20%;
+}
