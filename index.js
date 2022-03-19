@@ -246,12 +246,29 @@ app.get('/meeting/room/:room', (req,res) => {
 })
 
 io.of("/room").on('connection', socket => {
-  socket.on('join-room', (roomId, userId) => {
+  socket.on('join-room', async (roomId, userId) => {
     socket.join(roomId);
     socket.to(roomId).emit('user-connected', userId);
-    
-    socket.on('disconnect', () => {
+    //add active room to room database
+    try {
+      const client = await pool.connect();
+      const id = roomId;
+      await client.query(`insert into activemeetings values('${id}')`);
+      client.release();
+    } catch (err) {
+      res.send(err);
+    }
+
+    socket.on('disconnect', async () => {
       socket.to(roomId).emit('user-disconnected', userId);
+      try {
+        const client = await pool.connect();
+        const id = roomId;
+        await client.query(`delete from activemeetings where id='${id}'`);
+        client.release();
+      } catch (err) {
+        res.send(err);
+      }
     })
   })
 })
