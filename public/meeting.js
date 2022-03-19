@@ -3,11 +3,7 @@ const videoGrid = document.getElementById('video-grid');
 const myVideo = document.createElement('video');
 myVideo.muted = true;
 
-const myPeer = new Peer(undefined, {
-    path: '/peerjs',
-    host: '/',
-    port: 'process.env.PORT' || '5000'
-})
+const myPeer = new Peer(undefined, { host: "peerjs-server.herokuapp.com", secure: true, port: 443, });
 const peers = {}
 
 let myVideoStream
@@ -28,13 +24,14 @@ navigator.mediaDevices.getUserMedia({
     socket.on('user-connected', userId => {
         connectToNewUser(userId, stream)
     })
+    socket.on('user-disconnected', userId => {
+        if (peers[userId]) {
+            peers[userId].close()
+        }
+    })
 })
 
-socket.on('user-disconnected', userId => {
-    if (peers[userId]) {
-        peers[userId].close()
-    }
-})
+
 
 myPeer.on('open', id => {
     socket.emit('join-room', ROOM_ID, id);
@@ -115,5 +112,23 @@ function setStopVideo() {
     document.querySelector('.main-video-button').innerHTML = html;
 }
 
-document.querySelector('.main-mute-button').addEventListener("click", muteUnmute);
+function toggleChat() {
+    try{ 
+        document.querySelector(".main-left").setAttribute("class", "main-left-alt");
+        document.querySelector(".main-right").setAttribute("class", "main-right-alt"); 
+    } catch (exception) {
+        document.querySelector(".main-left-alt").setAttribute("class", "main-left");
+        document.querySelector(".main-right-alt").setAttribute("class", "main-right");
+    }
+}
+
+function leaveMeeting() {
+    window.location.href = "/";
+}
+
+document.querySelector('.main-mute-button').addEventListener('click', muteUnmute);
 document.querySelector('.main-video-button').addEventListener('click', playStop);
+document.querySelector('.main-chat-button').addEventListener('click', toggleChat);
+document.querySelector('.main-leave-button').addEventListener('click', leaveMeeting);
+
+

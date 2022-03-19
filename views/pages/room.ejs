@@ -46,13 +46,13 @@
                         <i class="fa-solid fa-user-group"></i>
                         <span>Participants</span>
                     </div>
-                    <div class="main-controls-button">
+                    <div class="main-controls-button main-chat-button">
                         <i class="fa-solid fa-message"></i>
                         <span>Chat</span>
                     </div>
                 </div>
                 <div class="main-controls-block">
-                    <div class="main-controls-button" onclick="">
+                    <div class="main-controls-button main-leave-button">
                         <span class="leave-meeting">Leave Meeting</span>
                     </div>
                 </div>
@@ -61,13 +61,14 @@
         <!-- chat -->
         <div class="main-right">
             <div class="main-header">
-                <h6>Chat</h6>
+                <h5>Chat</h5>
             </div>
             <div class="main-chat-window">
                 <ul class="messages"></ul>
             </div>
             <div class="main-message-container">
-                <input id="chat-message" type="text" placeholder="Type message here...">
+                <textarea class="chat-message" placeholder="Type message here..."></textarea>
+                <!-- <input id="chat-message" type="text" placeholder="Type message here..."> -->
             </div>
         </div>
     </div>

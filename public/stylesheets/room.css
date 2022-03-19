@@ -26,8 +26,10 @@ video {
     flex-direction: column;
 }
 
-.main-right {
-    flex: 0.2;
+.main-left-alt {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .main-videos {
@@ -75,6 +77,12 @@ video {
     flex-direction: column;
     background-color: white;
     border-left: 1px solid black;
+    flex: 0.2;
+}
+
+.main-right-alt {
+    flex: 0;
+    display: none;
 }
 
 .main-header {
@@ -92,11 +100,22 @@ video {
     display: 11px;
 }
 
-.main-messages-container input {
+.main-messages-containertextarea {
     flex-grow: 1;
     background-color: transparent;
     border: none;
-    color: black;
+    color: black;   
+    word-wrap: break-word;
+}
+
+.chat-message {
+    background-color: transparent;
+    border: solid 1px black;
+    height: 8.2vh;
+    width: 100%;    
+    font-size: 20px;
+    word-wrap: break-word;
+    resize: none;
 }
 
 .unmute, .stop {
