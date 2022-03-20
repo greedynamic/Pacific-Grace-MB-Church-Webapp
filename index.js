@@ -12,10 +12,11 @@ const pool = new Pool({
 });
 var app = express();
 
-const session = require('express-session')
+const session = require('express-session');
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({extended:false}));
 app.use(session({
   name: "session",
