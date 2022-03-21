@@ -145,6 +145,8 @@ app.post('/login', async (req,res) => {
   }
   verify()
   .then(()=>{
+    req.session.user = {fname:'OAuth', lname:'Go',
+      email:'Google User', password:'g@g.c', admin:'f'};
       res.cookie('session-token', token);
       res.send('success')
   })
@@ -203,7 +205,6 @@ app.get('/:title', (req,res) => {
 })
 
 function checkAuthenticated(req, res, next){
-
   let token = req.cookies['session-token'];
 
   let user = {};
