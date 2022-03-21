@@ -178,6 +178,7 @@ video {
     }
   }
   .pop input {
+    margin-top: 3px;
     visibility: hidden;
   }
   .popup__inner input {
