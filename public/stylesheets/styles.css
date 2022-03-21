@@ -407,3 +407,7 @@
     cursor: pointer;
     padding: 18px 0;
 }
+
+.comments_text {
+    padding-left: 20px;
+}
