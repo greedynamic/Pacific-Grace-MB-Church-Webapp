@@ -85,39 +85,53 @@ video {
     display: none;
 }
 
-.main-header {
+.main-chat-header {
     color: black;
     text-align: center;
+    border-bottom: 1px solid black;
 }
 
 .main-chat-window {
     flex-grow: 1;
     overflow-y: scroll;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }
 
-.main-messages-container {
-    padding: 22px 12px;
-    display: 11px;
-}
-
-.main-messages-containertextarea {
-    flex-grow: 1;
-    background-color: transparent;
-    border: none;
-    color: black;   
+.main-chat-window > li {
+    padding: 0.5rem 1rem;
+    color: black;
     word-wrap: break-word;
 }
 
-.chat-message {
-    background-color: transparent;
-    border: solid 1px black;
-    height: 8.2vh;
-    width: 100%;    
-    font-size: 20px;
-    word-wrap: break-word;
-    resize: none;
+.main-chat-window > li:nth-child(odd) { 
+    background: #efefef; 
+}
+
+#chat-input {
+    height: 8.3vh;
+    width: 100%;
+    font-size: 18px;
 }
 
 .unmute, .stop {
     color: red;
+}
+
+.videoContainer {
+    position: relative;
+}
+
+.videoLabel {
+    position: absolute;
+    color: white;
+    font-size: 22px;
+    bottom: 10px;
+    left: 10px;
+}
+
+.main-participants-button {
+    display: flex;  
+    flex: 0.5;
 }

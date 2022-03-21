@@ -14,6 +14,14 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 });
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const { v4: uuidV4 } = require('uuid');
+const { ExpressPeerServer } = require('peer');
+const peerServer = ExpressPeerServer(server, {
+    debug: true
+});
+
 const flash = require('express-flash')
 const session = require('express-session')
 const bcrypt = require('bcrypt')
@@ -25,7 +33,6 @@ const users = [];
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
-
 app.use(session({
   name: "session",
   secret: "zordon resurrection",
@@ -51,7 +58,6 @@ app.get('/', (req,res) => {
     }
   })
 });
-
 
 app.get('/database', async (req, res) => {
   try {
@@ -222,45 +228,52 @@ app.get('/blogs/:title', (req,res) => {
   })
 })
 
-// Meeting temporary spot
-const server = require('http').createServer(app);
-const io = require('socket.io')(server);
-const { v4: uuidV4 } = require('uuid');
-const { ExpressPeerServer } = require('peer');
-const peerServer = ExpressPeerServer(server, {
-    debug: true
-});
-
 app.use('/peerjs', peerServer);
 
 app.get('/meeting', (req,res) => {
-  res.render('pages/meeting');
+  if (req.session.user) {
+    res.render('pages/meeting');
+  } else {
+    res.redirect('/login')
+  }
 })
 
 // Redirect to a unique room
 app.get('/meeting/room', (req,res) => {
-  res.redirect(`/meeting/room/${uuidV4()}`);
+  if (req.session.user) {
+    res.redirect(`/meeting/room/${uuidV4()}`);
+  } else {
+    res.redirect('/login')
+  }
 })
 
 // Render unique room
 app.get('/meeting/room/:room', (req,res) => {
-  res.render('pages/room', {roomId: req.params.room});
+  if (req.session.user) {
+    res.render('pages/room', {roomId: req.params.room, user: req.session.user});
+  } else {
+    res.redirect('/login')
+  }
 })
 
 io.of("/room").on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {
     socket.join(roomId);
     socket.to(roomId).emit('user-connected', userId);
+    socket.on('chat message', (msg) => {
+      socket.to(roomId).emit('chat message', msg);
+    });
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId);
-    })
-  })
-})
+    });
+  });
+});
 
 // check if meeting code exists
+// need database
 app.post("/meeting", (req,res) => {
 
-})
+});
 
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
