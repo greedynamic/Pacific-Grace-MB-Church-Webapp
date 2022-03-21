@@ -128,6 +128,23 @@ function setStopVideo() {
     document.querySelector('.main-video-button').innerHTML = html;
 }
 
+function toggleInvite() {
+    var popup = document.getElementById("invite");
+    popup.setAttribute("visibility", "visible");
+    var link = document.getElementById("link");
+    link.setAttribute("value", window.location.href);
+}
+
+function copyLink() {
+    var copyText = document.getElementById("link");
+    copyText.select();
+    copyText.setSelectionRange(0,99999);
+
+    navigator.clipboard.writeText(copyText.value);
+    alert("Invite link copied to clipboard");
+}
+
+function toggleChat() {}
 function toggleExpand() {
     try{ 
         document.querySelector(".main-left").setAttribute("class", "main-left-alt");
@@ -175,6 +192,7 @@ function toggleChat() {
 function leaveMeeting() {
     window.location.href = "/meeting";
 }
+
 
 document.querySelector('.main-mute-button').addEventListener('click', muteUnmute);
 document.querySelector('.main-video-button').addEventListener('click', playStop);

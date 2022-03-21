@@ -238,7 +238,6 @@ app.get('/meeting', (req,res) => {
   }
 })
 
-// Redirect to a unique room
 app.get('/meeting/room', (req,res) => {
   if (req.session.user) {
     res.redirect(`/meeting/room/${uuidV4()}`);
@@ -247,7 +246,7 @@ app.get('/meeting/room', (req,res) => {
   }
 })
 
-// Render unique room
+//render unique room
 app.get('/meeting/room/:room', (req,res) => {
   if (req.session.user) {
     res.render('pages/room', {roomId: req.params.room, user: req.session.user});
@@ -310,4 +309,4 @@ app.post("/meeting", async (req,res) => {
   }
 });
 
-server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+ 
