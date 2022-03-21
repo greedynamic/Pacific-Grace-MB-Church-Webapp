@@ -2,60 +2,79 @@ const socket = io("/room"); // uses "meeting" namespace
 const videoGrid = document.getElementById('video-grid');
 const myVideo = document.createElement('video');
 myVideo.muted = true;
-
 const myPeer = new Peer(undefined, { host: "peerjs-server.herokuapp.com", secure: true, port: 443, });
-const peers = {}
+var peers = {};
 
-let myVideoStream
+let myVideoStream;
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
 }).then(stream => {
-    myVideoStream = stream
-    addVideoStream(myVideo, stream)
+    myVideoStream = stream;
+    addVideoStream(myVideo, stream);
     // Receive calls
     myPeer.on('call', call => {
-        call.answer(stream)
-        const video = document.createElement('video')
+        call.answer(stream);
+        const video = document.createElement('video');
         call.on('stream', userVideoStream => {  
-            addVideoStream(video, userVideoStream)
-        })
-    })
+            addVideoStream(video, userVideoStream);
+        });
+    });
     socket.on('user-connected', userId => {
         setTimeout(connectToNewUser,1000,userId,stream)
     })
     socket.on('user-disconnected', userId => {
         if (peers[userId]) {
-            peers[userId].close()
+            peers[userId].close();
         }
-    })
+    });
 })
-
-
 
 myPeer.on('open', id => {
     socket.emit('join-room', ROOM_ID, id);
 })
 
+document.getElementById('form').addEventListener('submit', e => {
+    const input = document.getElementById('chat-input');
+    e.preventDefault();
+    if (input.value) {
+        var item = document.createElement('li');
+        item.textContent = input.value;
+        document.getElementById('chat-window').appendChild(item);
+        input.value = '';
+    }
+});
+
 // Make calls when new users connect to room
 function connectToNewUser(userId, stream) {
-    const call = myPeer.call(userId, stream)
-    const video = document.createElement('video')
+    const call = myPeer.call(userId, stream);
+    const video = document.createElement('video');
     call.on('stream', userVideoStream => {
-        addVideoStream(video, userVideoStream)
-    })
+        addVideoStream(video, userVideoStream);
+    });
     call.on('close', () => {
-        video.remove()
-    })
-    peers[userId] = call
+        video.remove();
+    });
+    peers[userId] = call;
 }
 
-function addVideoStream(video, stream) {
+function addVideoStream(video, stream) {    
     video.srcObject = stream
     video.addEventListener('loadedmetadata', () => {
-        video.play()
+        video.play();
     })
-    videoGrid.append(video)
+    var container = document.createElement('div');
+    container.setAttribute('class', 'videoContainer');
+    container.appendChild(video);
+    container.appendChild(makeLabel(FIRST_NAME));
+    videoGrid.append(container);
+}
+
+function makeLabel(label) {
+    var videoLabel = document.createElement('div');
+    videoLabel.appendChild(document.createTextNode(label));
+    videoLabel.setAttribute('class', 'videoLabel');
+    return videoLabel;
 }
 
 function muteUnmute() {
@@ -73,7 +92,7 @@ function setMuteButton() {
     const html = `
         <i class="fa-solid fa-microphone"></i>
         <span>Mute</span>
-    `
+    `;
     document.querySelector('.main-mute-button').innerHTML = html;
 }
 
@@ -81,7 +100,7 @@ function setUnmuteButton() {
     const html = `
         <i class="unmute fa-solid fa-microphone-slash"></i>
         <span>Mute</span>
-    `
+    `;
     document.querySelector('.main-mute-button').innerHTML = html;
 }
 
@@ -100,7 +119,7 @@ function setPlayVideo() {
     const html = `
         <i class="stop fa-solid fa-video-slash"></i>
         <span>Play Video</span>
-    `
+    `;
     document.querySelector('.main-video-button').innerHTML = html;
 }
 
@@ -108,10 +127,11 @@ function setStopVideo() {
     const html = `
         <i class="fa-solid fa-video"></i>
         <span>Play Video</span>
-    `
+    `;
     document.querySelector('.main-video-button').innerHTML = html;
 }
 
+<<<<<<< HEAD
 function toggleInvite() {
     var popup = document.getElementById("invite");
     popup.setAttribute("visibility", "visible");
@@ -129,23 +149,62 @@ function copyLink() {
 }
 
 function toggleChat() {
+=======
+function toggleExpand() {
+>>>>>>> 741d0e24cd773bbc177faddb434a83cb36494ba0
     try{ 
         document.querySelector(".main-left").setAttribute("class", "main-left-alt");
         document.querySelector(".main-right").setAttribute("class", "main-right-alt"); 
+        setExpand();
     } catch (exception) {
         document.querySelector(".main-left-alt").setAttribute("class", "main-left");
         document.querySelector(".main-right-alt").setAttribute("class", "main-right");
+        setShrink();
+        return;
     }
 }
 
+function setExpand() {
+    const html = `
+        <i class="fa-solid fa-compress"></i>
+        <span>Shrink</span>
+    `;
+    document.querySelector('.main-expand-button').innerHTML = html;
+}
+
+function setShrink() {
+    const html = `
+        <i class="fa-solid fa-expand"></i>
+        <span>Expand</span>
+    `;
+    document.querySelector('.main-expand-button').innerHTML = html;
+}
+
+function toggleParticipants() {
+    document.getElementById("chat").style.display = "none";
+    document.getElementById("participants").style.display = "block";
+
+    // var window = document.querySelector("main-participants-window");
+
+    // // for(let i = 0; i < peers.length; i++) {
+    // //     console.log(i);
+    // //     window.innerHTML += peers[i] + '<br>';
+    // // }
+}
+
+function toggleChat() {
+    document.getElementById("participants").style.display = "none";
+    document.getElementById("chat").style.display = "block";
+}
+
 function leaveMeeting() {
-    window.location.href = "/";
+    window.location.href = "/meeting";
 }
 
 
 document.querySelector('.main-mute-button').addEventListener('click', muteUnmute);
 document.querySelector('.main-video-button').addEventListener('click', playStop);
+document.querySelector('.main-participants-button').addEventListener('click', toggleParticipants);
 document.querySelector('.main-chat-button').addEventListener('click', toggleChat);
+document.querySelector('.main-expand-button').addEventListener('click', toggleExpand);
 document.querySelector('.main-leave-button').addEventListener('click', leaveMeeting);
-
-
