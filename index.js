@@ -35,7 +35,7 @@ const users = [];
 
 // Google Auth
 const {OAuth2Client} = require('google-auth-library');
-const CLIENT_ID = '376022680662-nh9ojhptesh79cstivj8u2f0stfrs2k2.apps.googleusercontent.com'
+const CLIENT_ID = '376022680662-meru43h5tvg8i8qfeii49bjuj2rbi5qe.apps.googleusercontent.com'
 const client = new OAuth2Client(CLIENT_ID);
 
 app.use(express.static(path.join(__dirname, '/public')));
@@ -189,6 +189,11 @@ app.get('/logout', (req,res) => {
   res.redirect('/');
 })
 
+app.get('/profile', checkAuthenticated, (req, res)=>{
+  let user = req.user;
+  res.render('profile', {user});
+})
+
 app.get('/account', (req,res) => {
   if(req.session.user){
     res.render('pages/account', {user:req.session.user});
@@ -336,6 +341,31 @@ app.post("/meeting", async (req,res) => {
     res.send(err);
   }
 });
+
+function checkAuthenticated(req, res, next){
+  let token = req.cookies['session-token'];
+
+  let user = {};
+  async function verify() {
+      const ticket = await client.verifyIdToken({
+          idToken: token,
+          audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+      });
+      const payload = ticket.getPayload();
+      user.name = payload.name;
+      user.email = payload.email;
+      user.picture = payload.picture;
+    }
+    verify()
+    .then(()=>{
+        req.user = user;
+        next();
+    })
+    .catch(err=>{
+        res.redirect('/login')
+    })
+
+}
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
