@@ -248,17 +248,10 @@ app.get('/meeting/room', (req,res) => {
 
 //render unique room
 app.get('/meeting/room/:room', (req,res) => {
-<<<<<<< HEAD
-  if(req.session.user) {
-    res.render('pages/room', {roomId: req.params.room, user: req.session.user, uuid: uuidV4()});
-  } else {
-    res.redirect('/login');
-=======
   if (req.session.user) {
     res.render('pages/room', {roomId: req.params.room, user: req.session.user});
   } else {
     res.redirect('/login')
->>>>>>> 741d0e24cd773bbc177faddb434a83cb36494ba0
   }
 })
 
@@ -294,16 +287,13 @@ io.of("/room").on('connection', socket => {
   })
 })
 
-<<<<<<< HEAD
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
-=======
 // check if meeting code exists
 // need database
 app.post("/meeting", (req,res) => {
 
 });
->>>>>>> 741d0e24cd773bbc177faddb434a83cb36494ba0
 
  

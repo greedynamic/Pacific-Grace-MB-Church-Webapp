@@ -131,7 +131,6 @@ function setStopVideo() {
     document.querySelector('.main-video-button').innerHTML = html;
 }
 
-<<<<<<< HEAD
 function toggleInvite() {
     var popup = document.getElementById("invite");
     popup.setAttribute("visibility", "visible");
@@ -148,10 +147,8 @@ function copyLink() {
     alert("Invite link copied to clipboard");
 }
 
-function toggleChat() {
-=======
+function toggleChat() {}
 function toggleExpand() {
->>>>>>> 741d0e24cd773bbc177faddb434a83cb36494ba0
     try{ 
         document.querySelector(".main-left").setAttribute("class", "main-left-alt");
         document.querySelector(".main-right").setAttribute("class", "main-right-alt"); 

@@ -118,7 +118,6 @@ video {
 .unmute, .stop {
     color: red;
 }
-<<<<<<< HEAD
 .pop {
     position: absolute;
     width: 50%;
@@ -209,7 +208,6 @@ video {
   .pop input:checked + .popup label:hover {
     background: rgb(173, 8, 8);
   }
-=======
 
 .videoContainer {
     position: relative;
@@ -227,4 +225,3 @@ video {
     display: flex;  
     flex: 0.5;
 }
->>>>>>> 741d0e24cd773bbc177faddb434a83cb36494ba0
