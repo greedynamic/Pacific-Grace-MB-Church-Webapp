@@ -40,33 +40,25 @@
                 </ul>
             </div>
         </nav>   
-        <!-- add buttons for new meeting or join existing meeting -->
-        <!-- have public (displayed in table?) / private meetings -->
-
         <div class="main">
-            <div class="mainLeft">
+            <div class="create-room">
                 <h4>Create A New Room</h4>
                 <a href="/meeting/room">
                     <button>Create</button>
                 </a>
             </div>
-            <div class="mainRight">
+            <div class="join-room">
                 <h4>Have A Meeting Code?</h4>
-                <!-- join room via roomId? (meeting code) -->
                 <form method="post"> 
-                    <input type="text" id="roomId" placeholder="Enter code here..." required>
+                    <input type="text" id="roomId" name="roomId" placeholder="Enter code here..." required>
                     <input type="submit" id="submit" value="✔">
                 </form>
+                <div id="errorContent">
+                    <% if(typeof errors != 'undefined') { %> 
+                        <p><%= errors[0].message %></p>
+                    <% } %>
+                </div>
             </div>
-            
-            <!-- include table of public meetings? -->
-            <div class="mainBottom">
-                
-
-            </div>
-
-
         </div>
-        
     </body>
 </html>

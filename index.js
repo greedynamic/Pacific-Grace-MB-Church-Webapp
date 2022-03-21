@@ -256,41 +256,58 @@ app.get('/meeting/room/:room', (req,res) => {
   }
 })
 
+// change by adding new parameter for num participants
+// when participants reaches 0, delete room
+
 io.of("/room").on('connection', socket => {
   socket.on('join-room', async (roomId, userId) => {
     socket.join(roomId);
     socket.to(roomId).emit('user-connected', userId);
-    socket.on('chat message', (msg) => {
-      socket.to(roomId).emit('chat message', msg);
-    });
-    //add active room to room database
+    // Add room to activemeetings
     try {
       const client = await pool.connect();
-      const id = roomId;
-      await client.query(`insert into activemeetings values('${id}')`);
+      const meetingQuery = `select * from activemeetings where id='${roomId}'`;
+      const result = await client.query(meetingQuery);
+      if (result.rowCount == 0) {
+        await client.query(`insert into activemeetings values('${roomId}')`);
+      }
       client.release();
     } catch (err) {
       res.send(err);
     }
-
     socket.on('disconnect', async () => {
       socket.to(roomId).emit('user-disconnected', userId);
+      // Remove room from activemeetings
       try {
         const client = await pool.connect();
-        const id = roomId;
-        await client.query(`delete from activemeetings where id='${id}'`);
+        await client.query(`delete from activemeetings where id='${roomId}'`);
         client.release();
       } catch (err) {
         res.send(err);
       }
-    })
-  })
-})
+    });
+  });
+});
 
-// check if meeting code exists
-// need database
-app.post("/meeting", (req,res) => {
+// Checks if meeting exists with room id and joins if it does
+app.post("/meeting", async (req,res) => {
+  const roomId = req.body.roomId;
+  const meetingQuery = `select * from activemeetings where id='${roomId}'`;
+  let errors = [];
 
+  try {
+    const client = await pool.connect();
+    const result = await client.query(meetingQuery);
+    if (result.rowCount == 1) {
+      res.redirect(`/meeting/room/${roomId}`);
+    } else {
+      errors.push({message: "Meeting code does not exist!"});
+      res.render('pages/meeting', {errors});
+    }
+    client.release();
+  } catch (err) {
+    res.send(err);
+  }
 });
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
