@@ -4,6 +4,7 @@ const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
+const emailRoute = require('./email-nodeapp/emailVerify');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
@@ -45,6 +46,7 @@ app.set('view engine', 'ejs');
 
 app.use('/blog', authAmdin(), blogRoute);
 app.use('/video', videoRoute);
+app.use('/sendVerification', emailRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
