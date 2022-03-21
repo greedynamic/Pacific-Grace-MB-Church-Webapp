@@ -1,4 +1,6 @@
+require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
@@ -31,8 +33,14 @@ const {authUser, authAmdin} = require('./routes/middleware');
 const { database } = require('pg/lib/defaults');
 const users = [];
 
+// Google Auth
+const {OAuth2Client} = require('google-auth-library');
+const CLIENT_ID = '376022680662-nh9ojhptesh79cstivj8u2f0stfrs2k2.apps.googleusercontent.com'
+const client = new OAuth2Client(CLIENT_ID);
+
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({extended:false}));
 app.use(session({
   name: "session",
@@ -135,6 +143,24 @@ app.get('/login', (req,res) => {
 });
 
 app.post('/login', async (req,res) => {
+  let token = req.body.token;
+  console.log(token);
+  async function verify() {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+    });
+    const payload = ticket.getPayload();
+    const userid = payload['sub'];
+  }
+  verify()
+  .then(()=>{
+    req.session.user = {fname:'OAuth', lname:'Go',
+      email:'Google User', password:'g@g.c', admin:'f'};
+      res.cookie('session-token', token);
+      res.send('success')
+  })
+  .catch(console.error);
   try {
     const email = req.body.email;
     const password = req.body.password;
