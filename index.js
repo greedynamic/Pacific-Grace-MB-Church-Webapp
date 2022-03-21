@@ -1,9 +1,14 @@
+require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
+const res = require('express/lib/response');
+const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
 const emailRoute = require('./email-nodeapp/emailVerify');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
+const req = require('express/lib/request');
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL || 'postgres://wwiwookhmzbgif:b99fe28f9a5e30cdca56d64ce4165e8c1bf3f8a4fc1895b437043db9fa4ed35a@ec2-34-230-110-100.compute-1.amazonaws.com:5432/d329ha74afil4s',
     ssl: {
@@ -12,7 +17,17 @@ const pool = new Pool({
 });
 var app = express();
 
-const session = require('express-session');
+const flash = require('express-flash')
+const session = require('express-session')
+const bcrypt = require('bcrypt')
+const passport = require('passport');
+const {authUser, authAmdin} = require('./routes/middleware');
+const users = [];
+
+// Google Auth
+const {OAuth2Client} = require('google-auth-library');
+const CLIENT_ID = '376022680662-nh9ojhptesh79cstivj8u2f0stfrs2k2.apps.googleusercontent.com'
+const client = new OAuth2Client(CLIENT_ID);
 
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
@@ -118,6 +133,22 @@ app.get('/login', (req,res) => {
 });
 
 app.post('/login', async (req,res) => {
+  let token = req.body.token;
+  console.log(token);
+  async function verify() {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+    });
+    const payload = ticket.getPayload();
+    const userid = payload['sub'];
+  }
+  verify()
+  .then(()=>{
+      res.cookie('session-token', token);
+      res.send('success')
+  })
+  .catch(console.error);
   try {
     const email = req.body.email;
     const password = req.body.password;
@@ -140,6 +171,11 @@ app.post('/login', async (req,res) => {
     res.send(err);
   }
 });
+
+app.get('/profile', checkAuthenticated, (req, res)=>{
+  let user = req.user;
+  res.render('profile', {user});
+})
 
 app.get('/logout', (req,res) => {
   req.session.destroy();
@@ -165,6 +201,32 @@ app.get('/:title', (req,res) => {
       }
   })
 })
+
+function checkAuthenticated(req, res, next){
+
+  let token = req.cookies['session-token'];
+
+  let user = {};
+  async function verify() {
+      const ticket = await client.verifyIdToken({
+          idToken: token,
+          audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+      });
+      const payload = ticket.getPayload();
+      user.name = payload.name;
+      user.email = payload.email;
+      user.picture = payload.picture;
+    }
+    verify()
+    .then(()=>{
+        req.user = user;
+        next();
+    })
+    .catch(err=>{
+        res.redirect('/login')
+    })
+
+}
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
