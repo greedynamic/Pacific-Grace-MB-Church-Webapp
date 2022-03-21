@@ -21,7 +21,11 @@ navigator.mediaDevices.getUserMedia({
         });
     });
     socket.on('user-connected', userId => {
-        setTimeout(connectToNewUser,1000,userId,stream)
+    // user is joining`
+    setTimeout(() => {
+    // user joined
+    connectToNewUser(userId, stream)
+    }, 1000)
     })
     socket.on('user-disconnected', userId => {
         if (peers[userId]) {

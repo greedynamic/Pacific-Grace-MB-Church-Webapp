@@ -290,10 +290,10 @@ io.of("/room").on('connection', socket => {
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
-// check if meeting code exists
-// need database
-app.post("/meeting", (req,res) => {
+// // check if meeting code exists
+// // need database
+// app.post("/meeting", (req,res) => {
 
-});
+// });
 
  
