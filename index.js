@@ -144,7 +144,7 @@ app.get('/login', (req,res) => {
 
 app.post('/login', async (req,res) => {
   let token = req.body.token;
-  console.log(token);
+  // console.log(token);
   async function verify() {
     const ticket = await client.verifyIdToken({
       idToken: token,
