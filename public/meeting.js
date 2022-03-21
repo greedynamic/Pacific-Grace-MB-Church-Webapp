@@ -5,7 +5,7 @@ myVideo.muted = true;
 const myPeer = new Peer(undefined, { host: "peerjs-server.herokuapp.com", secure: true, port: 443, });
 var peers = {};
 
-let myVideoStream;
+let myVideoStream
 navigator.mediaDevices.getUserMedia({
     video: true,
     audio: true
@@ -21,15 +21,12 @@ navigator.mediaDevices.getUserMedia({
         });
     });
     socket.on('user-connected', userId => {
-    // user is joining`
-    setTimeout(() => {
-    // user joined
-    connectToNewUser(userId, stream)
-    }, 1000)
+        connectToNewUser(userId, stream);
     })
     socket.on('user-disconnected', userId => {
         if (peers[userId]) {
             peers[userId].close();
+            delete peers[userId];
         }
     });
 })
@@ -67,17 +64,13 @@ function addVideoStream(video, stream) {
     video.addEventListener('loadedmetadata', () => {
         video.play();
     })
-    var container = document.createElement('div');
-    container.setAttribute('class', 'videoContainer');
-    container.appendChild(video);
-    container.appendChild(makeLabel(FIRST_NAME));
-    videoGrid.append(container);
+    videoGrid.append(video);
 }
 
 function makeLabel(label) {
     var videoLabel = document.createElement('div');
-    videoLabel.appendChild(document.createTextNode(label));
     videoLabel.setAttribute('class', 'videoLabel');
+    videoLabel.appendChild(document.createTextNode(label));
     return videoLabel;
 }
 
@@ -184,13 +177,11 @@ function setShrink() {
 function toggleParticipants() {
     document.getElementById("chat").style.display = "none";
     document.getElementById("participants").style.display = "block";
-
-    // var window = document.querySelector("main-participants-window");
-
-    // // for(let i = 0; i < peers.length; i++) {
-    // //     console.log(i);
-    // //     window.innerHTML += peers[i] + '<br>';
-    // // }
+    var window = document.querySelector("main-participants-window");
+    for(let i = 0; i < peers.length; i++) {
+        console.log(i);
+        window.innerHTML += peers[i] + '<br>';
+    }
 }
 
 function toggleChat() {
