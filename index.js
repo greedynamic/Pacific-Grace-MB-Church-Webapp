@@ -237,14 +237,17 @@ app.get('/meeting', (req,res) => {
   res.render('pages/meeting');
 })
 
-// Redirect to a unique room
 app.get('/meeting/room', (req,res) => {
   res.redirect(`/meeting/room/${uuidV4()}`);
 })
 
-// Render unique room
+//render unique room
 app.get('/meeting/room/:room', (req,res) => {
-  res.render('pages/room', {roomId: req.params.room});
+  if(req.session.user) {
+    res.render('pages/room', {roomId: req.params.room, user: req.session.user, uuid: uuidV4()});
+  } else {
+    res.redirect('/login');
+  }
 })
 
 io.of("/room").on('connection', socket => {
@@ -263,6 +266,7 @@ io.of("/room").on('connection', socket => {
 
     socket.on('disconnect', async () => {
       socket.to(roomId).emit('user-disconnected', userId);
+      //remove active room from database
       try {
         const client = await pool.connect();
         const id = roomId;
@@ -275,10 +279,8 @@ io.of("/room").on('connection', socket => {
   })
 })
 
-// check if meeting code exists
-app.post("/meeting", (req,res) => {
-
-})
-
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
+
+ 
