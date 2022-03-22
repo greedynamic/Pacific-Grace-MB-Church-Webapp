@@ -1,9 +1,12 @@
+require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const app = express();
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
+const emailRoute = require('./email-nodeapp/emailVerify');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
@@ -30,8 +33,14 @@ const {authUser, authAmdin} = require('./routes/middleware');
 const { database } = require('pg/lib/defaults');
 const users = [];
 
+// Google Auth
+const {OAuth2Client} = require('google-auth-library');
+const CLIENT_ID = '376022680662-meru43h5tvg8i8qfeii49bjuj2rbi5qe.apps.googleusercontent.com'
+const client = new OAuth2Client(CLIENT_ID);
+
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({extended:false}));
 app.use(session({
   name: "session",
@@ -45,6 +54,7 @@ app.set('view engine', 'ejs');
 
 app.use('/blog', authAmdin(), blogRoute);
 app.use('/video', videoRoute);
+app.use('/sendVerification', emailRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
@@ -104,7 +114,7 @@ app.post('/signup', async (req,res) => {
           );
       };
       if (!validateEmail(email)) {
-        errors.push({message: "Email is invalid."});
+        errors.push({message: "Email address is invalid."});
       }
       if(password.length < 8) {
         errors.push({message: "Password minimum length 8 characters."});
@@ -133,6 +143,24 @@ app.get('/login', (req,res) => {
 });
 
 app.post('/login', async (req,res) => {
+  let token = req.body.token;
+  // console.log(token);
+  async function verify() {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+    });
+    const payload = ticket.getPayload();
+    const userid = payload['sub'];
+  }
+  verify()
+  .then(()=>{
+    req.session.user = {fname:'OAuth', lname:'Go',
+      email:'Google User', password:'g@g.c', admin:'f'};
+      res.cookie('session-token', token);
+      res.send('success')
+  })
+  .catch(console.error);
   try {
     const email = req.body.email;
     const password = req.body.password;
@@ -159,6 +187,11 @@ app.post('/login', async (req,res) => {
 app.get('/logout', (req,res) => {
   req.session.destroy();
   res.redirect('/');
+})
+
+app.get('/profile', checkAuthenticated, (req, res)=>{
+  let user = req.user;
+  res.render('profile', {user});
 })
 
 app.get('/account', (req,res) => {
@@ -308,6 +341,31 @@ app.post("/meeting", async (req,res) => {
     res.send(err);
   }
 });
+
+function checkAuthenticated(req, res, next){
+  let token = req.cookies['session-token'];
+
+  let user = {};
+  async function verify() {
+      const ticket = await client.verifyIdToken({
+          idToken: token,
+          audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+      });
+      const payload = ticket.getPayload();
+      user.name = payload.name;
+      user.email = payload.email;
+      user.picture = payload.picture;
+    }
+    verify()
+    .then(()=>{
+        req.user = user;
+        next();
+    })
+    .catch(err=>{
+        res.redirect('/login')
+    })
+
+}
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
