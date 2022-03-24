@@ -67,10 +67,12 @@
         <textarea id="comment" name="comment" cols="45" rows="4" maxlength="65525" required=""></textarea>
     </p>
     <p class="form-submit">
-        <input name="submit" type="submit" id="unregisteredUserBtn" class="submit" value="Register to Add Your Comment"> 
-        <% if(user && user.admin){ %> 
+        <% if(user){ %> 
             <input name="submit" type="submit" id="submit-comment" class="submit" value="Post Comment"> 
-        <% } %>
+        <% } else { %> 
+            <input name="submit" type="submit" id="unregisteredUserBtn" class="submit" value="Register to Add Your Comment"> 
+            <% } 
+        %>
         <input type="hidden" name="comment_post_ID" value="18386" id="comment_post_ID">
         <input type="hidden" name="comment_parent" id="comment_parent" value="0">
     </p>
@@ -87,15 +89,20 @@
 
       if (unregisteredBtn){
         unregisteredBtn.addEventListener('click', function() {
-            window.location.href = "https://church276.herokuapp.com/signup";
-            // window.location.href = "http://localhost:5000/signup";
+            // window.location.href = "https://church276.herokuapp.com/signup";
+            window.location.href = "http://localhost:5000/signup";
         });
       }
       
       if (commentPostBtn){
         commentPostBtn.addEventListener('click', function() {
             let newComment = comment.cloneNode(true);
-            newComment.innerHTML = `<p>test comment here: ${commentContent.value}</p>`;
+            if (commentContent.value != ''){
+                newComment.innerHTML = `<p>test comment here: ${commentContent.value}</p>`;
+            }
+            else {
+                alert('Empty comment will not be posted.')
+            }
             comment.appendChild(newComment);
         });
       }
