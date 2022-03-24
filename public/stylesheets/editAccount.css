@@ -1,4 +1,4 @@
-#accountDetails {
+#editDetails {
     margin-top: 3vh;
     margin-left: 15vw;
 }
@@ -11,27 +11,26 @@ h1 {
     margin-bottom: 20px;
 }
 
-table, th, td {
-    background-color: white;
+input[type=text], input[type=password] {
+    padding: 0.75rem;
+    width: 400px;
+    vertical-align: top;
+    box-sizing: border-box;
     border: 1px solid black;
-    border-collapse: collapse;
-    text-align: left;
-    font-size: 18px;
-    padding: 15px;
-    width: 25vw;
+    border-radius: 5px;
+    margin-bottom: 20px;
 }
 
-button {
+input[type=submit] {
     background-color: black;
     color: white;
     border-color: rgb(42, 42, 42);
     border-radius: 3px;
     font-size: 16px;
     padding: 8px;
-    margin-top: 30px;
-    margin-right: 8px;
+    margin-top: 20px;
 }
 
-button:hover {
+input[type=submit]:hover {
     background-color: rgb(80, 80, 80);
 }

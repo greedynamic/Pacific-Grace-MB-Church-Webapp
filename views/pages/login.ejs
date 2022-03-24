@@ -3,28 +3,31 @@
     <head>
         <meta charset="UTF-8">
         <script src="https://apis.google.com/js/platform.js" async defer></script>
-        <meta name="google-signin-client_id" content="376022680662-nh9ojhptesh79cstivj8u2f0stfrs2k2.apps.googleusercontent.com">
+        <meta name="google-signin-client_id" content="376022680662-meru43h5tvg8i8qfeii49bjuj2rbi5qe.apps.googleusercontent.com">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="/stylesheets/login.css">
-        <script src="../../index.js" defer></script>
+        <script src="index.js" defer></script>
         <title>Login</title>
     </head>
     <body>
         <div id="content">
             <a href="/"><img src="/images/logo.png" alt="logo"></a>
-            <div id="loginContent">
+            <div id="errorContent">
                 <ul>
-                    <% if(typeof errors != 'undefined') { %> <% errors.forEach(error=>{ %>
+                    <% if(typeof errors != 'undefined') { %> 
+                        <% errors.forEach(error=>{ %>
                             <li><%= error.message %></li>
-                    <% }) %><% } %>
+                        <% }) %>
+                    <% } %>
                 </ul>
+            </div>
+            <div id="loginContent">
                 <form method="post">
                     <input type="text" placeholder="Email" name="email" minlength="1" maxlength="100" required><br>
                     <input type="password" placeholder="Password" name="password" minglength="1" maxlength="20" required><br>
                     <input type="submit" value="Login">
                 </form>
             </div>
-            <div id="errorMessage"></div>
             <div id="signupContent">
                 <form action="/signup">
                     <text>No account?</text>
