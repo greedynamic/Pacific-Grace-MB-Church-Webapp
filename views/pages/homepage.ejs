@@ -5,13 +5,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Church Website</title>
+    <!--Stylesheets-->
     <link rel="stylesheet" href="/stylesheets/styles.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700" rel="stylesheet">
     <script src="homescript.js"></script>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
+    <script src="homescript.js" defer></script>
+    <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
 </head>
-<script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous"></script>
 <body>
     <nav class="header">
         <div class="header_container">
@@ -25,29 +28,33 @@
                 <li class = "header_item">
                     <a href="/" class="header_links">HOME</a></li>
                 <li class = "header_item">
-                    <a href="#videos" class="header_links">VIDEOS<i class="fa-solid fa-sort-down"></i></a></li>
+                    <a href="#videos" class="header_links">VIDEOS</i></a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/video" class="header_links">All Videos</a></li>
+                            <li><a href="/video/upload" class="header_links">Upload Video</a></li>
+                        </ul>
+                    <% } %>
+                </li>
                 <li class = "header_item">
                     <a href="#blog" class="header_links">BLOG</a>
                     <% if(user && user.admin){ %> 
                         <ul>
-                            <li><a href="/blog" class="header_link">All Blogs</a></li>
-                            <li><a href="/blog/new" class="header_link">New Blog</a></li>
+                            <li><a href="/blog" class="header_links">All Blogs</a></li>
+                            <li><a href="/blog/new" class="header_links">New Blog</a></li>
                         </ul>
                     <% } %>
+                </li>
                 <% if(user) { %>
-                    <div id="user">
-                        <li class = "header_item">
-                            <a href="/account" class="header_links"><%= user.email %></a></li>
-                        <li class = "header_item">
-                            <a href="/logout"class="header_links">LOGOUT</a></li>
-                    </div>
+                    <li class = "header_item">
+                        <a href="/account" class="header_links">ACCOUNT</a></li>
+                    <li class = "header_item">
+                        <a href="/logout"class="header_links">LOGOUT</a></li>
                 <% } else { %>
-                    <div id="guest">
-                        <li class = "header_item">
-                            <a href="/login" class="header_links loginBtn">LOGIN</a></li>
-                        <li class = "header_item">
-                            <a href="/signup" class="header_links signUpBtn">SIGNUP</a></li>
-                    </div>
+                    <li class = "header_item">
+                        <a href="/login" class="header_links">LOGIN</a></li>
+                    <li class = "header_item">
+                        <a href="/signup" class="header_links">SIGNUP</a></li>
                 <% } %>
             </ul>
         </div>
@@ -60,7 +67,7 @@
     <div id="home" class = "home_text">
         <h1>Fill your life with service that matters</h1>
         <p>
-            We will never change the world by going to Church <br>We will only change the world by being the church
+            We will never change the world by going to Church <br>We will only change the world by being the Church
         </p>
         <a href=""class="homepage_btn">Visit Us To Know More</a>
     </div>
@@ -85,7 +92,7 @@
                         <span><%= blogs[i].title %></span>
                         <div><%= blogs[i].published_at.toLocaleDateString() %></div>
                         <div><%- blogs[i].summary %></div>
-                            <a href="/<%= blogs[i].title %>">Read More</a>
+                            <a href="/blogs/<%= blogs[i].title %>">Read More</a>
                         </div>
                     </div>
                 </div>          
@@ -98,19 +105,28 @@
 
 <section id="videos">
     <div class="video_heading">
-        <h4>VIDEOS</h4>
+        <h4 style="margin-bottom: 0;">VIDEOS</h4>
+        <a style="float: right; font-size: large;" href="/video/archivedVideo">More Videos</a><br>
     </div>
-
-    <div class="video_container">
-        <div class="video_tag">
-                <iframe frameborder="0" scrolling="no" marginheight="0" marginwidth="0"width="600" height="400" type="text/html" src="https://www.youtube.com/embed/aih2gh734vw?autoplay=0&fs=1&iv_load_policy=3&showinfo=0&rel=0&cc_load_policy=1&start=0&end=0&origin=http://youtubeembedcode.com"><div><small><a href="https://youtubeembedcode.com/nl/">youtubeembedcode.com/nl/</a></small></div><div><small><a href="https://britecasinoutansvensklicens.se/">https://britecasinoutansvensklicens.se/</a></small></div><div><small><a href="https://youtubeembedcode.com/de/">youtubeembedcode de</a></small></div><div><small><a href="https://sportbethorseracing.com/">https://sportbethorseracing.com/</a></small></div></iframe>
-        </div>
-
+    <div class="video_tag">
+        <% if(videos.length) { 
+            for (var i=0; i < videos.length; i++){ %>
+                <div class="show_video">
+                    <% if(videos[i].filename != 'undefined') {%>
+                        <video src="videos/<%= videos[i].filename%>" controls type="video/*" width='800' height='500' ></video>
+                    <%} else{ %> 
+                        <iframe src="<%= videos[i].url %>" width="800" height="500"></iframe>
+                    <% } %>
+                </div>
+                <div class="video_text" >
+                    <h3><%= videos[i].title %></h3>
+                    <p><%= videos[i].description %></p>
+                </div>
+            <% }
+        } %>
+        <br>
     </div>
-    
-
-</section>
-
+</section><br>
 <!--CONTACT US-->
 <section class="contact">
     <h6>Have any questions?<br> Feel free to ask us</h6>
@@ -130,6 +146,12 @@
     </div>
     <p>Made by AntaresFive</p>
 </section>
+
+
+
+
+
+
+
 </body>
-<script src="homescript.js"></script>
 </html>

@@ -1,0 +1,230 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#video-grid {
+    display: grid;
+    grid-template-columns: auto auto auto auto;
+    grid-auto-rows: 300px;
+}
+
+video {
+    width: 100%;
+    height: 100%;
+    max-width: 500px;
+    max-height: 500px;
+    object-fit: cover;
+    border: 1px solid white;
+}
+
+.main {
+    height: 100vh;
+    display: flex;
+}
+
+.main-left {
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-left-alt {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-videos {
+    flex-grow: 1;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-controls {
+    display: flex;
+    background-color: rgb(46, 46, 46);
+    color: rgb(216, 216, 216);
+    padding: 5px;
+    justify-content: space-between;
+}
+
+.main-controls-block {
+    display: flex;
+}
+
+.main-controls-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 10px;
+    min-width: 80px;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.main-controls-button:hover {
+    background-color: #696969;
+    border-radius: 5px;
+}
+
+.leave-meeting {
+    color: red;
+}
+
+.main-right {
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-left: 1px solid black;
+    flex: 0.2;
+}
+
+.main-right-alt {
+    flex: 0;
+    display: none;
+}
+
+.main-chat-header {
+    color: black;
+    text-align: center;
+    border-bottom: 1px solid black;
+}
+
+.main-chat-window {
+    flex-grow: 1;
+    overflow-y: scroll;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.main-chat-window > li {
+    padding: 0.5rem 1rem;
+    color: black;
+    word-wrap: break-word;
+}
+
+.main-chat-window > li:nth-child(odd) { 
+    background: #efefef; 
+}
+
+#chat-input {
+    height: 8.3vh;
+    width: 100%;
+    font-size: 18px;
+}
+
+.unmute, .stop {
+    color: red;
+}
+.pop {
+    position: absolute;
+    width: 50%;
+    margin: auto;
+    padding: 20px;
+    height: 50%;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+  @media (max-width: 640px) {
+    .pop {
+      position: relative;
+      width: 100%;
+    }
+  }
+  .pop .popup {
+    z-index: 2;
+    opacity: 0;
+    visibility: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    -webkit-transition: opacity 500ms ease-in-out;
+    transition: opacity 500ms ease-in-out;
+  }
+  .pop .popup__inner {
+    -webkit-transform: translate(-50%, -50%) scale(0.75);
+            transform: translate(-50%, -50%) scale(0.75);
+    top: 50%;
+    left: 50%;
+    width: 50%;
+    border-radius: 5px;
+    background: white;
+    padding: 30px;
+    position: absolute;
+    color: black;
+  }
+  
+  /* Close Button */
+  .btn-close{
+      background-color: red;
+      text-align: center;
+  }
+  
+  @media (max-width: 640px) {
+    .pop .popup__inner {
+      width: 100%;
+    }
+  }
+  .pop input {
+    visibility: hidden;
+  }
+  .popup__inner input {
+      width: 100%;
+      visibility: visible;
+  }
+  .pop input:checked + .popup {
+    opacity: 1;
+    visibility: visible;
+  }
+  .pop input:checked + .popup .popup__inner {
+    -webkit-transform: translate(-50%, -50%) scale(1);
+            transform: translate(-50%, -50%) scale(1);
+    -webkit-transition: all 200ms ease-in-out;
+    transition: all 200ms ease-in-out;
+  }
+  .pop input:checked + .popup .popup__inner p {
+    font-size: 1.25rem;
+    line-height: 125%;
+  }
+  .pop input:checked + .popup label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 30px;
+    width: 30px;
+    background: rgb(173, 8, 8);
+    -webkit-transition: all 200ms ease-in-out;
+    transition: all 200ms ease-in-out;
+  }
+  .pop input:checked + .popup label:hover {
+    background: rgb(173, 8, 8);
+  }
+
+.videoContainer {
+    position: relative;
+}
+
+.videoLabel {
+    position: absolute;
+    color: white;
+    font-size: 22px;
+    bottom: 10px;
+    left: 10px;
+}
+
+.main-participants-button {
+    display: flex;  
+    flex: 0.5;
+}

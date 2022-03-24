@@ -1,9 +1,11 @@
 require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
+const app = express();
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
+const videoRoute = require('./routes/adminVideo');
 const emailRoute = require('./email-nodeapp/emailVerify');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
@@ -15,21 +17,28 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 });
-var app = express();
+const server = require('http').createServer(app);
+const io = require('socket.io')(server);
+const { v4: uuidV4 } = require('uuid');
+const { ExpressPeerServer } = require('peer');
+const peerServer = ExpressPeerServer(server, {
+    debug: true
+});
 
 const flash = require('express-flash')
 const session = require('express-session')
 const bcrypt = require('bcrypt')
 const passport = require('passport');
 const {authUser, authAmdin} = require('./routes/middleware');
+const { database } = require('pg/lib/defaults');
 const users = [];
 
 // Google Auth
 const {OAuth2Client} = require('google-auth-library');
-const CLIENT_ID = '376022680662-nh9ojhptesh79cstivj8u2f0stfrs2k2.apps.googleusercontent.com'
+const CLIENT_ID = '376022680662-meru43h5tvg8i8qfeii49bjuj2rbi5qe.apps.googleusercontent.com'
 const client = new OAuth2Client(CLIENT_ID);
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({extended:false}));
@@ -44,19 +53,20 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use('/blog', authAmdin(), blogRoute);
+app.use('/video', videoRoute);
 app.use('/sendVerification', emailRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
-  pool.query('SELECT * FROM blog ORDER BY published_at DESC;', (error, result) => {
+  var query = "SELECT * FROM blog ORDER BY published_at DESC; SELECT * FROM video ORDER BY uploaded_at DESC LIMIT 1;";
+
+  pool.query(query, (error, result) => {
     if(error)
       res.send(error);
     else{
-      res.render('pages/homepage', {'blogs' : result.rows, user: req.session.user});
+      res.render('pages/homepage', {'blogs' : result[0].rows, 'videos' : result[1].rows, user: req.session.user});
     }
-})
-//res.render('pages/homepage');
-  
+  })
 });
 
 app.get('/database', async (req, res) => {
@@ -112,7 +122,7 @@ app.post('/signup', async (req,res) => {
 
       if(errors.length == 0) {
         // adds account to database, creating account
-        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}')`;
+        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}', false)`;
         await client.query(registerQuery); 
         res.redirect("/login");
         client.release();
@@ -134,7 +144,7 @@ app.get('/login', (req,res) => {
 
 app.post('/login', async (req,res) => {
   let token = req.body.token;
-  console.log(token);
+  // console.log(token);
   async function verify() {
     const ticket = await client.verifyIdToken({
       idToken: token,
@@ -174,14 +184,14 @@ app.post('/login', async (req,res) => {
   }
 });
 
-app.get('/profile', checkAuthenticated, (req, res)=>{
-  let user = req.user;
-  res.render('profile', {user});
-})
-
 app.get('/logout', (req,res) => {
   req.session.destroy();
   res.redirect('/');
+})
+
+app.get('/profile', checkAuthenticated, (req, res)=>{
+  let user = req.user;
+  res.render('profile', {user});
 })
 
 app.get('/account', (req,res) => {
@@ -192,17 +202,144 @@ app.get('/account', (req,res) => {
   }
 })
 
-app.get('/:title', (req,res) => {
+app.post('/account', async (req,res) =>{
+  var buttonValue = req.body.button;
+
+  if (buttonValue == "delete") {
+    try {
+      const client = await pool.connect();
+      const email = req.session.user.email;
+      await client.query(`delete from usr where email='${email}'`);
+      res.redirect('/logout');
+      client.release();
+    } catch (err) {
+      res.send(err);
+    }
+  } else if(buttonValue == "edit") {
+    res.redirect('/account/edit');
+  } else {
+    res.redirect('/account');
+  }
+})
+
+app.get('/account/edit', (req,res) => {
+  if(req.session.user){
+    res.render('pages/editAccount', {user: req.session.user});
+  } else {
+    res.redirect('/');
+  }
+})
+
+app.post('/account/edit', async (req,res) => {
+  try{
+    const oldEmail = req.session.user.email;
+    const fname = req.body.fName;
+    const lname = req.body.lName;
+    const email = req.body.email;
+    const password = req.body.password;
+    const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}',
+      password='${password}' where email='${oldEmail}'`;
+
+    const client = await pool.connect();
+    await client.query(updateQuery);
+    req.session.user = {fname:fname, lname:lname, email:email, password:password, admin:req.session.user.admin};
+    res.redirect('/account');
+  } catch (err){
+    res.send(err);
+  }
+})
+
+app.get('/blogs/:title', (req,res) => {
   var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
   pool.query(getBlogQuery, (error, result) =>{
       if(error)
           res.send(error);
       else{
-          var results = {'blogs': result.rows};
-          res.render('pages/showBlog', results);
+          res.render('pages/showBlog', {'blogs': result.rows, user: req.session.user});
       }
   })
 })
+
+app.use('/peerjs', peerServer);
+
+app.get('/meeting', (req,res) => {
+  if (req.session.user) {
+    res.render('pages/meeting');
+  } else {
+    res.redirect('/login')
+  }
+})
+
+app.get('/meeting/room', (req,res) => {
+  if (req.session.user) {
+    res.redirect(`/meeting/room/${uuidV4()}`);
+  } else {
+    res.redirect('/login')
+  }
+})
+
+//render unique room
+app.get('/meeting/room/:room', (req,res) => {
+  if (req.session.user) {
+    res.render('pages/room', {roomId: req.params.room, user: req.session.user});
+  } else {
+    res.redirect('/login')
+  }
+})
+
+// change by adding new parameter for num participants
+// when participants reaches 0, delete room
+
+io.of("/room").on('connection', socket => {
+  socket.on('join-room', async (roomId, userId) => {
+    socket.join(roomId);
+    socket.to(roomId).emit('user-connected', userId);
+    // Add room to activemeetings
+    try {
+      const client = await pool.connect();
+      const meetingQuery = `select * from activemeetings where id='${roomId}'`;
+      const result = await client.query(meetingQuery);
+      if (result.rowCount == 0) {
+        await client.query(`insert into activemeetings values('${roomId}')`);
+      }
+      client.release();
+    } catch (err) {
+      res.send(err);
+    }
+    socket.on('disconnect', async () => {
+      socket.to(roomId).emit('user-disconnected', userId);
+      // Remove room from activemeetings
+      try {
+        const client = await pool.connect();
+        await client.query(`delete from activemeetings where id='${roomId}'`);
+        client.release();
+      } catch (err) {
+        res.send(err);
+      }
+    });
+  });
+});
+
+// Checks if meeting exists with room id and joins if it does
+app.post("/meeting", async (req,res) => {
+  const roomId = req.body.roomId;
+  const meetingQuery = `select * from activemeetings where id='${roomId}'`;
+  let errors = [];
+
+  try {
+    const client = await pool.connect();
+    const result = await client.query(meetingQuery);
+    if (result.rowCount == 1) {
+      res.redirect(`/meeting/room/${roomId}`);
+    } else {
+      errors.push({message: "Meeting code does not exist!"});
+      res.render('pages/meeting', {errors});
+    }
+    client.release();
+  } catch (err) {
+    res.send(err);
+  }
+});
 
 function checkAuthenticated(req, res, next){
   let token = req.cookies['session-token'];
@@ -229,73 +366,6 @@ function checkAuthenticated(req, res, next){
 
 }
 
-app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
-
-/*
-const express = require('express');
-const metadata = require('gcp-metadata');
-const {OAuth2Client} = require('google-auth-library');
-
-const app = express();
-const oAuth2Client = new OAuth2Client();
-
-// Cache externally fetched information for future invocations
-let aud;
-
-async function audience() {
-  if (!aud && (await metadata.isAvailable())) {
-    let project_number = await metadata.project('numeric-project-id');
-    let project_id = await metadata.project('project-id');
-
-    aud = '/projects/' + project_number + '/apps/' + project_id;
-  }
-
-  return aud;
-}
-
-async function validateAssertion(assertion) {
-  if (!assertion) {
-    return {};
-  }
-
-  // Check that the assertion's audience matches ours
-  const aud = await audience();
-
-  // Fetch the current certificates and verify the signature on the assertion
-  const response = await oAuth2Client.getIapPublicKeys();
-  const ticket = await oAuth2Client.verifySignedJwtWithCertsAsync(
-    assertion,
-    response.pubkeys,
-    aud,
-    ['https://cloud.google.com/iap']
-  );
-  const payload = ticket.getPayload();
-
-  // Return the two relevant pieces of information
-  return {
-    email: payload.email,
-    sub: payload.sub,
-  };
-}
-
-app.get('/', async (req, res) => {
-  const assertion = req.header('X-Goog-IAP-JWT-Assertion');
-  let email = 'None';
-  try {
-    const info = await validateAssertion(assertion);
-    email = info.email;
-  } catch (error) {
-    console.log(error);
-  }
-  res.status(200).send(`Hello ${email}`).end();
-});
-
-
-// Start the server
-const PORT = process.env.PORT || 8080;
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-  console.log('Press Ctrl+C to quit.');
-});
-*/
+ 

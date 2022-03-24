@@ -4,13 +4,18 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Church Account</title>
+        <title>Meetings</title>
         <link rel="stylesheet" href="/stylesheets/styles.css">
-        <link rel="stylesheet" href="/stylesheets/account.css">
+        <link rel="stylesheet" href="/stylesheets/meeting.css">
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
         <script src="index.js" defer></script>
         <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
-        <script src="accountscript.js" defer></script>
+        <script>
+            function loadCode() {
+                const code = document.getElementById("roomId").value;
+                document.location = '/meeting/room/' + code;
+            }
+        </script>
     </head>
     <body>
         <nav class="header">
@@ -34,35 +39,26 @@
                         <a href="/logout"class="header_links">LOGOUT</a></li>
                 </ul>
             </div>
-        </nav>    
-        <section id="accountDetails">
-            <h1>Account Details</h1>
-            <table>
-                <tr>
-                    <th>First Name:</th>
-                    <td><%= user.fname %></td>
-                </tr>
-                <tr>
-                    <th>Last Name:</th>
-                    <td><%= user.lname %></td>
-                </tr>
-                <tr>
-                    <th>Email:</th>
-                    <td><%= user.email %></td>
-                </tr>
-                <tr>
-                    <th>Password:</th>
-                    <td><%= user.password %></td>
-                </tr>
-                <tr>
-                    <th>Has Admin Privileges:</th>
-                    <td><%= user.admin %></td>
-                </tr>
-            </table>
-            <form method="post">
-                <button id="editButton" name="button" value="edit">Edit</button> 
-                <button id="deleteButton" name="button" value="" onclick=confirmDeletion()>Delete</button> 
-            </form>
-        </section>
+        </nav>   
+        <div class="main">
+            <div class="create-room">
+                <h4>Create A New Room</h4>
+                <a href="/meeting/room">
+                    <button>Create</button>
+                </a>
+            </div>
+            <div class="join-room">
+                <h4>Have A Meeting Code?</h4>
+                <form method="post"> 
+                    <input type="text" id="roomId" name="roomId" placeholder="Enter code here..." required>
+                    <input type="submit" id="submit" value="✔">
+                </form>
+                <div id="errorContent">
+                    <% if(typeof errors != 'undefined') { %> 
+                        <p><%= errors[0].message %></p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
     </body>
 </html>
