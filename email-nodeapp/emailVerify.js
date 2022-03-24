@@ -40,7 +40,7 @@ var transporter = nodemailer.createTransport(smtpConfig);
 //         console.log('Message sent successfully!');
 //         res.send(200);
 //     }
-// });      
+// });
 
 router.use(express.static(path.join(__dirname, '../public')));
 
@@ -64,6 +64,7 @@ router.post('/', (req,res) => {
         }
     });
 });
+
 // router.post('/',function(req,res){
     
 // });

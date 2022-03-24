@@ -1,4 +1,6 @@
+require('dotenv').config();
 const express = require('express');
+const cookieParser = require('cookie-parser');
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const blogRoute = require('./routes/adminBlog');
@@ -22,8 +24,14 @@ const passport = require('passport');
 const {authUser, authAmdin} = require('./routes/middleware');
 const users = [];
 
+// Google Auth
+const {OAuth2Client} = require('google-auth-library');
+const CLIENT_ID = '376022680662-nh9ojhptesh79cstivj8u2f0stfrs2k2.apps.googleusercontent.com'
+const client = new OAuth2Client(CLIENT_ID);
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({extended:false}));
 app.use(session({
   name: "session",
@@ -125,6 +133,24 @@ app.get('/login', (req,res) => {
 });
 
 app.post('/login', async (req,res) => {
+  let token = req.body.token;
+  console.log(token);
+  async function verify() {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+    });
+    const payload = ticket.getPayload();
+    const userid = payload['sub'];
+  }
+  verify()
+  .then(()=>{
+    req.session.user = {fname:'OAuth', lname:'Go',
+      email:'Google User', password:'g@g.c', admin:'f'};
+      res.cookie('session-token', token);
+      res.send('success')
+  })
+  .catch(console.error);
   try {
     const email = req.body.email;
     const password = req.body.password;
@@ -147,6 +173,11 @@ app.post('/login', async (req,res) => {
     res.send(err);
   }
 });
+
+app.get('/profile', checkAuthenticated, (req, res)=>{
+  let user = req.user;
+  res.render('profile', {user});
+})
 
 app.get('/logout', (req,res) => {
   req.session.destroy();
@@ -173,5 +204,98 @@ app.get('/:title', (req,res) => {
   })
 })
 
+function checkAuthenticated(req, res, next){
+  let token = req.cookies['session-token'];
+
+  let user = {};
+  async function verify() {
+      const ticket = await client.verifyIdToken({
+          idToken: token,
+          audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+      });
+      const payload = ticket.getPayload();
+      user.name = payload.name;
+      user.email = payload.email;
+      user.picture = payload.picture;
+    }
+    verify()
+    .then(()=>{
+        req.user = user;
+        next();
+    })
+    .catch(err=>{
+        res.redirect('/login')
+    })
+
+}
+
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`));
 
+
+/*
+const express = require('express');
+const metadata = require('gcp-metadata');
+const {OAuth2Client} = require('google-auth-library');
+
+const app = express();
+const oAuth2Client = new OAuth2Client();
+
+// Cache externally fetched information for future invocations
+let aud;
+
+async function audience() {
+  if (!aud && (await metadata.isAvailable())) {
+    let project_number = await metadata.project('numeric-project-id');
+    let project_id = await metadata.project('project-id');
+
+    aud = '/projects/' + project_number + '/apps/' + project_id;
+  }
+
+  return aud;
+}
+
+async function validateAssertion(assertion) {
+  if (!assertion) {
+    return {};
+  }
+
+  // Check that the assertion's audience matches ours
+  const aud = await audience();
+
+  // Fetch the current certificates and verify the signature on the assertion
+  const response = await oAuth2Client.getIapPublicKeys();
+  const ticket = await oAuth2Client.verifySignedJwtWithCertsAsync(
+    assertion,
+    response.pubkeys,
+    aud,
+    ['https://cloud.google.com/iap']
+  );
+  const payload = ticket.getPayload();
+
+  // Return the two relevant pieces of information
+  return {
+    email: payload.email,
+    sub: payload.sub,
+  };
+}
+
+app.get('/', async (req, res) => {
+  const assertion = req.header('X-Goog-IAP-JWT-Assertion');
+  let email = 'None';
+  try {
+    const info = await validateAssertion(assertion);
+    email = info.email;
+  } catch (error) {
+    console.log(error);
+  }
+  res.status(200).send(`Hello ${email}`).end();
+});
+
+
+// Start the server
+const PORT = process.env.PORT || 8080;
+app.listen(PORT, () => {
+  console.log(`App listening on port ${PORT}`);
+  console.log('Press Ctrl+C to quit.');
+});
+*/

@@ -2,6 +2,8 @@
 <html>
     <head>
         <meta charset="UTF-8">
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+        <meta name="google-signin-client_id" content="376022680662-nh9ojhptesh79cstivj8u2f0stfrs2k2.apps.googleusercontent.com">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" type="text/css" href="/stylesheets/login.css">
         <script src="../../index.js" defer></script>
@@ -29,6 +31,36 @@
                     <a href="/signup">Create one</a>
                 </form>
             </div>
+            <br>
+            <div class="g-signin2" data-onsuccess="onSignIn" style="float:right; padding-right: 185px;"></div>
+            <br>
+            <br>
+            <br>
+            <div><a href="#" onclick="signOut();" style="float:right; padding-right: 125px;">Google Account Sign out</a></div>
         </div>
+        <script>
+            function onSignIn(googleUser) {
+                var id_token = googleUser.getAuthResponse().id_token;
+                // console.log(id_token);
+
+                var xhr = new XMLHttpRequest();
+                xhr.open('POST', '/login');
+                xhr.setRequestHeader('Content-Type', 'application/json');
+                xhr.onload = function() {
+                    console.log('Signed in as: ' + xhr.responseText);
+                    if(xhr.responseText == 'success'){
+                        signOut();
+                        location.assign('profile');
+                    }
+                };
+                xhr.send(JSON.stringify({token : id_token}));
+            }
+            function signOut() {
+                let auth2 = gapi.auth2.getAuthInstance();
+                auth2.signOut().then(function () {
+                    console.log('User signed out.');
+                });
+            }
+        </script>
     </body>
 </html>
