@@ -255,8 +255,7 @@ app.get('/blogs/:title', (req,res) => {
       if(error)
           res.send(error);
       else{
-          var results = {'blogs': result.rows};
-          res.render('pages/showBlog', results);
+          res.render('pages/showBlog', {'blogs': result.rows, user: req.session.user});
       }
   })
 })

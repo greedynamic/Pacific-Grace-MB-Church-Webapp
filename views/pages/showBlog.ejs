@@ -67,7 +67,10 @@
         <textarea id="comment" name="comment" cols="45" rows="4" maxlength="65525" required=""></textarea>
     </p>
     <p class="form-submit">
-        <input name="submit" type="submit" id="submit-comment" class="submit" value="Post Comment"> 
+        <input name="submit" type="submit" id="unregisteredUserBtn" class="submit" value="Register to Add Your Comment"> 
+        <% if(user && user.admin){ %> 
+            <input name="submit" type="submit" id="submit-comment" class="submit" value="Post Comment"> 
+        <% } %>
         <input type="hidden" name="comment_post_ID" value="18386" id="comment_post_ID">
         <input type="hidden" name="comment_parent" id="comment_parent" value="0">
     </p>
@@ -80,11 +83,22 @@
       let commentPostBtn = document.getElementById('submit-comment');
       let comment = document.getElementById('new_comment');
       let commentContent = document.getElementById('comment');
+      let unregisteredBtn = document.getElementById('unregisteredUserBtn');
+
+      if (unregisteredBtn){
+        unregisteredBtn.addEventListener('click', function() {
+            // window.location.href = "https://church276.herokuapp.com//signup";
+            window.location.href = "http://localhost:5000/signup";
+        });
+      }
       
-      commentPostBtn.addEventListener('click', function() {
-          let newComment = comment.cloneNode(true);
-          newComment.innerHTML = `<p>test comment here: ${commentContent.value}</p>`;
-          comment.appendChild(newComment);
-      });
+      if (commentPostBtn){
+        commentPostBtn.addEventListener('click', function() {
+            let newComment = comment.cloneNode(true);
+            newComment.innerHTML = `<p>test comment here: ${commentContent.value}</p>`;
+            comment.appendChild(newComment);
+        });
+      }
+      
   </script>
 </html>
