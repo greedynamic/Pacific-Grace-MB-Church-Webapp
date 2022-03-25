@@ -347,7 +347,6 @@ app.post("/meeting", async (req,res) => {
 
 function checkAuthenticated(req, res, next){
   let token = req.cookies['session-token'];
-
   let user = {};
   async function verify() {
       const ticket = await client.verifyIdToken({
