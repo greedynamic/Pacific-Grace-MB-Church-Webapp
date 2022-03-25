@@ -39,6 +39,16 @@ def test_church_app():
     signUpButton.click()
     title = "Register an Account"
     assert title == driver.title
+
+    # test video button will direct to video page
+    driver.get("http://localhost:5000/") 
+    videoButton = driver.find_element_by_class_name('video_heading')
+    videoButton.click()
+    moreVideoBtn = driver.find_element_by_class_name('more-videos')
+    moreVideoBtn.click()
+    title = "Archived Videos"
+    assert title == driver.title
+    # test meeting button will direct to signup page
     driver.quit()
     # driver = webdriver.Chrome()
     # driver.get('https://church276.herokuapp.com/')
