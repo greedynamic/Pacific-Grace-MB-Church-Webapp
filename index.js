@@ -81,6 +81,10 @@ app.get('/database', async (req, res) => {
   }
 });
 
+app.get('/roombooking', (req, res) =>{
+  res.render('pages/roombooking');
+});
+
 app.get('/signup', (req,res) => {
   if(req.session.user){
     res.redirect("/");
