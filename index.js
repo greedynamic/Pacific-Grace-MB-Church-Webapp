@@ -17,7 +17,6 @@ const pool = new Pool({
 var app = express();
 
 const flash = require('express-flash')
-const session = require('express-session')
 const users = [];
 
 const bcrypt = require('bcrypt')
