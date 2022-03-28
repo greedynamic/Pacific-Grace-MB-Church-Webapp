@@ -1,0 +1,37 @@
+#accountDetails {
+    margin-top: 3vh;
+    margin-left: 15vw;
+}
+
+body {
+    background-color: aliceblue;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+table, th, td {
+    background-color: white;
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 18px;
+    padding: 15px;
+    width: 25vw;
+}
+
+button {
+    background-color: black;
+    color: white;
+    border-color: rgb(42, 42, 42);
+    border-radius: 3px;
+    font-size: 16px;
+    padding: 8px;
+    margin-top: 30px;
+    margin-right: 8px;
+}
+
+button:hover {
+    background-color: rgb(80, 80, 80);
+}

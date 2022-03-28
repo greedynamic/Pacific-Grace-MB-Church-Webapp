@@ -1,0 +1,174 @@
+*{
+    margin: 0;
+    padding: 0;   
+    font-family: 'Raleway', sans-serif;
+}
+
+.header{
+    background: black;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    position: sticky;
+    top: 0px;
+    z-index: 999;
+}
+
+.header_container{
+    display: flex;
+    justify-content: space-between;
+    height: 80px;
+    z-index: 1;
+    width: 100%;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 0 50px;
+
+}
+.header_container ul {
+    list-style: none;
+    margin: 0;
+}
+
+.header_container > ul > li {
+    float: left;
+    position: relative;
+}
+.header_container ul li a{
+    padding: 30px 20px;
+    color: white;
+    display: block;
+   
+}
+
+.header_container ul li:hover a{
+    background: #9b9696;
+    height: fit-content;
+  
+}
+
+.header_container ul li ul{
+    display: none;
+}
+
+.header_container ul li:hover ul {    
+    display: block;
+}
+#headerlogo{
+    background-color: aqua;
+    background-image: linear-gradient(to top, teal 0%, aqua 100%);
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 2rem;
+}
+
+.fa-church{
+    margin-right: 1rem;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}
+.header_item{
+    height: 80px;
+}
+
+.header_links{
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: 0 15px;
+    height: 100%;
+}
+.header_links:hover{
+    color:teal;
+    transition: 0.3s;
+}
+
+.roomform{
+    min-height: 100vh;
+    width: 100%;
+    background-image: linear-gradient(rgba(9, 79, 92, 0.7),rgba(20, 121, 139, 0.7));
+    background-position: center;
+    background-size: cover;
+    position: relative; 
+}
+
+.contact{
+    margin: 100px auto;
+    width: 80%;
+    background-image:linear-gradient(rgba(0,0,0,0.7),rgba(0,0,0,0.7));
+    background-position: center;
+    background-size: cover;
+    border-radius: 10px;
+    text-align: center;
+    padding: 100px 0;
+}
+.contact h1{
+    color: #fff;
+    margin-bottom: 50px;
+    padding: 0;
+    font-size: 50px;
+}
+
+.homepage_btn{
+    display: inline-block;
+    text-decoration: none;
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 12px 34px;
+    font: 13px;
+    background: transparent;
+    position: relative;
+    cursor: pointer;
+}
+.homepage_btn:hover{
+    border: 1px solid teal;
+    background: teal;
+    transition: 0.3s;
+}
+.roomcal{
+    display: block;
+    align-items: center;
+    background-image: linear-gradient(rgba(20, 121, 139, 0.7),rgba(9, 79, 92, 0.7));
+}
+.roomcal h1{
+    font-size: 25px;
+    font-weight: 800;
+    margin-bottom: 25px;
+    margin-left: 500px;
+    color: rgb(122, 7, 7);
+}
+.roomcal h2{
+    font-size: 25px;
+    font-weight: 500px;
+    margin-left: 650px;
+    color: rgb(122, 7, 7);
+}
+.roomcal p{
+    font-size: 25px;
+    font-weight: 300px;
+    margin-left: 500px;
+}
+
+.calform1{
+    align-items: center;
+    margin-top: 50px;
+    margin-bottom: 50px;
+    margin-left: 150px;
+}
+
+.calform2{
+    align-items: center;
+    margin-bottom: 50px;
+    margin-left: 350px;
+}

@@ -1,14 +1,6 @@
-label {
-    display: inline-block;
-    font-size: 16pt;
-    width: 160px;
-    text-align: left;
-}
-
-
 ul, li {
     text-align: left;
-    font-size: 11pt;
+    font-size: 12pt;
 }
 
 body {
@@ -20,7 +12,7 @@ body {
     text-align: center;
     font-family: Arial;
     color: black;
-    background-color: rgb(203, 250, 203);
+    background-color: rgb(111, 182, 111);
 }
 
 #content {
@@ -35,19 +27,18 @@ img {
     height: auto; 
 }
 
+#errorContent {
+    margin-left: 6vw;
+}
+
 #loginContent {
-    margin-top: 50px;
+    font-size: 28px;
+    margin-top: 30px;
 }
 
 #signupContent {
     font-size: 20px;
-    margin-top: 100px;
-}
-
-input {
-    background-color: white;
-    border-color: darkgrey;
-    margin-bottom: 5px;
+    margin-top: 50px;
 }
 
 input:last-child {
@@ -56,28 +47,24 @@ input:last-child {
 
 input[type=text], input[type=password] {
     padding: 0.75rem;
-    width: 400px;
+    width: 21vw;
     vertical-align: top;
     box-sizing: border-box;
     border: 1px solid black;
     border-radius: 5px;
     margin-bottom: 20px;
-<<<<<<< HEAD
-    font-size: 20px;
-=======
->>>>>>> 81888af7338394355fa3fe7c0d95dbd5cdef36d8
 }
 
 input[type=submit] {
     color: black;
-    background-color: rgb(198, 255, 198);
+    background-color: rgb(141, 226, 141);
     border: 1px solid black;
     border-radius: 5px;
     font-size: 20px;
     padding: 8px;
-    width: 400px;
+    width: 21vw;
 }
 
 input[type=submit]:hover {
-    background-color: rgb(146, 233, 146);
+    background-color: rgb(111, 182, 111);
 }

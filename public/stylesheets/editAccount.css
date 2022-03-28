@@ -1,0 +1,36 @@
+#editDetails {
+    margin-top: 3vh;
+    margin-left: 15vw;
+}
+
+body {
+    background-color: aliceblue;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+input[type=text], input[type=password] {
+    padding: 0.75rem;
+    width: 400px;
+    vertical-align: top;
+    box-sizing: border-box;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+input[type=submit] {
+    background-color: black;
+    color: white;
+    border-color: rgb(42, 42, 42);
+    border-radius: 3px;
+    font-size: 16px;
+    padding: 8px;
+    margin-top: 20px;
+}
+
+input[type=submit]:hover {
+    background-color: rgb(80, 80, 80);
+}
