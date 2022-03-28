@@ -39,11 +39,18 @@ document.getElementById('form').addEventListener('submit', e => {
     const input = document.getElementById('chat-input');
     e.preventDefault();
     if (input.value) {
-        var item = document.createElement('li');
-        item.textContent = input.value;
-        document.getElementById('chat-window').appendChild(item);
+        socket.emit('chat-message', input.value);
         input.value = '';
     }
+});
+
+// On chat-message event, append the msg to the chat-window
+socket.on('chat-message', (msg) => {
+    const chatWindow = document.getElementById('chat-window');
+    const item = document.createElement('li');  
+    item.innerHTML = FIRST_NAME.bold() + '<br />' + msg;
+    chatWindow.append(item);
+    chatWindow.scrollTop = chatWindow.scrollHeight;
 });
 
 // Make calls when new users connect to room

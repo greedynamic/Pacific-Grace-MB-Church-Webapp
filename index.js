@@ -291,9 +291,7 @@ app.get('/meeting/room/:room', (req,res) => {
   }
 })
 
-// change by adding new parameter for num participants
-// when participants reaches 0, delete room
-
+// Handles communication between client and server
 io.of("/room").on('connection', socket => {
   socket.on('join-room', async (roomId, userId) => {
     socket.join(roomId);
@@ -310,6 +308,9 @@ io.of("/room").on('connection', socket => {
     } catch (err) {
       res.send(err);
     }
+    socket.on('chat-message', (msg) => {
+      io.of("/room").emit('chat-message', msg);
+    });
     socket.on('disconnect', async () => {
       socket.to(roomId).emit('user-disconnected', userId);
       // Remove room from activemeetings
