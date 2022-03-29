@@ -44,15 +44,16 @@ router.get('/new', (req,res) => res.render('pages/newBlog'));
  */
 router.post('/', (req,res) => {
     const{title, summary, content} = req.body;
+    // Replace ' with '' to prevent query from reading apostrophe as delimiter for input arguments
+    var valid_content = content.replace(/'/g, "''");
     const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-    var query = `INSERT INTO blog VALUES (DEFAULT, '${title}', '${summary}', '${content}', '${date}');`;
+    var query = `INSERT INTO blog VALUES (DEFAULT, '${title}', '${summary}', '${valid_content}', '${date}');`;
     pool.query(query, (error, result) => {
         if(error){
           res.send(error);
           console.log(error);
         }  
         else{
-          var results = {'blogs' : result.rows};
           res.redirect('/');
         }
     });
