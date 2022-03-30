@@ -53,8 +53,14 @@
                     Last Updated: <%=blogs[i].updated_at.toLocaleDateString()%>
                 <% } %>
             </div>
+            <div id="image">
+                <% if(blogs[i].filename != null) { %>
+                    <img src="../blogImages/<%= blogs[i].filename %>" alt="Blog Image" ALIGN="left" style="width: auto; height: auto; padding-right: 10px;">
+                <% } %>
+                <div><%- blogs[i].content %></div>
+            </div>
             <div class="mt-4" id="content">
-                <%- blogs[i].content %>
+               
             </div>
         <% }    
     } %> 

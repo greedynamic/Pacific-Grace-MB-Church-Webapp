@@ -44,21 +44,29 @@
   </nav>    
   <div class="container">
     <h1 class="mb-4">New Blog</h1>
-    <form action="/blog" method="post">
+    <form action="/blog" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+            <%= typeof msg != 'undefined' ? msg: '' %>
+            <label for="picture">Select Image</label>
+            <p class="text-muted" style="display: inline;">(Optional)</p><br>
+            <input id="img_file" type="file" name="image" accept="image/*" class="form-control-file">
+        </div><br>
+
         <div class="form-group">
             <label for="title">Title</label>
             <input required type="text" name="title" id="title" class="form-control">
-        </div>
+        </div><br>
 
         <div class="form-group">
             <label for="summary">Summary</label>
             <textarea name="summary" id="summary" class="form-control"></textarea>
-        </div>
+        </div><br>
 
         <div class="form-group">
             <label for="content">Content</label>
             <textarea name="content" id="content" class="form-control"></textarea>
-        </div>
+        </div><br>
+
         <button type="submit" class="btn btn-primary">Publish</button>
         <a href="/blog" class="btn btn-secondary">Cancel</a>
     </form>

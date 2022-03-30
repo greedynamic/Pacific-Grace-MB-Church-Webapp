@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const moment = require('moment');
+const multer = require('multer');
+const fs = require('fs');
 const { Pool } = require('pg');
 const path = require('path');
 const pool = new Pool({
@@ -39,24 +41,58 @@ router.get('/homepage', (req, res) => {
 /** Create New Blog page via '/blog/new' */
 router.get('/new', (req,res) => res.render('pages/newBlog'));
 
+
+/** Set up storage for image files */
+const storage = multer.diskStorage({
+  destination: './public/blogImages/',
+  filename: function(req, file, cb){
+      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  },
+  fileFilter: function(file,cb){
+      const image_ext = file.mimetype.startsWith('image/');
+      if(image_ext){
+          cb(null,true);
+      }
+      else{
+          cb('File not supported. Images Only');
+      }
+  }
+})
+
+// Upload image function
+const upload = multer({
+  storage : storage,
+}).single('image');
+
 /** Get blog components in the blog table
- *  Redirect to /allBlogs page or homepage 
+ *  Redirect to /allBlogs page 
  */
 router.post('/', (req,res) => {
-    const{title, summary, content} = req.body;
-    // Replace ' with '' to prevent query from reading apostrophe as delimiter for input arguments
-    var valid_content = content.replace(/'/g, "''");
-    const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-    var query = `INSERT INTO blog VALUES (DEFAULT, '${title}', '${summary}', '${valid_content}', '${date}');`;
-    pool.query(query, (error, result) => {
-        if(error){
-          res.send(error);
-          console.log(error);
-        }  
-        else{
-          res.redirect('/');
+  upload(req, res, (err) => {
+    if(err)
+        res.render('pages/newBlog', {msg: err});
+    else{
+        if(req.file){
+          var filename = req.file.filename;
+          var filepath = req.file.path;
         }
-    });
+        const{title, summary, content} = req.body;
+        // Replace ' with '' to prevent query from reading apostrophe as delimiter for input arguments
+        var valid_summary = summary.replace(/'/g, "''");
+        var valid_content = content.replace(/'/g, "''");
+        const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        var query = `INSERT INTO blog VALUES (DEFAULT, '${title}', '${valid_summary}', '${valid_content}', '${date}', '${filename}', '${filepath}');`;
+        pool.query(query, (error, result) => {
+            if(error){
+              res.send(error);
+              console.log(error);
+            }  
+            else{
+              res.redirect('/');
+            }
+        })
+    }
+  })
 });
 
 /** Delete blog */
@@ -87,17 +123,46 @@ router.get('/edit/:title', (req,res) => {
 
 /** Update blog edit in the blog table */
 router.post('/edit/:title', (req,res) => {
-    const{title, summary, content} = req.body;
-    const updated_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+  upload(req, res, (err) => {
+    if(err)
+        res.render('pages/newBlog', {msg: err});
+    else{
+        if(req.file){
+          // Delete old files
+          var query = `SELECT * FROM blog WHERE title='${req.params.title}';`;
+          pool.query(query, (error,result) => {
+            if(error)
+              res.send(error); 
+            else{
+              if(result.rows[0].filepath != 'undefined')
+                fs.unlinkSync(result.rows[0].filepath);
+            }
+          });  
+          // Update new files
+          var filename = req.file.filename;
+          var filepath = req.file.path;
+          pool.query(`UPDATE blog SET filename='${filename}', filepath='${filepath} where title='${req.params.title}';`, (err)=>{
+            if(err)
+              res.send(err);
+          });
+        };
+
+        const{title, summary, content} = req.body;
+        // Replace ' with '' to prevent query from reading apostrophe as delimiter for input arguments
+        var valid_summary = summary.replace(/'/g, "''");
+        var valid_content = content.replace(/'/g, "''");
+        const updated_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
     
-    var editQuery = `UPDATE blog SET title='${title}', summary='${summary}', content='${content}', updated_at='${updated_at}' WHERE title='${req.params.title}';`;
-    pool.query(editQuery, (error, result) =>{
-        if(error)
-          res.send(error);
-        else{
-          res.redirect('/blog');
-        }
-    })
-})
+        var editQuery = `UPDATE blog SET title='${title}', summary='${valid_summary}', content='${valid_content}', updated_at='${updated_at}' WHERE title='${req.params.title}';`;
+        pool.query(editQuery, (error, result) =>{
+            if(error)
+              res.send(error);
+            else{
+              res.redirect('/blog');
+            }
+        })
+    }
+  }); 
+});
 
 module.exports = router;
