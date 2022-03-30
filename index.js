@@ -85,6 +85,10 @@ app.get('/roombooking', (req, res) =>{
   res.render('pages/roombooking');
 });
 
+app.get('/contact', (req, res) =>{
+  res.render('pages/contact');
+});
+
 app.get('/signup', (req,res) => {
   if(req.session.user){
     res.redirect("/");
