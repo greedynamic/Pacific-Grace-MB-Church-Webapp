@@ -27,10 +27,10 @@
           <div class="popup__inner">
               <b>Invite Link</b>
               <input type="text" id="link" value="x"><br>
-
               <b>Meeting Code</b>
-              <input type="text" id="room" value="<%= roomId %>"><br>
+              <input type="text" id="code" value="<%= roomId %>"><br>
               <button onclick="copyLink()">Copy link</button>
+              <button onclick="copyCode()">Copy code</button>
             <label class="btn-close" for="3">X</label>
           </div>
         </div>
@@ -55,15 +55,14 @@
                     </div>
                 </div>
                 <div class="main-controls-block">
-                    <label for="3" class="open">
+                    <label for="3" class="main-controls-button">
                         <div class="main-controls-button" onclick="toggleInvite()">
                             <i class="fa-solid fa-plus"></i>
                             <span>Invite</span>
                         </div>
                     </label>
-                    
-                    <div class="main-controls-button">
-                        <i class="fa-solid fa-user-group main-participants-button"></i>
+                    <div class="main-controls-button main-participants-button">
+                        <i class="fa-solid fa-user-group"></i>
                         <span>Participants</span>
                     </div>
                     <div class="main-controls-button main-chat-button">
@@ -84,15 +83,26 @@
         </div>
         <!-- chat -->
         <div class="main-right">
-            <div class="main-chat-header">
-                <h5>Chat</h5>
+
+            <div class="chat" id="chat">
+                <div class="main-chat-header">
+                    <h5>Chat</h5>
+                </div>
+                <div class="main-chat-window" id="chat-window"></div>
+                <div class="main-messages-container">
+                    <form id="form">
+                        <input id="chat-input" autocomplete="off" placeholder="Type message here..."/>
+                    </form>
+                </div>
             </div>
-            <div class="main-chat-window" id="chat-window"></div>
-            <div class="main-messages-container">
-                <form id="form">
-                    <input id="chat-input" autocomplete="off" placeholder="Type message here..."/>
-                </form>
+            
+            <div class="participants" id="participants">
+                <div class="main-chat-header">
+                    <h5>Participants</h5>
+                </div>
+                <div id="participants-window"></div>
             </div>
+
         </div>
     </div>
 </body>

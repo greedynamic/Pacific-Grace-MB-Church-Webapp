@@ -264,6 +264,8 @@ app.get('/blogs/:title', (req,res) => {
   })
 })
 
+const rooms = {};
+
 app.use('/peerjs', peerServer);
 
 app.get('/meeting', (req,res) => {
@@ -293,7 +295,7 @@ app.get('/meeting/room/:room', (req,res) => {
 
 // Handles communication between client and server
 io.of("/room").on('connection', socket => {
-  socket.on('join-room', async (roomId, userId) => {
+  socket.on('join-room', async (roomId, userId, name) => {
     socket.join(roomId);
     socket.to(roomId).emit('user-connected', userId);
     // Add room to activemeetings
@@ -308,8 +310,8 @@ io.of("/room").on('connection', socket => {
     } catch (err) {
       res.send(err);
     }
-    socket.on('chat-message', (msg) => {
-      io.of("/room").emit('chat-message', msg);
+    socket.on('send-chat-message', (msg) => {
+      io.of("/room").emit('chat-message', msg, name);
     });
     socket.on('disconnect', async () => {
       socket.to(roomId).emit('user-disconnected', userId);

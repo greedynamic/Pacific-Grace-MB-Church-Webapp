@@ -77,15 +77,19 @@ video {
 
 .main-right {
     display: flex;
-    flex-direction: column;
-    background-color: white;
-    border-left: 1px solid black;
     flex: 0.2;
 }
 
 .main-right-alt {
-    flex: 0;
     display: none;
+    flex: 0;
+}
+
+.chat {
+    flex-direction: column;
+    background-color: white;
+    border-left: 1px solid black;
+    width: 100%;
 }
 
 .main-chat-header {
@@ -100,6 +104,7 @@ video {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    height: 50.2rem;
 }
 
 .main-chat-window > li {
@@ -116,6 +121,11 @@ video {
     height: 8.3vh;
     width: 100%;
     font-size: 18px;
+}
+
+.participants {
+    display: none;
+    width: 100%;
 }
 
 .unmute, .stop {
@@ -226,7 +236,3 @@ video {
     left: 10px;
 }
 
-.main-participants-button {
-    display: flex;  
-    flex: 0.5;
-}

@@ -1,4 +1,4 @@
-const socket = io("/room"); // uses "meeting" namespace
+const socket = io("/room");
 const videoGrid = document.getElementById('video-grid');
 const myVideo = document.createElement('video');
 myVideo.muted = true;
@@ -32,23 +32,23 @@ navigator.mediaDevices.getUserMedia({
 })
 
 myPeer.on('open', id => {
-    socket.emit('join-room', ROOM_ID, id);
+    socket.emit('join-room', ROOM_ID, id, FIRST_NAME);
 })
 
 document.getElementById('form').addEventListener('submit', e => {
     const input = document.getElementById('chat-input');
     e.preventDefault();
     if (input.value) {
-        socket.emit('chat-message', input.value);
+        socket.emit('send-chat-message', input.value);
         input.value = '';
     }
 });
 
 // On chat-message event, append the msg to the chat-window
-socket.on('chat-message', (msg) => {
+socket.on('chat-message', (msg, name) => {
     const chatWindow = document.getElementById('chat-window');
     const item = document.createElement('li');  
-    item.innerHTML = FIRST_NAME.bold() + '<br />' + msg;
+    item.innerHTML = name + '<br />' + msg;
     chatWindow.append(item);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 });
@@ -146,12 +146,34 @@ function copyLink() {
     var copyText = document.getElementById("link");
     copyText.select();
     copyText.setSelectionRange(0,99999);
-
     navigator.clipboard.writeText(copyText.value);
     alert("Invite link copied to clipboard");
 }
 
-function toggleChat() {}
+function copyCode() {
+    var copyText = document.getElementById("code");
+    copyText.select();
+    copyText.setSelectionRange(0,99999);
+    navigator.clipboard.writeText(copyText.value);
+    alert("Invite code copied to clipboard");
+}
+
+function toggleParticipants() {
+    document.getElementById("chat").style.display = "none";
+    document.getElementById("participants").style.display = "block";
+    var window = document.querySelector("main-participants-window");
+    for(let i = 0; i < peers.length; i++) {
+        console.log(i);
+        window.innerHTML += peers[i] + '<br>';
+    }
+    document.querySelector("participants-window").append(window);
+}
+
+function toggleChat() {
+    document.getElementById("participants").style.display = "none";
+    document.getElementById("chat").style.display = "block";
+}
+
 function toggleExpand() {
     try{ 
         document.querySelector(".main-left").setAttribute("class", "main-left-alt");
@@ -181,25 +203,9 @@ function setShrink() {
     document.querySelector('.main-expand-button').innerHTML = html;
 }
 
-function toggleParticipants() {
-    document.getElementById("chat").style.display = "none";
-    document.getElementById("participants").style.display = "block";
-    var window = document.querySelector("main-participants-window");
-    for(let i = 0; i < peers.length; i++) {
-        console.log(i);
-        window.innerHTML += peers[i] + '<br>';
-    }
-}
-
-function toggleChat() {
-    document.getElementById("participants").style.display = "none";
-    document.getElementById("chat").style.display = "block";
-}
-
 function leaveMeeting() {
     window.location.href = "/meeting";
 }
-
 
 document.querySelector('.main-mute-button').addEventListener('click', muteUnmute);
 document.querySelector('.main-video-button').addEventListener('click', playStop);
