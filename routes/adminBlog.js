@@ -81,7 +81,7 @@ router.post('/', (req,res) => {
         var valid_summary = summary.replace(/'/g, "''");
         var valid_content = content.replace(/'/g, "''");
         const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-        var query = `INSERT INTO blog VALUES (DEFAULT, '${title}', '${valid_summary}', '${valid_content}', '${date}', '${filename}', '${filepath}');`;
+        var query = `INSERT INTO blog VALUES (DEFAULT, '${title}', '${valid_summary}', '${valid_content}', '${date}', '${filepath}', '${filename}');`;
         pool.query(query, (error, result) => {
             if(error){
               res.send(error);
