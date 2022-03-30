@@ -97,15 +97,24 @@ router.post('/', (req,res) => {
 
 /** Delete blog */
 router.post('/del/:title', (req,res) => {
-    var query = `DELETE FROM blog WHERE title='${req.params.title}'`;
-    pool.query(query, (error,result) => {
-        if(error){
-          res.send(error);
-        }  
-        else{
-          res.redirect('/blog/');
-        } 
-    })
+  var query = `SELECT * FROM blog WHERE title='${req.params.title}';`;
+  pool.query(query, (error,result) => {
+      if(error){
+        res.send(error);
+      }  
+      else{
+        if(result.rows[0].filepath != 'undefined'){
+          fs.unlinkSync(result.rows[0].filepath);
+        };
+        pool.query(`DELETE FROM blog WHERE title='${req.params.title}';`, (err)=>{
+            if(err)
+              res.send(err);
+            else{
+              res.redirect('/blog/');
+            }
+        })
+      }  
+  })
 })
 
 /** Render /blog/edit/:title to edit page */
