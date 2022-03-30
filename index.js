@@ -52,7 +52,7 @@ app.use(session({
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use('/blog', blogRoute);
+app.use('/blog', authAmdin(), blogRoute);
 app.use('/video', videoRoute);
 app.use('/sendVerification', emailRoute);
 
@@ -257,7 +257,16 @@ app.post('/account/edit', async (req,res) => {
   }
 })
 
-
+app.get('/blogs/:title', (req,res) => {
+  var getBlogQuery = `SELECT * FROM blog WHERE title='${req.params.title}';`;
+  pool.query(getBlogQuery, (error, result) =>{
+      if(error)
+          res.send(error);
+      else{
+          res.render('pages/showBlog', {'blogs': result.rows, user: req.session.user});
+      }
+  })
+})
 
 const rooms = {};
 

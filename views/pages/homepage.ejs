@@ -89,8 +89,8 @@
             for(var i=0; i < blogs.length; i++) { %> 
                 <div class="blog_box">
                     <div class="blog_image">
-                        <% if(blogs[i].filepath != null){ %>
-                            <img src="<%= blogs[i].filepath %>" alt="Blog Image">
+                        <% if(blogs[i].filename != null) { %>
+                            <img src="../blogImages/<%= blogs[i].filename %>">
                         <% } %>
                     </div>
                     <div>
@@ -98,7 +98,7 @@
                         <span><%= blogs[i].title %></span>
                         <div><%= blogs[i].published_at.toLocaleDateString() %></div>
                         <div><%- blogs[i].summary %></div>
-                            <a href="/blog/<%= blogs[i].title %>">Read More</a>
+                            <a href="/blogs/<%= blogs[i].title %>">Read More</a>
                         </div>
                     </div>
                 </div>          
@@ -124,7 +124,6 @@
                         <iframe src="<%= videos[i].url %>" width="800" height="500"></iframe>
                     <% } %>
                 </div>
-                
                 <div class="video_text" >
                     <h3><%= videos[i].title %></h3>
                     <p><%= videos[i].description %></p>
@@ -134,23 +133,31 @@
         <br>
     </div>
 </section><br>
-
 <!--CONTACT US-->
 <section class="contact">
     <h6>Have any questions?<br> Feel free to ask us</h6>
     <a href="/contact" class="homepage_btn">CONTACT US</a>
 </section>
 
+
 <!--ABOUT US-->
 <section class="about">
     <h5>ABOUT US</h5>
     <P>We are determined to move forward by combining technology to make everything more accessible </P>
     <div class="icons">
-        <a href="https://www.facebook.com/pmpgmbc/"><i class="fa fa-facebook"></i></a>
-        <a href="https://www.youtube.com/c/pmpgmbc"><i class="fa-brands fa-youtube"></i></a>
+        <i class="fa fa-facebook"></i>
+        <i class="fa fa-twitter"></i>
+        <i class="fa fa-instagram"></i>
+        <i class="fa fa-linkedin"></i>
     </div>
     <p>Made by AntaresFive</p>
 </section>
+
+
+
+
+
+
 
 </body>
 </html>
