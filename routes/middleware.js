@@ -8,7 +8,7 @@ function authUser(){
     }
   }
 
-function authAmdin (){
+function authAdmin (){
     return (req, res, next) => {
         if(req.session.user){
             if(req.session.user.admin){
@@ -24,4 +24,4 @@ function authAmdin (){
     }
 }
 
-module.exports = {authUser, authAmdin} ;
+module.exports = {authUser, authAdmin} ;

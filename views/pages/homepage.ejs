@@ -89,8 +89,8 @@
             for(var i=0; i < blogs.length; i++) { %> 
                 <div class="blog_box">
                     <div class="blog_image">
-                        <% if(blogs[i].filename != null){ %>
-                            <img src="../blogImages/<%= blogs[i].filename %>" alt="Blog Image">
+                        <% if(blogs[i].filepath != null){ %>
+                            <img src="<%= blogs[i].filepath %>" alt="Blog Image">
                         <% } %>
                     </div>
                     <div>
@@ -98,7 +98,7 @@
                         <span><%= blogs[i].title %></span>
                         <div><%= blogs[i].published_at.toLocaleDateString() %></div>
                         <div><%- blogs[i].summary %></div>
-                            <a href="/blogs/<%= blogs[i].title %>">Read More</a>
+                            <a href="/blog/<%= blogs[i].title %>">Read More</a>
                         </div>
                     </div>
                 </div>          
