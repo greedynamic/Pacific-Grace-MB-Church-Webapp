@@ -270,6 +270,17 @@ app.get('/blogs/:title', (req,res) => {
 
 const rooms = {};
 
+// Get video page
+app.get('/videos/:title', (req,res)=>{
+  pool.query(`SELECT * FROM video WHERE title='${req.params.title}';`, (error, result) =>{
+      if(error)
+          res.send(error);
+      else{
+          res.render('pages/showVideo', {'videos': result.rows});
+      }
+  })
+})
+
 app.use('/peerjs', peerServer);
 
 app.get('/meeting', (req,res) => {

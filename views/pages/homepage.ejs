@@ -118,16 +118,17 @@
         <% if(videos.length) { 
             for (var i=0; i < videos.length; i++){ %>
                 <div class="show_video">
-                    <% if(videos[i].filename != 'undefined') {%>
-                        <video src="videos/<%= videos[i].filename%>" controls type="video/*" width='800' height='500' ></video>
+                    <% if(videos[i].filepath != 'undefined') {%>
+                        <video src="<%= videos[i].filepath%>" controls type="video/*" style="clear:left; float: left; padding-right: 20px;" width='800' height='500' ></video>
                     <%} else{ %> 
                         <iframe src="<%= videos[i].url %>" width="800" height="500"></iframe>
                     <% } %>
                 </div>
                 <div class="video_text" >
-                    <h3><%= videos[i].title %></h3>
-                    <p><%= videos[i].description %></p>
+                    <h3><%= videos[i].title %></h3><br>
+                    <a href="/videos/<%= videos[i].title %>" style="align-content: center;">Read More</a>
                 </div>
+                
             <% }
         } %>
         <br>

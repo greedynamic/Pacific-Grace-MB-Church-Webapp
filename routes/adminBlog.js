@@ -5,7 +5,6 @@ const moment = require('moment');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
 const uuid = require('uuid').v4;
-const fs = require('fs');
 const aws = require('aws-sdk');
 const { Pool } = require('pg');
 const path = require('path');
