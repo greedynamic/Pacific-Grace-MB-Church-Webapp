@@ -89,8 +89,8 @@
             for(var i=0; i < blogs.length; i++) { %> 
                 <div class="blog_box">
                     <div class="blog_image">
-                        <% if(blogs[i].filename != null) { %>
-                            <img src="../blogImages/<%= blogs[i].filename %>">
+                        <% if(blogs[i].filepath != null) { %>
+                            <img src="<%= blogs[i].filepath%>">
                         <% } %>
                     </div>
                     <div>

@@ -1,16 +1,27 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const moment = require('moment');
 const multer = require('multer');
+const multerS3 = require('multer-s3');
+const uuid = require('uuid').v4;
 const fs = require('fs');
+const aws = require('aws-sdk');
 const { Pool } = require('pg');
 const path = require('path');
 const pool = new Pool({
-    connectionString: 'postgres://wwiwookhmzbgif:b99fe28f9a5e30cdca56d64ce4165e8c1bf3f8a4fc1895b437043db9fa4ed35a@ec2-34-230-110-100.compute-1.amazonaws.com:5432/d329ha74afil4s',
+    connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
 });
+
+// aws credientials
+aws.config.update({
+  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+  region: 'us-west-2',
+})
 
 router.use(express.static(path.join(__dirname, '../public')));
 
@@ -26,74 +37,48 @@ router.get('/', (req, res) => {
     })
 })
 
-
-router.get('/homepage', (req, res) => {
-  pool.query('SELECT * FROM blog;', (error, result) => {
-      if(error)
-        res.send(error);
-      else{
-        var results = {'blogs' : result.rows};
-        res.render('pages/blogHome', results);
-      }
-  })
-})
-
 /** Create New Blog page via '/blog/new' */
 router.get('/new', (req,res) => res.render('pages/newBlog'));
 
-
-/** Set up storage for image files */
-const storage = multer.diskStorage({
-  destination: './public/blogImages',
-  filename: function(req, file, cb){
-      cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-  },
-  fileFilter: function(file,cb){
-      const image_ext = file.mimetype.startsWith('image/');
-      if(image_ext){
-          cb(null,true);
-      }
-      else{
-          cb('File not supported. Images Only');
-      }
-  }
-})
-
-// Upload image function
+// Get storage in aws
+const BUCKET = process.env.S3_BUCKET_NAME;
+const s3 = new aws.S3();
 const upload = multer({
-  storage : storage,
-}).single('image');
+    storage: multerS3({
+        s3: s3,
+        bucket: BUCKET,
+        key: function (req, file, cb) {
+            const ext = path.extname(file.originalname);
+            cb(null, `${uuid()}${ext}`);
+        }
+    })
+})
 
 /** Get blog components in the blog table
  *  Redirect to /allBlogs page 
  */
-router.post('/', (req,res) => {
-  upload(req, res, (err) => {
-    if(err)
-        res.render('pages/newBlog', {msg: err});
-    else{
-        if(req.file){
-          var filename = req.file.filename;
-          var filepath = req.file.path;
-        }
-        const{title, summary, content} = req.body;
-        // Replace ' with '' to prevent query from reading apostrophe as delimiter for input arguments
-        var valid_summary = summary.replace(/'/g, "''");
-        var valid_content = content.replace(/'/g, "''");
-        const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-        var query = `INSERT INTO blog VALUES (DEFAULT, '${title}', '${valid_summary}', '${valid_content}', '${date}', '${filepath}', '${filename}');`;
-        pool.query(query, (error, result) => {
-            if(error){
-              res.send(error);
-              console.log(error);
-            }  
-            else{
-              res.redirect('/');
-            }
-        })
-    }
+ router.post('/new', upload.single('image'), (req,res) => {
+  if(req.file){
+      var filepath = req.file.location;
+      var filekey = req.file.key;
+  }
+  const{title, summary, content} = req.body;
+  // Replace ' with '' to prevent query from reading apostrophe as delimiter for input arguments
+  var valid_summary = summary.replace(/'/g, "''");
+  var valid_content = content.replace(/'/g, "''");
+  const date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+  var query = `INSERT INTO blog VALUES (DEFAULT, '${title}', '${valid_summary}', '${valid_content}', '${date}', '${filepath}', '${filekey}');`;
+  pool.query(query, (error, result) => {
+      if(error){
+        res.send(error);
+        console.log(error);
+      }  
+      else{
+        res.redirect('/');
+      }
   })
 });
+
 
 /** Delete blog */
 router.post('/del/:title', (req,res) => {
