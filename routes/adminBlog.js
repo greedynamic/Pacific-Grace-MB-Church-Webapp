@@ -88,9 +88,9 @@ router.post('/del/:title', (req,res) => {
         res.send(error);
       }  
       else{
-        if(result.rows[0].filepath != 'undefined'){
-          fs.unlinkSync(result.rows[0].filepath);
-        };
+        if(result.rows[0].filekey != 'undefined'){
+          s3.deleteObject({Bucket: BUCKET, Key: result.rows[0].filekey}).promise();
+        }
         pool.query(`DELETE FROM blog WHERE title='${req.params.title}';`, (err)=>{
             if(err)
               res.send(err);
@@ -116,47 +116,42 @@ router.get('/edit/:title', (req,res) => {
 })
 
 /** Update blog edit in the blog table */
-router.post('/edit/:title', (req,res) => {
-  upload(req, res, (err) => {
-    if(err)
-        res.render('pages/newBlog', {msg: err});
-    else{
-        if(req.file){
-          // Delete old files
-          var query = `SELECT * FROM blog WHERE title='${req.params.title}';`;
-          pool.query(query, (error,result) => {
-            if(error)
-              res.send(error); 
-            else{
-              if(result.rows[0].filepath != 'undefined')
-                fs.unlinkSync(result.rows[0].filepath);
-            }
-          });  
-          // Update new files
-          var filename = req.file.filename;
-          var filepath = req.file.path;
-          pool.query(`UPDATE blog SET filepath='${filepath}, filename='${filename}' where title='${req.params.title}';`, (err)=>{
-            if(err)
-              res.send(err);
-          });
-        };
+router.post('/edit/:title', upload.single('image'), (req,res) => {
+  if(req.file){
+    // Delete old files
+    var query = `SELECT * FROM blog WHERE title='${req.params.title}';`;
+    pool.query(query, (error,result) => {
+      if(error)
+        res.send(error); 
+      else{
+        if(result.rows[0].filekey != 'undefined'){
+          s3.deleteObject({Bucket: BUCKET, Key: result.rows[0].filekey}).promise();
+        }
+      }
+    });  
+    // Update new files
+    var filepath = req.file.location;
+    var filekey = req.file.key;
+    pool.query(`UPDATE blog SET filepath='${filepath}', filekey='${filekey}' where title='${req.params.title}';`, (err)=>{
+      if(err)
+        res.send(err);
+    });
+  };
 
-        const{title, summary, content} = req.body;
-        // Replace ' with '' to prevent query from reading apostrophe as delimiter for input arguments
-        var valid_summary = summary.replace(/'/g, "''");
-        var valid_content = content.replace(/'/g, "''");
-        const updated_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-    
-        var editQuery = `UPDATE blog SET title='${title}', summary='${valid_summary}', content='${valid_content}', updated_at='${updated_at}' WHERE title='${req.params.title}';`;
-        pool.query(editQuery, (error, result) =>{
-            if(error)
-              res.send(error);
-            else{
-              res.redirect('/blog');
-            }
-        })
-    }
-  }); 
+  const{title, summary, content} = req.body;
+  // Replace ' with '' to prevent query from reading apostrophe as delimiter for input arguments
+  var valid_summary = summary.replace(/'/g, "''");
+  var valid_content = content.replace(/'/g, "''");
+  const updated_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
+  var editQuery = `UPDATE blog SET title='${title}', summary='${valid_summary}', content='${valid_content}', updated_at='${updated_at}' WHERE title='${req.params.title}';`;
+  pool.query(editQuery, (error, result) =>{
+      if(error)
+        res.send(error);
+      else{
+        res.redirect('/blog');
+      }
+  })
 });
 
 module.exports = router;
