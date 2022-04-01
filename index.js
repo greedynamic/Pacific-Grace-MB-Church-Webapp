@@ -301,7 +301,7 @@ app.get('/meeting/room/:room', (req,res) => {
 io.of("/room").on('connection', socket => {
   socket.on('join-room', async (roomId, userId, name) => {
     socket.join(roomId);
-    socket.to(roomId).emit('user-connected', userId);
+    socket.to(roomId).emit('user-connected', userId, name);
     // Add room to activemeetings
     try {
       const client = await pool.connect();
@@ -315,7 +315,7 @@ io.of("/room").on('connection', socket => {
       res.send(err);
     }
     socket.on('send-chat-message', (msg) => {
-      io.of("/room").emit('chat-message', msg, name);
+      io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
     socket.on('disconnect', async () => {
       socket.to(roomId).emit('user-disconnected', userId);

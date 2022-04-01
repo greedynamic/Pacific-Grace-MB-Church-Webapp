@@ -4,6 +4,7 @@ const myVideo = document.createElement('video');
 myVideo.muted = true;
 const myPeer = new Peer(undefined, { host: "peerjs-server.herokuapp.com", secure: true, port: 443, });
 var peers = {};
+var clients = [];
 
 let myVideoStream
 navigator.mediaDevices.getUserMedia({
@@ -16,23 +17,34 @@ navigator.mediaDevices.getUserMedia({
     myPeer.on('call', call => {
         call.answer(stream);
         const video = document.createElement('video');
-        call.on('stream', userVideoStream => {  
+        call.on('stream', userVideoStream => {      
             addVideoStream(video, userVideoStream);
         });
     });
-    socket.on('user-connected', userId => {
-        connectToNewUser(userId, stream);
+    socket.on('user-connected', (userId, name) => {
+        connectToNewUser(userId, stream, name);
     })
     socket.on('user-disconnected', userId => {
         if (peers[userId]) {
             peers[userId].close();
             delete peers[userId];
+            delete clients.splice(clients.findIndex(item => item.id === userId), 1);
         }
     });
 })
 
 myPeer.on('open', id => {
     socket.emit('join-room', ROOM_ID, id, FIRST_NAME);
+
+    clients[clients.length] = {
+        name: FIRST_NAME,
+        id: userId
+    }
+
+    // clients.push({
+    //     name: FIRST_NAME,
+    //     id: userId
+    // });
 })
 
 document.getElementById('form').addEventListener('submit', e => {
@@ -48,13 +60,13 @@ document.getElementById('form').addEventListener('submit', e => {
 socket.on('chat-message', (msg, name) => {
     const chatWindow = document.getElementById('chat-window');
     const item = document.createElement('li');  
-    item.innerHTML = name + '<br />' + msg;
+    item.innerHTML = name + '<br/>' + msg;
     chatWindow.append(item);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 });
 
 // Make calls when new users connect to room
-function connectToNewUser(userId, stream) {
+function connectToNewUser(userId, stream, name) {
     const call = myPeer.call(userId, stream);
     const video = document.createElement('video');
     call.on('stream', userVideoStream => {
@@ -64,14 +76,23 @@ function connectToNewUser(userId, stream) {
         video.remove();
     });
     peers[userId] = call;
+    // clients.push({
+    //     name: name,
+    //     id: userId
+    // });
+
+    clients[clients.length] = {
+        name: FIRST_NAME,
+        id: userId
+    }
 }
 
 function addVideoStream(video, stream) {    
     video.srcObject = stream
     video.addEventListener('loadedmetadata', () => {
         video.play();
+        videoGrid.append(video);
     })
-    videoGrid.append(video);
 }
 
 function makeLabel(label) {
@@ -160,18 +181,21 @@ function copyCode() {
 
 function toggleParticipants() {
     document.getElementById("chat").style.display = "none";
-    document.getElementById("participants").style.display = "block";
-    var window = document.querySelector("main-participants-window");
-    for(let i = 0; i < peers.length; i++) {
-        console.log(i);
-        window.innerHTML += peers[i] + '<br>';
+    document.getElementById("participants").style.display = "flex";
+    var header = document.getElementById("participants-header");
+    header.innerHTML = "Participants (" + clients.length + ")"; 
+    var window = document.getElementById("participants-window");
+    window.innerHTML = "<br/>";
+    for (let c in clients) { 
+        const name = clients.map(client => client.name);
+        // const name = c.name;
+        window.innerHTML += name + '<br/>';
     }
-    document.querySelector("participants-window").append(window);
 }
 
 function toggleChat() {
     document.getElementById("participants").style.display = "none";
-    document.getElementById("chat").style.display = "block";
+    document.getElementById("chat").style.display = "flex";
 }
 
 function toggleExpand() {
