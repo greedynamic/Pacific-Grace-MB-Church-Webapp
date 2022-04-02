@@ -24,14 +24,10 @@ const { ExpressPeerServer } = require('peer');
 const peerServer = ExpressPeerServer(server, {
     debug: true
 });
-
-const flash = require('express-flash')
 const session = require('express-session')
-const bcrypt = require('bcrypt')
-const passport = require('passport');
 const {authUser, authAmdin} = require('./routes/middleware');
-const { database } = require('pg/lib/defaults');
-const users = [];
+const {Users} = require('./public/roomUsers');
+var roomUsers = new Users();
 
 // Google Auth
 const {OAuth2Client} = require('google-auth-library');
@@ -86,7 +82,7 @@ app.get('/roombooking', (req, res) =>{
 });
 
 app.get('/contact', (req, res) =>{
-  res.render('pages/contact');
+  res.render('pages/contact', {user: req.session.user});
 });
 
 app.get('/signup', (req,res) => {
@@ -204,7 +200,7 @@ app.get('/profile', checkAuthenticated, (req, res)=>{
 
 app.get('/account', (req,res) => {
   if(req.session.user){
-    res.render('pages/account', {user:req.session.user});
+    res.render('pages/account', {user: req.session.user});
   } else {
     res.redirect('/login');
   }
@@ -301,7 +297,10 @@ app.get('/meeting/room/:room', (req,res) => {
 io.of("/room").on('connection', socket => {
   socket.on('join-room', async (roomId, userId, name) => {
     socket.join(roomId);
-    socket.to(roomId).emit('user-connected', userId, name);
+    roomUsers.removeUser(userId);
+    roomUsers.addUser(userId, name, roomId)
+    io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
+    io.of("/room").to(roomId).emit('user-connected', userId, name);
     // Add room to activemeetings
     try {
       const client = await pool.connect();
@@ -318,14 +317,18 @@ io.of("/room").on('connection', socket => {
       io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
     socket.on('disconnect', async () => {
-      socket.to(roomId).emit('user-disconnected', userId);
-      // Remove room from activemeetings
-      try {
-        const client = await pool.connect();
-        await client.query(`delete from activemeetings where id='${roomId}'`);
-        client.release();
-      } catch (err) {
-        res.send(err);
+      let roomUser = roomUsers.removeUser(userId);
+      if (roomUser) {
+        io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
+        io.of("/room").to(roomId).emit('user-disconnected', userId);
+          // Remove room from activemeetings
+        try {
+          const client = await pool.connect();
+          await client.query(`delete from activemeetings where id='${roomId}'`);
+          client.release();
+        } catch (err) {
+          res.send(err);
+        }
       }
     });
   });

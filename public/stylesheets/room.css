@@ -133,7 +133,9 @@ video {
 }
 
 #participants-window {
-    margin-left: 20px;
+    margin-left: 18px;
+    padding: 10px;
+    font-size: 18px;
 }
 
 .unmute, .stop {

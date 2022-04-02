@@ -4,7 +4,6 @@ const myVideo = document.createElement('video');
 myVideo.muted = true;
 const myPeer = new Peer(undefined, { host: "peerjs-server.herokuapp.com", secure: true, port: 443, });
 var peers = {};
-var clients = [];
 
 let myVideoStream
 navigator.mediaDevices.getUserMedia({
@@ -27,24 +26,31 @@ navigator.mediaDevices.getUserMedia({
     socket.on('user-disconnected', userId => {
         if (peers[userId]) {
             peers[userId].close();
+            peers[userId].destroy();
             delete peers[userId];
-            delete clients.splice(clients.findIndex(item => item.id === userId), 1);
         }
     });
 })
 
 myPeer.on('open', id => {
     socket.emit('join-room', ROOM_ID, id, FIRST_NAME);
+})
 
-    clients[clients.length] = {
-        name: FIRST_NAME,
-        id: userId
-    }
+socket.on('updateUsersList', (users) => {
+    var count = 0;
+    var ul = document.createElement('ul');
 
-    // clients.push({
-    //     name: FIRST_NAME,
-    //     id: userId
-    // });
+    users.forEach((user) => {
+      var li = document.createElement('li');
+      li.innerHTML = user;
+      ul.appendChild(li);
+      count++;
+    });
+    var header = document.getElementById("participants-header");
+    header.innerHTML = "Participants (" + count + ")"; 
+    var window = document.getElementById("participants-window");
+    window.innerHTML = "";
+    window.appendChild(ul);
 })
 
 document.getElementById('form').addEventListener('submit', e => {
@@ -76,15 +82,6 @@ function connectToNewUser(userId, stream, name) {
         video.remove();
     });
     peers[userId] = call;
-    // clients.push({
-    //     name: name,
-    //     id: userId
-    // });
-
-    clients[clients.length] = {
-        name: FIRST_NAME,
-        id: userId
-    }
 }
 
 function addVideoStream(video, stream) {    
@@ -156,13 +153,6 @@ function setStopVideo() {
     document.querySelector('.main-video-button').innerHTML = html;
 }
 
-function toggleInvite() {
-    var popup = document.getElementById("invite");
-    popup.setAttribute("visibility", "visible");
-    var link = document.getElementById("link");
-    link.setAttribute("value", window.location.href);
-}
-
 function copyLink() {
     var copyText = document.getElementById("link");
     copyText.select();
@@ -182,15 +172,6 @@ function copyCode() {
 function toggleParticipants() {
     document.getElementById("chat").style.display = "none";
     document.getElementById("participants").style.display = "flex";
-    var header = document.getElementById("participants-header");
-    header.innerHTML = "Participants (" + clients.length + ")"; 
-    var window = document.getElementById("participants-window");
-    window.innerHTML = "<br/>";
-    for (let c in clients) { 
-        const name = clients.map(client => client.name);
-        // const name = c.name;
-        window.innerHTML += name + '<br/>';
-    }
 }
 
 function toggleChat() {
@@ -231,6 +212,13 @@ function leaveMeeting() {
     window.location.href = "/meeting";
 }
 
+// Invite Button
+var popup = document.getElementById("invite");
+popup.setAttribute("visibility", "visible");
+var link = document.getElementById("link");
+link.setAttribute("value", window.location.href);
+
+// Button click events
 document.querySelector('.main-mute-button').addEventListener('click', muteUnmute);
 document.querySelector('.main-video-button').addEventListener('click', playStop);
 document.querySelector('.main-participants-button').addEventListener('click', toggleParticipants);
