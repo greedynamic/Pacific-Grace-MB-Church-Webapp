@@ -48,7 +48,7 @@ document.getElementById('form').addEventListener('submit', e => {
 socket.on('chat-message', (msg, name) => {
     const chatWindow = document.getElementById('chat-window');
     const item = document.createElement('li');  
-    item.innerHTML = name + '<br />' + msg;
+    item.innerHTML = '<b>' + name + '</b>' + '<br />' + msg;
     chatWindow.append(item);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 });

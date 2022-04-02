@@ -86,6 +86,7 @@ video {
 }
 
 .chat {
+    display: flex;
     flex-direction: column;
     background-color: white;
     border-left: 1px solid black;

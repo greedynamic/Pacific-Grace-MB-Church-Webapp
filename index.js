@@ -202,6 +202,10 @@ app.get('/profile', checkAuthenticated, (req, res)=>{
   res.render('profile', {user});
 })
 
+app.get('/donate', (req,res) => {
+  res.render('pages/donate');
+})
+
 app.get('/account', (req,res) => {
   if(req.session.user){
     res.render('pages/account', {user:req.session.user});
@@ -268,7 +272,7 @@ app.get('/blogs/:title', (req,res) => {
   })
 })
 
-const rooms = {};
+const rooms = { };
 
 app.use('/peerjs', peerServer);
 
@@ -297,6 +301,7 @@ app.get('/meeting/room/:room', (req,res) => {
   }
 })
 
+
 // Handles communication between client and server
 io.of("/room").on('connection', socket => {
   socket.on('join-room', async (roomId, userId, name) => {
@@ -315,7 +320,7 @@ io.of("/room").on('connection', socket => {
       res.send(err);
     }
     socket.on('send-chat-message', (msg) => {
-      io.of("/room").emit('chat-message', msg, name);
+      io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
     socket.on('disconnect', async () => {
       socket.to(roomId).emit('user-disconnected', userId);

@@ -1,0 +1,72 @@
+.donation-box {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: white;
+    margin-top: 30px;
+    padding: 4vw;
+    width: 35vw;
+    border-radius: 20px;
+}
+
+.donation-box-inner {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-family: Arial;
+    color: black;
+    background-color: rgb(111, 182, 111);
+}
+.input-symbol-dollar {
+    position: relative;
+    display: block;
+}
+.input-symbol-dollar:after {
+    color: #37424a !important;
+    content: "$";
+    font-size: 16px !important;
+    font-weight: 400;
+    position: absolute;
+
+    display: block;
+    height: 100%;
+    top: 0;
+    left: 10px;
+    line-height: 46px; 
+}
+
+.donation-box input {
+    border: 2px solid #c9c9c9;
+    box-shadow: none;
+    color: #6b6f72;
+    font-size: 0.9375rem;
+    text-transform: none;
+    width: 95%;
+    color: #37424a;
+    font-family: "Roboto Regular", sans-serif;
+    font-size: 16px;
+    font-weight: 400;
+    height: 42px;
+    padding-left: 20px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+
+.currency {
+    border: 1px solid #000;
+}
+
+img {
+    width: 60%; 
+    height: auto; 
+}
