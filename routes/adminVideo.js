@@ -1,73 +1,70 @@
+require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const {authUser, authAmdin} = require('./middleware');
 const moment = require('moment');
 const multer = require('multer');
-const fs = require('fs');
+const multerS3 = require('multer-s3');
+const aws = require('aws-sdk');
+const uuid = require('uuid').v4;
+
+// Database connection
 const { Pool } = require('pg');
 const path = require('path');
-const res = require('express/lib/response');
-const req = require('express/lib/request');
 const pool = new Pool({
-    connectionString: 'postgres://wwiwookhmzbgif:b99fe28f9a5e30cdca56d64ce4165e8c1bf3f8a4fc1895b437043db9fa4ed35a@ec2-34-230-110-100.compute-1.amazonaws.com:5432/d329ha74afil4s',
+    connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
 });
 
-router.use(express.static(path.join(__dirname, '../public')));
-
-//Set storage of videos 
-const storage = multer.diskStorage({
-    destination: './public/videos',
-    filename: function(req, file, cb){
-        cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
-    },
-    fileFilter: function(file,cb){
-        const videoext = file.mimetype.startsWith('video/');
-        if(videoext){
-            cb(null,true);
-        }
-        else{
-            cb('File not supported. Videos Only');
-        }
-    }
+// aws credientials
+aws.config.update({
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    region: 'us-west-2',
 })
 
-// Upload video function
+router.use(express.static(path.join(__dirname, '../public')));
+
+// Get storage in aws for videos
+const BUCKET = process.env.S3_BUCKET;
+const s3 = new aws.S3();
 const upload = multer({
-    storage : storage,
-}).single('video');
+    storage: multerS3({
+        s3: s3,
+        bucket: BUCKET,
+        key: function (req, file, cb) {
+            const ext = path.extname(file.originalname);
+            cb(null, `${uuid()}${ext}`);
+        }
+    })
+})
 
 
 // Render upload video form
 router.get('/upload', authAmdin(), (req,res) => res.render('pages/uploadVideo'));
 
-router.post('/upload', authAmdin(), (req,res) => {
-    upload(req, res, (err) => {
-        if(err)
-            res.render('pages/uploadVideo', {msg: err});
+router.post('/upload', authAmdin(), upload.single('video'), (req,res) => {
+    if(req.file){
+        var filepath = req.file.location;
+        var filekey = req.file.key;
+    }
+    if(req.body.url){
+        var url = req.body.url;
+        var url_parts = url.split('/');
+        var video_id = url_parts[3];
+        var embed_url ="https://www.youtube.com/embed/" + video_id;
+    }
+    const {title, description, tag} = req.body;
+    var valid_description = description.replace(/'/g, "''");
+    const uploaded_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    const query = `INSERT INTO video VALUES ('${title}', '${valid_description}', '${tag}', '${uploaded_at}', '${filepath}', '${filekey}', '${embed_url}');`;
+    pool.query(query, (error, result) =>{
+        if(error)
+            res.send(error);
         else{
-            if(req.file){
-                var filename = req.file.filename;
-                var filepath = req.file.path;
-            }
-            const {title, description, tag} = req.body;
-            if(req.body.url){
-                var url = req.body.url;
-                var url_parts = url.split('/');
-                var video_id = url_parts[3];
-                var embed_url ="https://www.youtube.com/embed/" + video_id;
-            }
-            const uploaded_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-            const query = `INSERT INTO video VALUES ('${filename}', '${title}', '${description}', '${tag}', '${uploaded_at}', '${filepath}', '${embed_url}');`;
-            pool.query(query, (error, result) =>{
-                if(error)
-                    res.send(error);
-                else{
-                    res.redirect('/');
-                }
-            })
+            res.redirect('/');
         }
     })
 })
@@ -91,19 +88,78 @@ router.post('/del/:title', authAmdin(), (req,res) => {
           res.send(error);
         }  
         else{
-          if(result.rows[0].filepath != 'undefined'){
-            fs.unlinkSync(result.rows[0].filepath);
-          };
-          pool.query(`DELETE FROM video WHERE title='${req.params.title}';`, (err)=>{
+            if(result.rows[0].filekey != 'undefined'){
+                s3.deleteObject({Bucket: BUCKET, Key: result.rows[0].filekey}).promise();
+            }
+            pool.query(`DELETE FROM video WHERE title='${req.params.title}';`, (err)=>{
               if(err)
                 res.send(err);
               else{
                 res.redirect('/video');
-              }
+            }
           })
         }  
     })
 })
+
+/** Render /blog/edit/:title to edit page */
+router.get('/edit/:title', authAmdin(), (req,res) => {
+    var query = `SELECT * FROM video WHERE title='${req.params.title}';`
+    pool.query(query, (error, result) => {
+        if(error)
+          res.send(error);
+        else{
+          var results = {'videos' : result.rows};
+          res.render('pages/editVideo', results);
+        }
+    })
+})
+
+/** Update blog edit in the blog table */
+router.post('/edit/:title', upload.single('video'), (req,res) => {
+    if(req.file){
+      // Delete old files
+      var query = `SELECT * FROM video WHERE title='${req.params.title}';`;
+      pool.query(query, (error,result) => {
+        if(error)
+          res.send(error); 
+        else{
+          if(result.rows[0].filekey != 'undefined'){
+            s3.deleteObject({Bucket: BUCKET, Key: result.rows[0].filekey}).promise();
+          }
+        }
+      });  
+      // Update new files
+      var filepath = req.file.location;
+      var filekey = req.file.key;
+      pool.query(`UPDATE video SET filepath='${filepath}', filekey='${filekey}' where title='${req.params.title}';`, (err)=>{
+        if(err)
+          res.send(err);
+      });
+    }
+    if(req.body.url){
+        var url = req.body.url;
+        var url_parts = url.split('/');
+        var video_id = url_parts[3];
+        var embed_url ="https://www.youtube.com/embed/" + video_id;
+        pool.query(`UPDATE video SET url='${embed_url}' where title='${req.params.title}';`, (err)=>{
+            if(err)
+              res.send(err);
+        });
+    }
+    const{title, description,tag} = req.body;
+    // Replace ' with '' to prevent query from reading apostrophe as delimiter for input arguments
+    var valid_description = description.replace(/'/g, "''");
+    const updated_at = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+    var editQuery = `UPDATE video SET title='${title}', description='${valid_description}', tag='${tag}', updated_at='${updated_at}' WHERE title='${req.params.title}';`;
+    pool.query(editQuery, (error, result) =>{
+      if(error)
+          res.send(error);
+      else{
+          res.redirect('/video');
+      }
+    })
+});
 
 // See all archived videos
 router.get('/archivedVideo', (req, res) => {
