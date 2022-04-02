@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@zoomus/websdk": "^2.3.0",
+    "aws-sdk": "^2.1103.0",
     "bcrypt": "^5.0.1",
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
@@ -26,6 +27,7 @@
     "google-auth-library": "^7.14.0",
     "moment": "^2.29.1",
     "multer": "^1.4.4",
+    "multer-s3": "^2.10.0",
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.15",
     "passport": "^0.5.2",
