@@ -225,8 +225,8 @@ var link = document.getElementById("link");
 link.setAttribute("value", window.location.href);
 
 // Settings button popup
-var settingsPopup = document.getElementById("settings");
-settingsPopup.setAttribute("visibility", "visible");
+// var settingsPopup = document.getElementById("settings");
+// settingsPopup.setAttribute("visibility", "visible");
 
 
 // Button click events

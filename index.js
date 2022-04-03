@@ -335,7 +335,7 @@ io.of("/room").on('connection', socket => {
       const meetingQuery = `select * from activemeetings where id='${roomId}'`;
       const result = await client.query(meetingQuery);
       if (result.rowCount == 0) {
-        await client.query(`insert into activemeetings values('${roomId}')`);
+        client.query(`insert into activemeetings values('${roomId}')`);
       }
       client.release();
     } catch (err) {
@@ -378,13 +378,16 @@ app.post("/meeting", async (req,res) => {
     if (activeMeeting.rowCount == 1) {
       res.redirect(`/meeting/room/${roomId}`);
     } else {
+      //create a room
       if(checkedValue) {
         res.redirect(`/meeting/room/${uuidV4()}`);
+      } else {
+        //throw error
+        errors.push({message: "Meeting code does not exist!"});
+        res.render('pages/meeting', results);
+        client.release();
       }
-      errors.push({message: "Meeting code does not exist!"});
-      res.render('pages/meeting', results);
     }
-    client.release();
   } catch (err) {
     res.send(err);
   }
