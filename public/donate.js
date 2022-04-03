@@ -2,6 +2,9 @@ const amountElement = document.getElementById("amount");
 paypal.Buttons({
     // Sets up the transaction when a payment button is clicked
     createOrder: (data, actions) => {
+      if(amountElement == null) {
+        alert('Enter a valid value.');
+      }
       return actions.order.create({
         purchase_units: [{
           amount: {

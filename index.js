@@ -203,7 +203,11 @@ app.get('/profile', checkAuthenticated, (req, res)=>{
 })
 
 app.get('/donate', (req,res) => {
-  res.render('pages/donate');
+  if(req.session.user) {
+    res.render('pages/donate');
+  } else {
+    res.redirect('/login');
+  }
 })
 
 app.get('/account', (req,res) => {
