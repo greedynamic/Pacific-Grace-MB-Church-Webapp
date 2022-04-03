@@ -50,24 +50,19 @@
                 <div class="dropdown">
                     <button class="dropbtn">Create</button>
                     <div class="dropdown-content">
-                        <form method="post"> 
-                            <input type="submit" id="create" name="create" onclick="isCreatingRoom()" value="Public Meeting">
-                            <input type="submit" id="create" name="create" onclick="isCreatingRoom()" value="Private Meeting">
-                        </form>
+                        <a href="/meeting/public">Public Meeting</a>
+                        <a href="/meeting/private">Private Meeting</a>
+
+                        <!-- <form method="post"> 
+                            <input type="submit" name="createPublic" value="Public Meeting">
+                            <input type="submit" name="createPrivate" value="Private Meeting">
+                        </form> -->
                       </div>
                 </div>
             </div>
             <div class="join-room">
                 <h4>Have A Meeting Code?</h4>
-                <form method="post"> 
-                    <input type="text" id="roomId" name="roomId" placeholder="Enter code here..." required>
-                    <input type="submit" id="submit" value="✔">
-                </form>
-                <div id="errorContent">
-                    <% if(typeof errors != 'undefined') { %> 
-                        <p><%= errors[0].message %></p>
-                    <% } %>
-                </div>
+                <a href="/meeting/code">Join a Meeting</a>
             </div>
         </div>
         <!-- public meetings -->
@@ -79,13 +74,6 @@
                     <th>Participants</th>
                     <th>Join</th>
                 </tr>
-                <tr>
-                    <td>12345678901234567890123456789012345678901234567890</td>
-                    <td>4</td>
-                    <!-- <td><a href="/meeting/room"><button>✔</button></a></td> -->
-                    <td><a href="/meeting"><button>✔</button></a></td>
-                </tr>
-
                 <% results.forEach(function(meeting) { %>
                     <tr>
                         <td><%= meeting.name %></td>
