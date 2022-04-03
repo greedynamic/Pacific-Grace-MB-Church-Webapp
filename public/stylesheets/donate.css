@@ -9,12 +9,6 @@
     border-radius: 20px;
 }
 
-.donation-box-inner {
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-
 body {
     margin: 0;
     height: 100vh;
