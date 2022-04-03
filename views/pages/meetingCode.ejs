@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Meetings</title>
+        <link rel="stylesheet" href="/stylesheets/styles.css">
+        <link rel="stylesheet" href="/stylesheets/meeting.css">
+        <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
+        <script src="index.js" defer></script>
+        <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
+        <script>
+            function loadCode() {
+                const code = document.getElementById("roomId").value;
+                document.location = '/meeting/room/' + code;
+            }
+        </script>
+    </head>
+    <body>
+        <nav class="header">
+            <div class="header_container">
+                <a href="/" id="headerlogo"><i class="fa-solid fa-church"></i>Pacific Church</a>
+                <div class="header_toggle" id="mobile_menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+                <ul class="header_menu">
+                    <li class = "header_item">
+                        <a href="/" class="header_links">HOME</a></li>
+                    <li class = "header_item">
+                        <a href="/roombooking" class="header_links">ROOMS</a></li>
+                    <li class = "header_item">
+                        <a href="/#videos" class="header_links">VIDEOS<i class="fa-solid fa-sort-down"></i></a></li>
+                    <li class = "header_item">
+                        <a href="/#blog" class="header_links">BLOG</a></li>
+                    <li class = "header_item">
+                        <a href="/meeting" class="header_links">MEETINGS</a></li>
+                    <li class = "header_item">
+                        <a href="/account" class="header_links">ACCOUNT</a></li>
+                    <li class = "header_item">
+                        <a href="/logout"class="header_links">LOGOUT</a></li>
+                </ul>
+            </div>
+        </nav>   
+
+        <div class="join-room">
+            <h4>Have A Meeting Code?</h4>
+            <a href>Join a Meeting</a>
+            
+            <form method="post"> 
+                <input type="text" id="roomId" name="roomId" placeholder="Enter code here..." required>
+                <input type="submit" id="submit" value="✔">
+            </form>
+            <div id="errorContent">
+                <% if(typeof errors != 'undefined') { %> 
+                    <p><%= errors[0].message %></p>
+                <% } %>
+            </div>
+        </div>
+
+    </body>
+</html>
