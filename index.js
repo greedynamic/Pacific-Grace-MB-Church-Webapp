@@ -201,6 +201,10 @@ app.get('/profile', checkAuthenticated, (req, res)=>{
   res.render('profile', {user});
 })
 
+app.get('/donate', (req,res) => {
+  res.render('pages/donate');
+})
+
 app.get('/account', (req,res) => {
   if(req.session.user){
     res.render('pages/account', {user: req.session.user});
@@ -311,6 +315,7 @@ app.get('/meeting/room/:room', async (req,res) => {
   }
 })
 
+
 // Handles communication between client and server
 io.of("/room").on('connection', socket => {
   socket.on('join-room', async (roomId, userId, name) => {
@@ -398,5 +403,3 @@ function checkAuthenticated(req, res, next){
 }
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
-
- 

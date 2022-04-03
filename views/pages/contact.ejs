@@ -62,5 +62,61 @@
         </div>
     </nav> 
 
+
+    <section>
+        <div class="form_container">
+            <form>
+                <h1>CONTACT US</h1>
+                <input type="text" id="name" placeholder="Your Name" required>
+                <input type="email" id="email" placeholder="Your Email" required>
+                <input type="text" id="phone" placeholder="Phone no." required>
+                <textarea id="message" rows="4" placeholder="Tell us..."></textarea>
+                <button type="submit">SEND</button>
+            </form>
+        </div>
+
+    </section>
+    <section>
+        <h2>You can find us here</h2>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d83371.94302863597!2d-123.01117339681741!3d49.23141280530833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x548678e28d22ec0b%3A0x7d46874f44a2b95a!2sPort%20Moody%20Pacific%20Grace%20MB%20Church!5e0!3m2!1sen!2sca!4v1648935055626!5m2!1sen!2sca" width="1000" height="500" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </section>
+
+
+
+
+
+
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    <!--
+    <script>
+        function sendEmail(){
+            Email.send({
+                Host : "smtp.gmail.com",
+                Username : "church.pacific01@gmail.com",
+                Password : "Qwerty@1234",
+                To : 'church.pacific01@gmail.com',
+                From : document.getElementById("email").value,
+                Subject : "Contact Form",
+                Body : "And this is the body"
+            }).then(
+            message => alert(message)
+            );
+        }
+    </script>
+-->
+
+
+<section class="about">
+    <h5>ABOUT US</h5>
+    <P>We are determined to move forward by combining technology to make everything more accessible </P>
+    <div class="icons">
+        <i class="fa fa-facebook"></i>
+        <i class="fa fa-twitter"></i>
+        <i class="fa fa-instagram"></i>
+        <i class="fa fa-linkedin"></i>
+    </div>
+    <p>Made by AntaresFive</p>
+</section>
 </body>
 </html>
