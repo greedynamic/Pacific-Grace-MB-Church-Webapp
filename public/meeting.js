@@ -179,7 +179,6 @@ function toggleChat() {
     document.getElementById("chat").style.display = "flex";
 }
 
-
 function toggleExpand() {
     try{ 
         document.querySelector(".main-left").setAttribute("class", "main-left-alt");
@@ -213,21 +212,11 @@ function leaveMeeting() {
     window.location.href = "/meeting";
 }
 
-function isCreatingRoom() {
-    // Check
-    document.getElementById("create").checked = true;
-}
-
 // Invite Button popup
 var invitePopup = document.getElementById("invite");
 invitePopup.setAttribute("visibility", "visible");
 var link = document.getElementById("link");
 link.setAttribute("value", window.location.href);
-
-// Settings button popup
-var settingsPopup = document.getElementById("settings");
-settingsPopup.setAttribute("visibility", "visible");
-
 
 // Button click events
 document.querySelector('.main-mute-button').addEventListener('click', muteUnmute);

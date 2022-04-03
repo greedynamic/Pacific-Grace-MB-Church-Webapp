@@ -1,0 +1,13 @@
+.back-btn {
+    position: relative;
+    margin-top: 30%;
+    width: 5%;
+}
+
+#roomId {
+    width: 100%;
+}
+
+#submit {
+    width: 10%;
+}

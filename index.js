@@ -26,6 +26,8 @@ const peerServer = ExpressPeerServer(server, {
 });
 const session = require('express-session')
 const {authUser, authAmdin} = require('./routes/middleware');
+const {Users} = require('./public/roomUsers');
+var roomUsers = new Users();
 
 // Google Auth
 const {OAuth2Client} = require('google-auth-library');
@@ -42,6 +44,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }))
+app.use('/peerjs', peerServer);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -281,8 +284,6 @@ app.get('/videos/:title', (req,res)=>{
   })
 })
 
-app.use('/peerjs', peerServer);
-
 app.get('/meeting', async (req,res) => {
   try {
     const client = await pool.connect();
@@ -310,7 +311,6 @@ app.get('/meeting/code', (req,res) => {
 app.post('/meeting/code', async (req,res) => {
   let code = req.body.roomId;
   let errors = [];
-
   try {
     const client = await pool.connect();
     const meetingQuery = `select * from activemeetings where id='${code}'`;
@@ -343,8 +343,6 @@ app.get('/meeting/room/:room', (req,res) => {
     res.redirect('/login')
   }
 })
-const {Users} = require('./public/roomUsers');
-var roomUsers = new Users();
 
 // Handles communication between client and server
 io.of("/room").on('connection', socket => {
@@ -354,7 +352,6 @@ io.of("/room").on('connection', socket => {
     roomUsers.addUser(userId, name, roomId);
     io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
     io.of("/room").to(roomId).emit('user-connected', userId);
-
     socket.on('send-chat-message', (msg) => {
       io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
@@ -363,7 +360,7 @@ io.of("/room").on('connection', socket => {
       if (roomUser) {
         io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
         io.of("/room").to(roomId).emit('user-disconnected', userId);
-         // Remove room from activemeetings
+        // Remove room from activemeetings
         if (roomUsers.getUserList(roomId).length == 0) {
           try {
             const client = await pool.connect();
@@ -380,8 +377,10 @@ io.of("/room").on('connection', socket => {
 
 app.get('/meeting/public', async (req,res) => {
   try {
-    var roomId = uuidV4();
-    await pool.query(`insert into activemeetings values('${roomId}', 1, 'placeholder', true)`);
+    const roomId = uuidV4();
+    const fName = req.session.user.fname;
+    const meetingName = `${fName} s meeting`; 
+    await pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', true)`);
     res.redirect(`/meeting/room/${roomId}`);
   } catch (err) {
     res.send(err);
@@ -390,8 +389,10 @@ app.get('/meeting/public', async (req,res) => {
 
 app.get('/meeting/private', async (req,res) => {
   try {
-    var roomId = uuidV4();
-    await pool.query(`insert into activemeetings values('${roomId}', 1, 'placeholder', false)`);
+    const roomId = uuidV4();
+    const fName = req.session.user.fname;
+    const meetingName = `${fName} s meeting`; 
+    await pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', false)`);
     res.redirect(`/meeting/room/${roomId}`);
   } catch (err) {
     res.send(err);
@@ -423,5 +424,3 @@ function checkAuthenticated(req, res, next){
 }
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
-
- 

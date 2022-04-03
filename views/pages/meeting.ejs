@@ -10,12 +10,6 @@
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
         <script src="index.js" defer></script>
         <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
-        <script>
-            function loadCode() {
-                const code = document.getElementById("roomId").value;
-                document.location = '/meeting/room/' + code;
-            }
-        </script>
     </head>
     <body>
         <nav class="header">
@@ -43,7 +37,10 @@
                         <a href="/logout"class="header_links">LOGOUT</a></li>
                 </ul>
             </div>
-        </nav>   
+        </nav>  
+        <div class="title">
+            <h1>Start A Virtual Meeting</h1>
+        </div> 
         <div class="main">
             <div class="create-room">
                 <h4>Create A New Room</h4>
@@ -52,17 +49,12 @@
                     <div class="dropdown-content">
                         <a href="/meeting/public">Public Meeting</a>
                         <a href="/meeting/private">Private Meeting</a>
-
-                        <!-- <form method="post"> 
-                            <input type="submit" name="createPublic" value="Public Meeting">
-                            <input type="submit" name="createPrivate" value="Private Meeting">
-                        </form> -->
-                      </div>
+                    </div>
                 </div>
             </div>
             <div class="join-room">
                 <h4>Have A Meeting Code?</h4>
-                <a href="/meeting/code">Join a Meeting</a>
+                <a href="/meeting/code"><button>Join a Meeting</button></a>
             </div>
         </div>
         <!-- public meetings -->
@@ -71,13 +63,11 @@
             <table>
                 <tr>
                     <th style="width: 30vw">Meeting Name</th>
-                    <th>Participants</th>
                     <th>Join</th>
                 </tr>
                 <% results.forEach(function(meeting) { %>
                     <tr>
                         <td><%= meeting.name %></td>
-                        <td style="text-align: center"><%= meeting.participants %></td>
                         <td>
                             <a href="/meeting/room/<%= meeting.id%>"><button>✔</button></a>
                         </td>
@@ -85,7 +75,5 @@
                 <% }); %>
             </table>
         </div>
-        <input type="checkbox" name="createPublic">
-        <input type="checkbox" name="createPrivate">
     </body>
 </html>

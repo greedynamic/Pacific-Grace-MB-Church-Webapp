@@ -8,13 +8,13 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 10vh;
+    margin-top: 5vh;
 }
 
 .create-room, .join-room {
     flex-direction: column;
     margin-bottom: auto;
-    padding: 50px;
+    padding: 6vh 4.9vw;
 }
 
 button, input {
@@ -24,18 +24,8 @@ button, input {
     font-size: 18px;
 }
 
-input[type="checkbox"] {
-    width: auto;
-}
-
 label {
     font-size: 14pt;
-}
-
-
-
-.publicity {
-    margin-top: 0;
 }
 
 button, input[type="submit"] {
@@ -134,12 +124,19 @@ table, th, td {
 
 .dropdown-content a:hover {
     background-color: #ddd;
+    color: teal;
+    transition: 0.3s;
 }
 
 .dropdown:hover .dropdown-content {
     display: block;
 }
 
-input[type=checkbox] {
-    visibility: hidden;
+.title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 10vh;
+    font-size: 24px;
+    margin-bottom: 0;
 }
