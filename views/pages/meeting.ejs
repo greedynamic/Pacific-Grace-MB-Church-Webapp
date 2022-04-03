@@ -50,8 +50,10 @@
                 <div class="dropdown">
                     <button class="dropbtn">Create</button>
                     <div class="dropdown-content">
-                        <a href="/meeting/room">Public Room</a>
-                        <a href="/meeting/room">Private Room</a>
+                        <form method="post"> 
+                            <input type="submit" id="create" name="create" onclick="isCreatingRoom()" value="Public Meeting">
+                            <input type="submit" id="create" name="create" onclick="isCreatingRoom()" value="Private Meeting">
+                        </form>
                       </div>
                 </div>
             </div>
@@ -95,5 +97,7 @@
                 <% }); %>
             </table>
         </div>
+        <input type="checkbox" name="createPublic">
+        <input type="checkbox" name="createPrivate">
     </body>
 </html>

@@ -24,10 +24,14 @@ const { ExpressPeerServer } = require('peer');
 const peerServer = ExpressPeerServer(server, {
     debug: true
 });
+
+const flash = require('express-flash')
 const session = require('express-session')
+const bcrypt = require('bcrypt')
+const passport = require('passport');
 const {authUser, authAmdin} = require('./routes/middleware');
-const {Users} = require('./public/roomUsers');
-var roomUsers = new Users();
+const { database } = require('pg/lib/defaults');
+const users = [];
 
 // Google Auth
 const {OAuth2Client} = require('google-auth-library');
@@ -44,7 +48,6 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }))
-app.use('/peerjs', peerServer);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -83,7 +86,7 @@ app.get('/roombooking', (req, res) =>{
 });
 
 app.get('/contact', (req, res) =>{
-  res.render('pages/contact', {user: req.session.user});
+  res.render('pages/contact');
 });
 
 app.get('/signup', (req,res) => {
@@ -150,44 +153,42 @@ app.get('/login', (req,res) => {
 app.post('/login', async (req,res) => {
   let token = req.body.token;
   // console.log(token);
-  if (token) {
-    async function verify() {
-      const ticket = await client.verifyIdToken({
-        idToken: token,
-        audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
-      });
-      const payload = ticket.getPayload();
-      const userid = payload['sub'];
-    }
-    verify()
-    .then(()=>{
-      req.session.user = {fname:'OAuth', lname:'Go',
-        email:'Google User', password:'g@g.c', admin:'f'};
-        res.cookie('session-token', token);
-        res.send('success')
-    })
-    .catch(console.error);
-  } else {
+  async function verify() {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+    });
+    const payload = ticket.getPayload();
+    const userid = payload['sub'];
+  }
+  verify()
+  .then(()=>{
+    req.session.user = {fname:'OAuth', lname:'Go',
+      email:'Google User', password:'g@g.c', admin:'f'};
+      res.cookie('session-token', token);
+      res.send('success')
+  })
+  .catch(console.error);
+  try {
     const email = req.body.email;
     const password = req.body.password;
     const loginQuery = `select * from usr where email='${email}' and password='${password}'`;
     let errors = [];
-    try {
-      const client = await pool.connect();
-      const result = await client.query(loginQuery);
-      if (result.rowCount == 1) {
-        const userResult = result.rows[0];
-        req.session.user = {fname:userResult.fname, lname:userResult.lname,
-          email:userResult.email, password:userResult.password, admin:userResult.admin};
-        res.redirect("/");
-      } else {
-        errors.push({message: "Invalid email or password"});
-        res.render('pages/login', {errors});
-      }
-      client.release();
-    } catch (err) {
-      res.send(err);
+
+    const client = await pool.connect();
+    const result = await client.query(loginQuery);
+    if (result.rowCount == 1) {
+      const userResult = result.rows[0];
+      req.session.user = {fname:userResult.fname, lname:userResult.lname,
+        email:userResult.email, password:userResult.password, admin:userResult.admin};
+      res.redirect("/");
+    } else {
+      errors.push({message: "Invalid email or password"});
+      res.render('pages/login', {errors});
     }
+    client.release();
+  } catch (err) {
+    res.send(err);
   }
 });
 
@@ -202,12 +203,16 @@ app.get('/profile', checkAuthenticated, (req, res)=>{
 })
 
 app.get('/donate', (req,res) => {
-  res.render('pages/donate');
+  if(req.session.user) {
+    res.render('pages/donate');
+  } else {
+    res.redirect('/login');
+  }
 })
 
 app.get('/account', (req,res) => {
   if(req.session.user){
-    res.render('pages/account', {user: req.session.user});
+    res.render('pages/account', {user:req.session.user});
   } else {
     res.redirect('/login');
   }
@@ -271,6 +276,8 @@ app.get('/blogs/:title', (req,res) => {
   })
 })
 
+const rooms = { };
+
 // Get video page
 app.get('/videos/:title', (req,res)=>{
   pool.query(`SELECT * FROM video WHERE title='${req.params.title}';`, (error, result) =>{
@@ -282,19 +289,20 @@ app.get('/videos/:title', (req,res)=>{
   })
 })
 
+app.use('/peerjs', peerServer);
+
 app.get('/meeting', async (req,res) => {
-  if (req.session.user) {
-    try {
-      const client = await pool.connect();
-      const result = await client.query(`select * from activemeetings where public=true`);
-      const results = {'results': (result) ? result.rows : null};
+  try {
+    const client = await pool.connect();
+    const result = await client.query(`select * from activemeetings`);
+    const results = {'results': (result) ? result.rows : null};
+    if (req.session.user) {
       res.render('pages/meeting', results);
-      client.release();
-    } catch (err) {
-      res.send(err);
+    } else {
+      res.redirect('/login')
     }
-  } else {
-    res.redirect('/login')
+  } catch(err) {
+    res.send(err);
   }
 })
 
@@ -306,12 +314,12 @@ app.get('/meeting/room', (req,res) => {
   }
 })
 
-// Render unique room
-app.get('/meeting/room/:room', async (req,res) => {
+//render unique room
+app.get('/meeting/room/:room', (req,res) => {
   if (req.session.user) {
     res.render('pages/room', {roomId: req.params.room, user: req.session.user});
   } else {
-    res.redirect('/login');
+    res.redirect('/login')
   }
 })
 
@@ -320,58 +328,63 @@ app.get('/meeting/room/:room', async (req,res) => {
 io.of("/room").on('connection', socket => {
   socket.on('join-room', async (roomId, userId, name) => {
     socket.join(roomId);
-    roomUsers.removeUser(userId);
-    roomUsers.addUser(userId, name, roomId)
-    io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
-    io.of("/room").to(roomId).emit('user-connected', userId, name);
-    // Adds to activemeetings
+    socket.to(roomId).emit('user-connected', userId);
+    // Add room to activemeetings
     try {
-      const result = await pool.query(`select * from activemeetings where id='${roomId}'`);
-      if (result.rowCount == 1) {
-        // dont work
-        const le = roomUsers.getUserList(roomId).size + 1;
-        await pool.query(`UPDATE activemeetings SET participants=${le} WHERE id='${roomId}'`);
-      } else {
-        await pool.query(`insert into activemeetings values('${roomId}', 1, 'placeholder', false)`);
+      const client = await pool.connect();
+      const meetingQuery = `select * from activemeetings where id='${roomId}'`;
+      const result = await client.query(meetingQuery);
+      if (result.rowCount == 0) {
+        await client.query(`insert into activemeetings values('${roomId}')`);
       }
+      client.release();
     } catch (err) {
+      res.send(err);
     }
-
     socket.on('send-chat-message', (msg) => {
       io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
-
     socket.on('disconnect', async () => {
-      let roomUser = roomUsers.removeUser(userId);
-      if (roomUser) {
-        io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
-        io.of("/room").to(roomId).emit('user-disconnected', userId);
-
-        // dont work
-        await pool.query(`UPDATE activemeetings SET participants=${roomUsers.getUserList(roomId).length-1} WHERE id='${roomId}'`);
-
-        if (roomUsers.getUserList(roomId).length == 0) {
-          await pool.query(`delete from activemeetings where id='${roomId}'`);
-        }
+      socket.to(roomId).emit('user-disconnected', userId);
+      // Remove room from activemeetings
+      try {
+        const client = await pool.connect();
+        await client.query(`delete from activemeetings where id='${roomId}'`);
+        client.release();
+      } catch (err) {
+        res.send(err);
       }
     });
   });
 });
 
+// Creates a public or private meeting or
 // Checks if meeting exists with room id and joins if it does
 app.post("/meeting", async (req,res) => {
+  const roomId = req.body.roomId;
+  const meetingQuery = `select * from activemeetings where id='${roomId}'`;
+  const participants = `select * from activemeetings`;
+  let errors = [];
+
+  let checkedValue = req.body["create"];
+
   try {
     const client = await pool.connect();
-    const meetingQuery = `select * from activemeetings where id='${req.body.roomId}'`;
-    const result = await client.query(meetingQuery);
-    client.release();
-    if (result.rowCount == 1) {
-      res.redirect(`/meeting/room/${req.body.roomId}`);
+    const activeMeeting = await client.query(meetingQuery);
+    const meetingList = await client.query(participants);
+    const results = {'results': (meetingList) ? meetingList.rows : null};
+
+    
+    if (activeMeeting.rowCount == 1) {
+      res.redirect(`/meeting/room/${roomId}`);
     } else {
-      let errors = [];
+      if(checkedValue) {
+        res.redirect(`/meeting/room/${uuidV4()}`);
+      }
       errors.push({message: "Meeting code does not exist!"});
-      res.render('pages/meeting', {errors});
+      res.render('pages/meeting', results);
     }
+    client.release();
   } catch (err) {
     res.send(err);
   }
@@ -402,3 +415,5 @@ function checkAuthenticated(req, res, next){
 }
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
+ 
