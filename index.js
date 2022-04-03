@@ -24,14 +24,8 @@ const { ExpressPeerServer } = require('peer');
 const peerServer = ExpressPeerServer(server, {
     debug: true
 });
-
-const flash = require('express-flash')
 const session = require('express-session')
-const bcrypt = require('bcrypt')
-const passport = require('passport');
 const {authUser, authAmdin} = require('./routes/middleware');
-const { database } = require('pg/lib/defaults');
-const users = [];
 
 // Google Auth
 const {OAuth2Client} = require('google-auth-library');
@@ -247,15 +241,15 @@ app.get('/account/edit', (req,res) => {
 })
 
 app.post('/account/edit', async (req,res) => {
-  try{
-    const oldEmail = req.session.user.email;
-    const fname = req.body.fName;
-    const lname = req.body.lName;
-    const email = req.body.email;
-    const password = req.body.password;
-    const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}',
-      password='${password}' where email='${oldEmail}'`;
+  const oldEmail = req.session.user.email;
+  const fname = req.body.fName;
+  const lname = req.body.lName;
+  const email = req.body.email;
+  const password = req.body.password;
+  const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}',
+    password='${password}' where email='${oldEmail}'`;
 
+  try{
     const client = await pool.connect();
     await client.query(updateQuery);
     req.session.user = {fname:fname, lname:lname, email:email, password:password, admin:req.session.user.admin};
@@ -276,8 +270,6 @@ app.get('/blogs/:title', (req,res) => {
   })
 })
 
-const rooms = { };
-
 // Get video page
 app.get('/videos/:title', (req,res)=>{
   pool.query(`SELECT * FROM video WHERE title='${req.params.title}';`, (error, result) =>{
@@ -294,7 +286,7 @@ app.use('/peerjs', peerServer);
 app.get('/meeting', async (req,res) => {
   try {
     const client = await pool.connect();
-    const result = await client.query(`select * from activemeetings`);
+    const result = await client.query(`select * from activemeetings where public=true`);
     const results = {'results': (result) ? result.rows : null};
     if (req.session.user) {
       res.render('pages/meeting', results);
@@ -302,6 +294,35 @@ app.get('/meeting', async (req,res) => {
       res.redirect('/login')
     }
   } catch(err) {
+    res.send(err);
+  }
+})
+
+app.get('/meeting/code', (req,res) => {
+  if (req.session.user) {
+    let errors = [];
+    res.render('pages/meetingCode', errors);
+  } else {
+    res.redirect('/login')
+  }
+})
+
+app.post('/meeting/code', async (req,res) => {
+  let code = req.body.roomId;
+  let errors = [];
+
+  try {
+    const client = await pool.connect();
+    const meetingQuery = `select * from activemeetings where id='${code}'`;
+    const result = await client.query(meetingQuery);
+    if (result.rowCount == 0) {
+      errors.push({message: "Meeting code does not exist!"});
+      res.render('pages/meetingCode', {errors});
+    } else {
+      res.redirect(`/meeting/room/${code}`);
+    }
+    client.release();
+  } catch (err) {
     res.send(err);
   }
 })
@@ -322,76 +343,60 @@ app.get('/meeting/room/:room', (req,res) => {
     res.redirect('/login')
   }
 })
-
+const {Users} = require('./public/roomUsers');
+var roomUsers = new Users();
 
 // Handles communication between client and server
 io.of("/room").on('connection', socket => {
   socket.on('join-room', async (roomId, userId, name) => {
     socket.join(roomId);
-    socket.to(roomId).emit('user-connected', userId);
-    // Add room to activemeetings
-    try {
-      const client = await pool.connect();
-      const meetingQuery = `select * from activemeetings where id='${roomId}'`;
-      const result = await client.query(meetingQuery);
-      if (result.rowCount == 0) {
-        client.query(`insert into activemeetings values('${roomId}')`);
-      }
-      client.release();
-    } catch (err) {
-      res.send(err);
-    }
+    roomUsers.removeUser(userId);
+    roomUsers.addUser(userId, name, roomId);
+    io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
+    io.of("/room").to(roomId).emit('user-connected', userId);
+
     socket.on('send-chat-message', (msg) => {
       io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
     socket.on('disconnect', async () => {
-      socket.to(roomId).emit('user-disconnected', userId);
-      // Remove room from activemeetings
-      try {
-        const client = await pool.connect();
-        await client.query(`delete from activemeetings where id='${roomId}'`);
-        client.release();
-      } catch (err) {
-        res.send(err);
+      let roomUser = roomUsers.removeUser(userId);
+      if (roomUser) {
+        io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
+        io.of("/room").to(roomId).emit('user-disconnected', userId);
+         // Remove room from activemeetings
+        if (roomUsers.getUserList(roomId).length == 0) {
+          try {
+            const client = await pool.connect();
+            await client.query(`delete from activemeetings where id='${roomId}'`);
+            client.release();
+          } catch (err) {
+            res.send(err);
+          }
+        }
       }
     });
   });
 });
 
-// Creates a public or private meeting or
-// Checks if meeting exists with room id and joins if it does
-app.post("/meeting", async (req,res) => {
-  const roomId = req.body.roomId;
-  const meetingQuery = `select * from activemeetings where id='${roomId}'`;
-  const participants = `select * from activemeetings`;
-  let errors = [];
-
-  let checkedValue = req.body["create"];
-
+app.get('/meeting/public', async (req,res) => {
   try {
-    const client = await pool.connect();
-    const activeMeeting = await client.query(meetingQuery);
-    const meetingList = await client.query(participants);
-    const results = {'results': (meetingList) ? meetingList.rows : null};
-
-    
-    if (activeMeeting.rowCount == 1) {
-      res.redirect(`/meeting/room/${roomId}`);
-    } else {
-      //create a room
-      if(checkedValue) {
-        res.redirect(`/meeting/room/${uuidV4()}`);
-      } else {
-        //throw error
-        errors.push({message: "Meeting code does not exist!"});
-        res.render('pages/meeting', results);
-        client.release();
-      }
-    }
+    var roomId = uuidV4();
+    await pool.query(`insert into activemeetings values('${roomId}', 1, 'placeholder', true)`);
+    res.redirect(`/meeting/room/${roomId}`);
   } catch (err) {
     res.send(err);
   }
-});
+})
+
+app.get('/meeting/private', async (req,res) => {
+  try {
+    var roomId = uuidV4();
+    await pool.query(`insert into activemeetings values('${roomId}', 1, 'placeholder', false)`);
+    res.redirect(`/meeting/room/${roomId}`);
+  } catch (err) {
+    res.send(err);
+  }
+})
 
 function checkAuthenticated(req, res, next){
   let token = req.cookies['session-token'];
@@ -415,7 +420,6 @@ function checkAuthenticated(req, res, next){
     .catch(err=>{
         res.redirect('/login')
     })
-
 }
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));

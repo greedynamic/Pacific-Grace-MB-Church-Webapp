@@ -44,46 +44,21 @@
                 </ul>
             </div>
         </nav>   
-        <div class="main">
-            <div class="create-room">
-                <h4>Create A New Room</h4>
-                <div class="dropdown">
-                    <button class="dropbtn">Create</button>
-                    <div class="dropdown-content">
-                        <a href="/meeting/public">Public Meeting</a>
-                        <a href="/meeting/private">Private Meeting</a>
 
-                        <!-- <form method="post"> 
-                            <input type="submit" name="createPublic" value="Public Meeting">
-                            <input type="submit" name="createPrivate" value="Private Meeting">
-                        </form> -->
-                      </div>
-                </div>
-            </div>
-            <div class="join-room">
-                <h4>Have A Meeting Code?</h4>
-                <a href="/meeting/code">Join a Meeting</a>
+        <div class="join-room">
+            <h4>Have A Meeting Code?</h4>
+            <a href>Join a Meeting</a>
+            
+            <form method="post"> 
+                <input type="text" id="roomId" name="roomId" placeholder="Enter code here..." required>
+                <input type="submit" id="submit" value="✔">
+            </form>
+            <div id="errorContent">
+                <% if(typeof errors != 'undefined') { %> 
+                    <p><%= errors[0].message %></p>
+                <% } %>
             </div>
         </div>
-        <!-- public meetings -->
-        <div class="public-meetings">
-            <h4>Public Meetings</h4>
-            <table>
-                <tr>
-                    <th style="width: 30vw">Meeting Name</th>
-                    <th>Participants</th>
-                    <th>Join</th>
-                </tr>
-                <% results.forEach(function(meeting) { %>
-                    <tr>
-                        <td><%= meeting.name %></td>
-                        <td style="text-align: center"><%= meeting.participants %></td>
-                        <td>
-                            <a href="/meeting/room/<%= meeting.id%>"><button>✔</button></a>
-                        </td>
-                    </tr>
-                <% }); %>
-            </table>
-        </div>
+
     </body>
 </html>
