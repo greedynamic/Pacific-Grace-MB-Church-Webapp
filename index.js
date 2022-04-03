@@ -242,15 +242,15 @@ app.get('/account/edit', (req,res) => {
 })
 
 app.post('/account/edit', async (req,res) => {
-  try{
-    const oldEmail = req.session.user.email;
-    const fname = req.body.fName;
-    const lname = req.body.lName;
-    const email = req.body.email;
-    const password = req.body.password;
-    const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}',
-      password='${password}' where email='${oldEmail}'`;
+  const oldEmail = req.session.user.email;
+  const fname = req.body.fName;
+  const lname = req.body.lName;
+  const email = req.body.email;
+  const password = req.body.password;
+  const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}',
+    password='${password}' where email='${oldEmail}'`;
 
+  try{
     const client = await pool.connect();
     await client.query(updateQuery);
     req.session.user = {fname:fname, lname:lname, email:email, password:password, admin:req.session.user.admin};
@@ -399,7 +399,6 @@ function checkAuthenticated(req, res, next){
     .catch(err=>{
         res.redirect('/login')
     })
-
 }
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
