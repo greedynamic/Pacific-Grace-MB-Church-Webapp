@@ -22,15 +22,16 @@
 </head>
 <body>
     <div class="pop">
+        <!-- Invite -->
         <input type="checkbox" id="3">
         <div class="popup" id="invite">
             <div class="popup__inner">
-                    <b>Invite Link</b>
-                    <input type="text" id="link" value=""><br>
-                    <b>Meeting Code</b>
-                    <input type="text" id="code" value="<%= roomId %>"><br>
-                    <button onclick="copyLink()">Copy link</button>
-                    <button onclick="copyCode()">Copy code</button>
+                <b>Invite Link</b>
+                <input type="text" id="link" value=""><br>
+                <b>Meeting Code</b>
+                <input type="text" id="code" value="<%= roomId %>"><br>
+                <button onclick="copyLink()">Copy link</button>
+                <button onclick="copyCode()">Copy code</button>
                 <label class="btn-close" for="3">X</label>
             </div>
         </div>
@@ -73,6 +74,12 @@
                         <i class="fa-solid fa-expand"></i>
                         <span>Expand</span>
                     </div>
+                    <label for="2" class="main-controls-button">
+                        <div class="main-controls-button main-settings-button">
+                            <i class="fa-solid fa-bars"></i>
+                            <span>Settings</span>
+                        </div>
+                     </label>
                 </div>
                 <div class="main-controls-block">
                     <div class="main-controls-button main-leave-button">

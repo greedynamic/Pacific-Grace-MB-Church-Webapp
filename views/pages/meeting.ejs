@@ -47,9 +47,13 @@
         <div class="main">
             <div class="create-room">
                 <h4>Create A New Room</h4>
-                <a href="/meeting/room">
-                    <button>Create</button>
-                </a>
+                <div class="dropdown">
+                    <button class="dropbtn">Create</button>
+                    <div class="dropdown-content">
+                        <a href="/meeting/room">Public Room</a>
+                        <a href="/meeting/room">Private Room</a>
+                      </div>
+                </div>
             </div>
             <div class="join-room">
                 <h4>Have A Meeting Code?</h4>
@@ -63,6 +67,33 @@
                     <% } %>
                 </div>
             </div>
+        </div>
+        <!-- public meetings -->
+        <div class="public-meetings">
+            <h4>Public Meetings</h4>
+            <table>
+                <tr>
+                    <th style="width: 30vw">Meeting Name</th>
+                    <th>Participants</th>
+                    <th>Join</th>
+                </tr>
+                <tr>
+                    <td>12345678901234567890123456789012345678901234567890</td>
+                    <td>4</td>
+                    <!-- <td><a href="/meeting/room"><button>✔</button></a></td> -->
+                    <td><a href="/meeting"><button>✔</button></a></td>
+                </tr>
+
+                <% results.forEach(function(meeting) { %>
+                    <tr>
+                        <td><%= meeting.name %></td>
+                        <td style="text-align: center"><%= meeting.participants %></td>
+                        <td>
+                            <a href="/meeting/room/<%= meeting.id%>"><button>✔</button></a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </table>
         </div>
     </body>
 </html>

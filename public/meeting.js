@@ -212,11 +212,16 @@ function leaveMeeting() {
     window.location.href = "/meeting";
 }
 
-// Invite Button
-var popup = document.getElementById("invite");
-popup.setAttribute("visibility", "visible");
+// Invite Button popup
+var invitePopup = document.getElementById("invite");
+invitePopup.setAttribute("visibility", "visible");
 var link = document.getElementById("link");
 link.setAttribute("value", window.location.href);
+
+// Settings button popup
+var settingsPopup = document.getElementById("settings");
+settingsPopup.setAttribute("visibility", "visible");
+
 
 // Button click events
 document.querySelector('.main-mute-button').addEventListener('click', muteUnmute);
