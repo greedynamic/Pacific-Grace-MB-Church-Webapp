@@ -64,13 +64,15 @@
 
 
     <section>
+        
         <div class="form_container">
-            <form>
-                <h1>CONTACT US</h1>
+            <form onsubmit="sendEmail(); reset(); return false;">
+                <h1>CONTACT US</h1> 
                 <input type="text" id="name" placeholder="Your Name" required>
                 <input type="email" id="email" placeholder="Your Email" required>
                 <input type="text" id="phone" placeholder="Phone no." required>
                 <textarea id="message" rows="4" placeholder="Tell us..."></textarea>
+                <span> *We will get back to you within 2-3 business days.</span>
                 <button type="submit">SEND</button>
             </form>
         </div>
@@ -88,7 +90,7 @@
 
 
     <script src="https://smtpjs.com/v3/smtp.js"></script>
-    <!--
+    
     <script>
         function sendEmail(){
             Email.send({
@@ -97,14 +99,18 @@
                 Password : "Qwerty@1234",
                 To : 'church.pacific01@gmail.com',
                 From : document.getElementById("email").value,
-                Subject : "Contact Form",
-                Body : "And this is the body"
+                Subject : "Contact Form - ",
+                Body : "Name: " + document.getElementById("name").value
+                        +" <br> Email: " + document.getElementById("email").value
+                        +" <br> Phone no: " + document.getElementById("phone").value
+                        +" <br> Message: " + document.getElementById("message").value
+
             }).then(
-            message => alert(message)
+            message => alert("Your Submission sent succesfully")
             );
         }
     </script>
--->
+
 
 
 <section class="about">
