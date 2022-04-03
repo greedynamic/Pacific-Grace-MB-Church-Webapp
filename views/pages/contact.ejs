@@ -66,7 +66,7 @@
     <section>
         
         <div class="form_container">
-            <form onsubmit="sendEmail(); reset(); return false;">
+            <form onsubmit="sendEmail(); sendEmailConfirmation(); reset(); return false;">
                 <h1>CONTACT US</h1> 
                 <input type="text" id="name" placeholder="Your Name" required>
                 <input type="email" id="email" placeholder="Your Email" required>
@@ -99,12 +99,34 @@
                 Password : "Qwerty@1234",
                 To : 'church.pacific01@gmail.com',
                 From : document.getElementById("email").value,
-                Subject : "Contact Form - ",
+                Subject : "Contact Form - Submission",
                 Body : "Name: " + document.getElementById("name").value
                         +" <br> Email: " + document.getElementById("email").value
                         +" <br> Phone no: " + document.getElementById("phone").value
                         +" <br> Message: " + document.getElementById("message").value
 
+            }).then(
+            message => alert("Your Submission sent succesfully")
+            );
+        }
+    </script>
+
+    <script>
+        function sendEmailConfirmation(){
+            Email.send({
+                Host : "smtp.gmail.com",
+                Username : "church.pacific01@gmail.com",
+                Password : "Qwerty@1234",
+                To : document.getElementById("email").value,
+                From : 'church.pacific01@gmail.com',
+                Subject : "Contact Form - Confirmation ",
+                Body : "This is a confirmation regarding your submission."  
+                        + "<br> Name: " + document.getElementById("name").value
+                        +" <br> Email: " + document.getElementById("email").value
+                        +" <br> Phone no: " + document.getElementById("phone").value
+                        +" <br> Message: " + document.getElementById("message").value
+                        + "<br> <br> <br> THANKS FOR YOUR PATIENCE. WE WILL GET BACK TO YOU IN 2-3 BUSINESS DAYS"
+                        +"<br><br><br> PLEASE DO NOT REPLY TO THIS EMAIL."
             }).then(
             message => alert("Your Submission sent succesfully")
             );
