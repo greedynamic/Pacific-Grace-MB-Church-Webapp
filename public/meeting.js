@@ -179,6 +179,7 @@ function toggleChat() {
     document.getElementById("chat").style.display = "flex";
 }
 
+
 function toggleExpand() {
     try{ 
         document.querySelector(".main-left").setAttribute("class", "main-left-alt");
@@ -210,6 +211,11 @@ function setShrink() {
 
 function leaveMeeting() {
     window.location.href = "/meeting";
+}
+
+function isCreatingRoom() {
+    // Check
+    document.getElementById("create").checked = true;
 }
 
 // Invite Button popup

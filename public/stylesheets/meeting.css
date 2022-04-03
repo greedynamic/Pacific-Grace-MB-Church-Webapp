@@ -24,6 +24,16 @@ button, input {
     font-size: 18px;
 }
 
+input[type="checkbox"] {
+    width: auto;
+}
+
+label {
+    font-size: 14pt;
+}
+
+
+
 .publicity {
     margin-top: 0;
 }
@@ -128,4 +138,8 @@ table, th, td {
 
 .dropdown:hover .dropdown-content {
     display: block;
+}
+
+input[type=checkbox] {
+    visibility: hidden;
 }
