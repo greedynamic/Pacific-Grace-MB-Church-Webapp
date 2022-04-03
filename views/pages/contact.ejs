@@ -5,26 +5,62 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheets/styles.css">
     <link rel="stylesheet" href="/stylesheets/contact.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="index.js" defer></script>
     <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
+
 </head>
 <body>
-    <section>
-        <nav class="header">
-            <div class="header_container">
-                <a href="/" id="headerlogo"><i class="fa-solid fa-church"></i>Pacific Church</a>
-                <div class="header_toggle" id="mobile_menu">
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                    <span class="bar"></span>
-                </div>
-                <ul class="header_menu">
-                    <li class = "header_item">
-                        <a href="/" class="header_links">HOME</a></li> 
-                </ul>
+    <nav class="header">
+        <div class="header_container">
+            <a href="/" id="headerlogo"><i class="fa-solid fa-church"></i>Pacific Church</a>
+            <div class="header_toggle" id="mobile_menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
             </div>
-        </nav>
-        </section>
+            <ul class="header_menu">
+                <li class = "header_item">
+                    <a href="/" class="header_links">HOME</a></li>
+                <li class = "header_item">
+                    <a href="/roombooking" class="header_links">ROOMS</a></li>
+                <li class = "header_item">
+                    <a href="#videos" class="header_links">VIDEOS</i></a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/video" class="header_links">All Videos</a></li>
+                            <li><a href="/video/upload" class="header_links">Upload Video</a></li>
+                        </ul>
+                    <% } %>
+                </li>
+                <li class = "header_item">
+                    <a href="#blog" class="header_links">BLOG</a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/blog" class="header_links">All Blogs</a></li>
+                            <li><a href="/blog/new" class="header_links">New Blog</a></li>
+                        </ul>
+                    <% } %>
+                </li>
+                <li class = "header_item">
+                    <a href="/meeting" class="header_links">MEETINGS</a></li>
+                <% if(user) { %>
+                    <li class = "header_item">
+                        <a href="/account" class="header_links">ACCOUNT</a></li>
+                    <li class = "header_item">
+                        <a href="/logout"class="header_links">LOGOUT</a></li>
+                <% } else { %>
+                    <li class = "header_item">
+                        <a href="/login" class="header_links">LOGIN</a></li>
+                    <li class = "header_item">
+                        <a href="/signup" class="header_links">SIGNUP</a></li>
+                <% } %>
+            </ul>
+        </div>
+    </nav> 
 
 
     <section>

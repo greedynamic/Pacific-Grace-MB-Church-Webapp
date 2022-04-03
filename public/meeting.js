@@ -16,16 +16,17 @@ navigator.mediaDevices.getUserMedia({
     myPeer.on('call', call => {
         call.answer(stream);
         const video = document.createElement('video');
-        call.on('stream', userVideoStream => {  
+        call.on('stream', userVideoStream => {      
             addVideoStream(video, userVideoStream);
         });
     });
-    socket.on('user-connected', userId => {
-        connectToNewUser(userId, stream);
+    socket.on('user-connected', (userId, name) => {
+        connectToNewUser(userId, stream, name);
     })
     socket.on('user-disconnected', userId => {
         if (peers[userId]) {
             peers[userId].close();
+            peers[userId].destroy();
             delete peers[userId];
         }
     });
@@ -33,6 +34,23 @@ navigator.mediaDevices.getUserMedia({
 
 myPeer.on('open', id => {
     socket.emit('join-room', ROOM_ID, id, FIRST_NAME);
+})
+
+socket.on('updateUsersList', (users) => {
+    var count = 0;
+    var ul = document.createElement('ul');
+
+    users.forEach((user) => {
+      var li = document.createElement('li');
+      li.innerHTML = user;
+      ul.appendChild(li);
+      count++;
+    });
+    var header = document.getElementById("participants-header");
+    header.innerHTML = "Participants (" + count + ")"; 
+    var window = document.getElementById("participants-window");
+    window.innerHTML = "";
+    window.appendChild(ul);
 })
 
 document.getElementById('form').addEventListener('submit', e => {
@@ -48,13 +66,13 @@ document.getElementById('form').addEventListener('submit', e => {
 socket.on('chat-message', (msg, name) => {
     const chatWindow = document.getElementById('chat-window');
     const item = document.createElement('li');  
-    item.innerHTML = '<b>' + name + '</b>' + '<br />' + msg;
+    item.innerHTML = name + '<br/>' + msg;
     chatWindow.append(item);
     chatWindow.scrollTop = chatWindow.scrollHeight;
 });
 
 // Make calls when new users connect to room
-function connectToNewUser(userId, stream) {
+function connectToNewUser(userId, stream, name) {
     const call = myPeer.call(userId, stream);
     const video = document.createElement('video');
     call.on('stream', userVideoStream => {
@@ -70,8 +88,8 @@ function addVideoStream(video, stream) {
     video.srcObject = stream
     video.addEventListener('loadedmetadata', () => {
         video.play();
+        videoGrid.append(video);
     })
-    videoGrid.append(video);
 }
 
 function makeLabel(label) {
@@ -135,13 +153,6 @@ function setStopVideo() {
     document.querySelector('.main-video-button').innerHTML = html;
 }
 
-function toggleInvite() {
-    var popup = document.getElementById("invite");
-    popup.setAttribute("visibility", "visible");
-    var link = document.getElementById("link");
-    link.setAttribute("value", window.location.href);
-}
-
 function copyLink() {
     var copyText = document.getElementById("link");
     copyText.select();
@@ -160,18 +171,12 @@ function copyCode() {
 
 function toggleParticipants() {
     document.getElementById("chat").style.display = "none";
-    document.getElementById("participants").style.display = "block";
-    var window = document.querySelector("main-participants-window");
-    for(let i = 0; i < peers.length; i++) {
-        console.log(i);
-        window.innerHTML += peers[i] + '<br>';
-    }
-    document.querySelector("participants-window").append(window);
+    document.getElementById("participants").style.display = "flex";
 }
 
 function toggleChat() {
     document.getElementById("participants").style.display = "none";
-    document.getElementById("chat").style.display = "block";
+    document.getElementById("chat").style.display = "flex";
 }
 
 function toggleExpand() {
@@ -207,6 +212,18 @@ function leaveMeeting() {
     window.location.href = "/meeting";
 }
 
+// Invite Button popup
+var invitePopup = document.getElementById("invite");
+invitePopup.setAttribute("visibility", "visible");
+var link = document.getElementById("link");
+link.setAttribute("value", window.location.href);
+
+// Settings button popup
+var settingsPopup = document.getElementById("settings");
+settingsPopup.setAttribute("visibility", "visible");
+
+
+// Button click events
 document.querySelector('.main-mute-button').addEventListener('click', muteUnmute);
 document.querySelector('.main-video-button').addEventListener('click', playStop);
 document.querySelector('.main-participants-button').addEventListener('click', toggleParticipants);

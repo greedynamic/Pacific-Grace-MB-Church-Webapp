@@ -105,7 +105,6 @@ video {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    height: 50.2rem;
 }
 
 .main-chat-window > li {
@@ -126,7 +125,17 @@ video {
 
 .participants {
     display: none;
+    flex-direction: column;
+    background-color: white;
+    border-left: 1px solid black;
     width: 100%;
+    height: 100%;
+}
+
+#participants-window {
+    margin-left: 18px;
+    padding: 10px;
+    font-size: 18px;
 }
 
 .unmute, .stop {
@@ -177,7 +186,6 @@ video {
     color: black;
   }
   
-  /* Close Button */
   .btn-close{
       background-color: red;
       text-align: center;
