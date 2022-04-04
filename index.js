@@ -9,6 +9,7 @@ const fetch = (...args) =>
 const moment = require('moment');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
+const transactionRoute = require('./routes/adminTransaction');
 const emailRoute = require('./email-nodeapp/emailVerify');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
@@ -55,6 +56,7 @@ app.set('view engine', 'ejs');
 app.use('/blog', authAmdin(), blogRoute);
 app.use('/video', videoRoute);
 app.use('/sendVerification', emailRoute);
+app.use('/transactions', transactionRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
@@ -203,11 +205,7 @@ app.get('/profile', checkAuthenticated, (req, res)=>{
 })
 
 app.get('/donate', (req,res) => {
-  if(req.session.user) {
-    res.render('pages/donate', {paypalClientId: process.env.PAYPAL_CLIENT_ID});
-  } else {
-    res.redirect('/login');
-  }
+  res.render('pages/donate', {paypalClientId: process.env.PAYPAL_CLIENT_ID});
 })
 
 app.get('/account', (req,res) => {

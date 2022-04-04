@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Transaction Record</title>
+        <link rel="stylesheet" href="/stylesheets/styles.css">
+        <link rel="stylesheet" href="/stylesheets/meeting.css">
+        <link rel="stylesheet" href="/stylesheets/transactions.css">
+        <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
+        <script src="index.js" defer></script>
+        <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
+    </head>
+    <body>
+        <nav class="header">
+            <div class="header_container">
+                <a href="/" id="headerlogo"><i class="fa-solid fa-church"></i>Pacific Church</a>
+                <div class="header_toggle" id="mobile_menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+                <ul class="header_menu">
+                    <li class = "header_item">
+                        <a href="/" class="header_links">HOME</a></li>
+                    <li class = "header_item">
+                        <a href="/roombooking" class="header_links">ROOMS</a></li>
+                    <li class = "header_item">
+                        <a href="/#videos" class="header_links">VIDEOS<i class="fa-solid fa-sort-down"></i></a></li>
+                    <li class = "header_item">
+                        <a href="/#blog" class="header_links">BLOG</a></li>
+                    <li class = "header_item">
+                        <a href="/meeting" class="header_links">MEETINGS</a></li>
+                    <li class = "header_item">
+                        <a href="/account" class="header_links">ACCOUNT</a></li>
+                    <li class = "header_item">
+                        <a href="/logout"class="header_links">LOGOUT</a></li>
+                </ul>
+            </div>
+        </nav>  
+        <div class="title">
+            <h2>Transaction Record</h2>
+        </div> 
+        <div class="main-table">
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Amount</th>
+                    <th>Created at</th>
+                </tr>
+                <% transactions.forEach(function(transaction) { %>
+                    <tr>
+                        <td><%= transaction.name %></td>
+                        <td><%= transaction.email %></td>
+                        <td><%= transaction.amount %></td>
+                        <td><%= transaction.created_at %></td>
+                    </tr>
+                <% }); %>
+            </table>
+        </div>
+    </body>
+</html>

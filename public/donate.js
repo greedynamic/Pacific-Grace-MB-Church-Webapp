@@ -1,18 +1,18 @@
 const amountElement = document.getElementById("amount");
 function getAmount25(){
-  amountElement.value = '25';
+  amountElement.value = '25.00';
 }
 
 function getAmount50(){
-  amountElement.value = '50';
+  amountElement.value = '50.00';
 }
 
 function getAmount75(){
-  amountElement.value = '75';
+  amountElement.value = '75.00';
 }
 
 function getAmount100(){
-  amountElement.value = '100';
+  amountElement.value = '100.00';
 }
 
 var isShared;
