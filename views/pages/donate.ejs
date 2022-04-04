@@ -7,10 +7,11 @@
         <title>Donate</title>
         <link rel="stylesheet" href="/stylesheets/styles.css">
         <link rel="stylesheet" href="/stylesheets/donate.css">
+        
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
         <script src="index.js" defer></script>
         <script src="/donate.js" defer></script>
-        <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=CAD"></script>
+        <script src="https://www.paypal.com/sdk/js?client-id=<%= paypalClientId %>&currency=CAD"></script>
     </head>
     <body>
         <section class="donation-box">
@@ -18,11 +19,21 @@
                 <a href="/"><img src="/images/logo.png" alt="logo"></a>
                 <div id="donation-box-inner">
                     <h3>Single Donation</h3>
+                    <div>
+                        <button type="button" id="amt-25" onclick="getAmount25()">25$</button>
+                        <button type="button" id="amt-50" onclick="getAmount50()">50$</button>
+                        <button type="button" id="amt-75" onclick="getAmount75()">75$</button>
+                        <button type="button" id="amt-100" onclick="getAmount100()">100$</button>
+                      </div>
                     <span class="input-symbol-dollar">
                         <input type="number" id="amount" placeholder="0.00" value="1.00" step=".01" required>
                     </span>
-                    <div id="paypal-button-container">
+                    <div>
+                        <label>Share name, email address and donation details
+                            <input type="checkbox" style="transform: scale(0.5); display: inline;" id="info" onchange="isChecked(this)">
+                        </label>
                     </div>
+                    <div id="paypal-button-container"></div>
                 </div>
         </section>
         

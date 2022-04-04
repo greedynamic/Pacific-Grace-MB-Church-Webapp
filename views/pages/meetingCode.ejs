@@ -7,15 +7,10 @@
         <title>Meetings</title>
         <link rel="stylesheet" href="/stylesheets/styles.css">
         <link rel="stylesheet" href="/stylesheets/meeting.css">
+        <link rel="stylesheet" href="/stylesheets/meetingCode.css">
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
         <script src="index.js" defer></script>
         <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
-        <script>
-            function loadCode() {
-                const code = document.getElementById("roomId").value;
-                document.location = '/meeting/room/' + code;
-            }
-        </script>
     </head>
     <body>
         <nav class="header">
@@ -44,11 +39,8 @@
                 </ul>
             </div>
         </nav>   
-
         <div class="join-room">
-            <h4>Have A Meeting Code?</h4>
-            <a href>Join a Meeting</a>
-            
+            <h2>Have A Meeting Code?</h2>
             <form method="post"> 
                 <input type="text" id="roomId" name="roomId" placeholder="Enter code here..." required>
                 <input type="submit" id="submit" value="✔">
@@ -58,7 +50,9 @@
                     <p><%= errors[0].message %></p>
                 <% } %>
             </div>
+            <div class="back-btn">
+                <a href="/meeting"><button><i class="fa-solid fa-arrow-left-long"></i></button></a>
+            </div>
         </div>
-
     </body>
 </html>

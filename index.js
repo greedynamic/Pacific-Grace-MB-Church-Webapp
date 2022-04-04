@@ -4,6 +4,9 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const moment = require('moment');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
 const emailRoute = require('./email-nodeapp/emailVerify');
@@ -26,6 +29,8 @@ const peerServer = ExpressPeerServer(server, {
 });
 const session = require('express-session')
 const {authUser, authAmdin} = require('./routes/middleware');
+const {Users} = require('./public/roomUsers');
+var roomUsers = new Users();
 
 // Google Auth
 const {OAuth2Client} = require('google-auth-library');
@@ -42,6 +47,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }))
+app.use('/peerjs', peerServer);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -198,7 +204,7 @@ app.get('/profile', checkAuthenticated, (req, res)=>{
 
 app.get('/donate', (req,res) => {
   if(req.session.user) {
-    res.render('pages/donate');
+    res.render('pages/donate', {paypalClientId: process.env.PAYPAL_CLIENT_ID});
   } else {
     res.redirect('/login');
   }
@@ -281,8 +287,6 @@ app.get('/videos/:title', (req,res)=>{
   })
 })
 
-app.use('/peerjs', peerServer);
-
 app.get('/meeting', async (req,res) => {
   try {
     const client = await pool.connect();
@@ -310,7 +314,6 @@ app.get('/meeting/code', (req,res) => {
 app.post('/meeting/code', async (req,res) => {
   let code = req.body.roomId;
   let errors = [];
-
   try {
     const client = await pool.connect();
     const meetingQuery = `select * from activemeetings where id='${code}'`;
@@ -343,8 +346,6 @@ app.get('/meeting/room/:room', (req,res) => {
     res.redirect('/login')
   }
 })
-const {Users} = require('./public/roomUsers');
-var roomUsers = new Users();
 
 // Handles communication between client and server
 io.of("/room").on('connection', socket => {
@@ -354,7 +355,6 @@ io.of("/room").on('connection', socket => {
     roomUsers.addUser(userId, name, roomId);
     io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
     io.of("/room").to(roomId).emit('user-connected', userId);
-
     socket.on('send-chat-message', (msg) => {
       io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
@@ -363,7 +363,7 @@ io.of("/room").on('connection', socket => {
       if (roomUser) {
         io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
         io.of("/room").to(roomId).emit('user-disconnected', userId);
-         // Remove room from activemeetings
+        // Remove room from activemeetings
         if (roomUsers.getUserList(roomId).length == 0) {
           try {
             const client = await pool.connect();
@@ -380,8 +380,10 @@ io.of("/room").on('connection', socket => {
 
 app.get('/meeting/public', async (req,res) => {
   try {
-    var roomId = uuidV4();
-    await pool.query(`insert into activemeetings values('${roomId}', 1, 'placeholder', true)`);
+    const roomId = uuidV4();
+    const fName = req.session.user.fname;
+    const meetingName = `${fName} s meeting`; 
+    await pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', true)`);
     res.redirect(`/meeting/room/${roomId}`);
   } catch (err) {
     res.send(err);
@@ -390,8 +392,10 @@ app.get('/meeting/public', async (req,res) => {
 
 app.get('/meeting/private', async (req,res) => {
   try {
-    var roomId = uuidV4();
-    await pool.query(`insert into activemeetings values('${roomId}', 1, 'placeholder', false)`);
+    const roomId = uuidV4();
+    const fName = req.session.user.fname;
+    const meetingName = `${fName} s meeting`; 
+    await pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', false)`);
     res.redirect(`/meeting/room/${roomId}`);
   } catch (err) {
     res.send(err);
@@ -422,6 +426,68 @@ function checkAuthenticated(req, res, next){
     })
 }
 
-server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+/** DONATION */
 
- 
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env; // change client_id and client_secret of real business if want to go live
+const base = "https://api-m.sandbox.paypal.com"; // if want to go live transaction, use "https://api-m.paypal.com"
+
+// capture payment & store order information or fullfill order
+app.post("/api/orders/:orderID/capture", async (req, res) => {
+  const { orderID } = req.params;
+  const captureData = await capturePayment(orderID);
+  res.json(captureData);
+  // TODO: store payment information such as the transaction ID
+  const isShared = req.body.shareInfo;
+  var name, email;  
+  if(isShared == 'yes'){
+     name = captureData.payer.name.given_name + " " + captureData.payer.name.surname;
+     email = captureData.payer.email_address;
+  } 
+  else{
+    name = 'anonymous';
+    email = 'anonymous';
+  }
+  const amount = captureData.purchase_units[0].payments.captures[0].amount.value;
+  const created_at =  moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
+  var query = `INSERT INTO transaction VALUES ('${name}', '${email}', ${amount}, '${created_at}')`;
+  pool.query(query, (error, result) => {
+    if(error)
+      res.send(error)
+    else{
+      console.log("success");
+    }
+  })
+});
+
+
+// use the orders api to capture payment for an order
+async function capturePayment(orderId) {
+  const accessToken = await generateAccessToken();
+  const url = `${base}/v2/checkout/orders/${orderId}/capture`;
+  const response = await fetch(url, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data;
+}
+
+// generate an access token using client id and app secret
+async function generateAccessToken() {
+  const auth = Buffer.from(PAYPAL_CLIENT_ID + ":" + PAYPAL_CLIENT_SECRET).toString("base64")
+  const response = await fetch(`${base}/v1/oauth2/token`, {
+    method: "post",
+    body: "grant_type=client_credentials",
+    headers: {
+      Authorization: `Basic ${auth}`,
+    },
+  });
+  const data = await response.json();
+  return data.access_token;
+}
+
+server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
