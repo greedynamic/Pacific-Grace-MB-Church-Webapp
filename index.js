@@ -4,8 +4,12 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const moment = require('moment');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
+const transactionRoute = require('./routes/adminTransaction');
 const emailRoute = require('./email-nodeapp/emailVerify');
 const path = require('path');
 const PORT = process.env.PORT || 5000;
@@ -52,6 +56,7 @@ app.set('view engine', 'ejs');
 app.use('/blog', authAmdin(), blogRoute);
 app.use('/video', videoRoute);
 app.use('/sendVerification', emailRoute);
+app.use('/transactions', transactionRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
@@ -200,11 +205,7 @@ app.get('/profile', checkAuthenticated, (req, res)=>{
 })
 
 app.get('/donate', (req,res) => {
-  if(req.session.user) {
-    res.render('pages/donate');
-  } else {
-    res.redirect('/login');
-  }
+  res.render('pages/donate', {paypalClientId: process.env.PAYPAL_CLIENT_ID});
 })
 
 app.get('/account', (req,res) => {
@@ -421,6 +422,70 @@ function checkAuthenticated(req, res, next){
     .catch(err=>{
         res.redirect('/login')
     })
+}
+
+/** DONATION */
+
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env; // change client_id and client_secret of real business if want to go live
+const base = "https://api-m.sandbox.paypal.com"; // if want to go live transaction, use "https://api-m.paypal.com"
+
+// capture payment & store order information or fullfill order
+app.post("/api/orders/:orderID/capture", async (req, res) => {
+  const { orderID } = req.params;
+  const captureData = await capturePayment(orderID);
+  res.json(captureData);
+  // TODO: store payment information such as the transaction ID
+  const isShared = req.body.shareInfo;
+  var name, email;  
+  if(isShared == 'yes'){
+     name = captureData.payer.name.given_name + " " + captureData.payer.name.surname;
+     email = captureData.payer.email_address;
+  } 
+  else{
+    name = 'anonymous';
+    email = 'anonymous';
+  }
+  const amount = captureData.purchase_units[0].payments.captures[0].amount.value;
+  const created_at =  moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
+  var query = `INSERT INTO transaction VALUES ('${name}', '${email}', ${amount}, '${created_at}')`;
+  pool.query(query, (error, result) => {
+    if(error)
+      res.send(error)
+    else{
+      console.log("success");
+    }
+  })
+});
+
+
+// use the orders api to capture payment for an order
+async function capturePayment(orderId) {
+  const accessToken = await generateAccessToken();
+  const url = `${base}/v2/checkout/orders/${orderId}/capture`;
+  const response = await fetch(url, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data;
+}
+
+// generate an access token using client id and app secret
+async function generateAccessToken() {
+  const auth = Buffer.from(PAYPAL_CLIENT_ID + ":" + PAYPAL_CLIENT_SECRET).toString("base64")
+  const response = await fetch(`${base}/v1/oauth2/token`, {
+    method: "post",
+    body: "grant_type=client_credentials",
+    headers: {
+      Authorization: `Basic ${auth}`,
+    },
+  });
+  const data = await response.json();
+  return data.access_token;
 }
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
