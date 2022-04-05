@@ -11,3 +11,22 @@
 #submit {
     width: 10%;
 }
+
+#errorContent {
+    margin-top: 10px;
+    font-size: 18px;
+    color: red;
+    -webkit-animation: cssAnimation 4s forwards; 
+    animation: cssAnimation 4s forwards;
+}
+
+@keyframes cssAnimation {
+    0%   {opacity: 1;}
+    80%  {opacity: 1;}
+    100% {opacity: 0;}
+}
+@-webkit-keyframes cssAnimation {
+    0%   {opacity: 1;}
+    80%  {opacity: 1;}
+    100% {opacity: 0;}
+}

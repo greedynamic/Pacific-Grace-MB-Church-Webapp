@@ -99,6 +99,15 @@ app.get('/signup', (req,res) => {
   }
 });
 
+// Validate email format
+const validateEmail = (email) => {
+  return String(email)
+    .toLowerCase()
+    .match(
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+    );
+};
+
 app.post('/signup', async (req,res) => {
   try {
     const firstName = req.body.fName;
@@ -115,14 +124,6 @@ app.post('/signup', async (req,res) => {
       if(result.rows.length > 0) {
         errors.push({message: "Email in use. Please use a different email"})
       }
-      // validate email format
-      const validateEmail = (email) => {
-        return String(email)
-          .toLowerCase()
-          .match(
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-          );
-      };
       if (!validateEmail(email)) {
         errors.push({message: "Email address is invalid."});
       }
@@ -252,12 +253,27 @@ app.post('/account/edit', async (req,res) => {
   const password = req.body.password;
   const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}',
     password='${password}' where email='${oldEmail}'`;
+  const emailQuery = `select * from usr where email='${email}'`;
+  let errors = [];
 
   try{
     const client = await pool.connect();
-    await client.query(updateQuery);
-    req.session.user = {fname:fname, lname:lname, email:email, password:password, admin:req.session.user.admin};
-    res.redirect('/account');
+    const result = await client.query(emailQuery);
+
+    if (result.rows.length > 0 && email != oldEmail) {
+      errors.push({message: "Email in use. Please use a different email"})
+    }
+    if (!validateEmail(email)) {
+      errors.push({message: "Email address is invalid."});
+    }
+
+    if (errors.length == 0) {
+      await client.query(updateQuery);
+      req.session.user = {fname:fname, lname:lname, email:email, password:password, admin:req.session.user.admin};
+      res.redirect('/account');
+    } else {
+      res.render('pages/editAccount', {user: req.session.user, errors})
+    }
   } catch (err){
     res.send(err);
   }

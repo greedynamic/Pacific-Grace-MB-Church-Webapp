@@ -48,10 +48,20 @@
                 <input type="text" name="lName" minlength="1" maxlength="100" value="<%= user.lname%>" required><br>
                 <label for="email">Email:</label><br>
                 <input type="text" name="email" minlength="1" maxlength="100" value="<%= user.email%>" required><br>
+                <div id="errorContent">
+                    <ul>
+                        <% if(typeof errors != 'undefined') { %> 
+                            <% errors.forEach(error=>{ %>
+                                <li><%= error.message %></li>
+                            <% }) %>
+                        <% } %>
+                    </ul>
+                </div>
                 <label for="password">Password:</label><br>
                 <input type="text" name="password" minlength="8" maxlength="20" value="<%= user.password%>" required><br>
                 <input type="submit" value="Submit">
             </form>
+            
         </section>
     </body>
 </html>
