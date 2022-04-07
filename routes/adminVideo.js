@@ -80,6 +80,7 @@ router.get('/', authAmdin(), (req, res) => {
     })
 })
 
+
 // Delete videos
 router.post('/del/:title', authAmdin(), (req,res) => {
     var query = `SELECT * FROM video WHERE title='${req.params.title}';`;

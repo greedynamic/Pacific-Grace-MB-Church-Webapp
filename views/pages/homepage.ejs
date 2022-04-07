@@ -48,7 +48,18 @@
                     <% } %>
                 </li>
                 <li class = "header_item">
-                    <a href="/meeting" class="header_links">MEETINGS</a></li>
+                    <a href="/meeting" class="header_links">MEETINGS</a>
+                </li>
+
+                <li class = "header_item">
+                    <a href="/donate" class="header_links">DONATION</a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/transactions" class="header_links">Donate Transactions</a></li>
+                        </ul>
+                    <% } %>
+                </li>
+
                 <% if(user) { %>
                     <li class = "header_item">
                         <a href="/account" class="header_links">ACCOUNT</a></li>
@@ -126,7 +137,7 @@
                 </div>
                 <div class="video_text" >
                     <h3><%= videos[i].title %></h3><br>
-                    <a href="/videos/<%= videos[i].title %>" style="align-content: center;">Read More</a>
+                    <a href="/videos/<%= videos[i].title %>" style="align-content: center;">View Notes</a>
                 </div>
                 
             <% }
