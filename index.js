@@ -567,3 +567,5 @@ async function generateAccessToken() {
 }
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+
+module.exports = server

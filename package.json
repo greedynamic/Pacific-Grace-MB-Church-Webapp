@@ -8,7 +8,8 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon index.js",
-    "test": "nodemon test.js"
+    "test": "nodemon test.js",
+    "name-test": "mocha test"
   },
   "dependencies": {
     "@zoomus/websdk": "^2.3.0",
@@ -42,6 +43,7 @@
   },
   "devDependencies": {
     "got": "^11.3.0",
+    "request": "^2.88.2",
     "tape": "^4.7.0"
   },
   "repository": {
