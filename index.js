@@ -285,19 +285,18 @@ app.get('/videos/:title', (req,res)=>{
   })
 })
 
-app.get('/meeting', async (req,res) => {
-  try {
-    const client = await pool.connect();
-    const result = await client.query(`select * from activemeetings where public=true`);
-    const results = {'results': (result) ? result.rows : null};
-    if (req.session.user) {
-      res.render('pages/meeting', results);
+app.get('/meeting', (req,res) => {
+  pool.query(`select * from activemeetings where public=true`, (error, result) => {
+    if(error) {
+      res.send(error)
     } else {
-      res.redirect('/login')
+        if(req.session.user) {
+          res.render('pages/meeting', {'results' : result.rows, user : req.session.user});
+        } else {
+          res.redirect('/login')
+        }
     }
-  } catch(err) {
-    res.send(err);
-  }
+  })
 })
 
 app.get('/meeting/code', (req,res) => {

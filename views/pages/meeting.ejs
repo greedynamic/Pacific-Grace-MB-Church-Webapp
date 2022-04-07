@@ -26,15 +26,47 @@
                     <li class = "header_item">
                         <a href="/roombooking" class="header_links">ROOMS</a></li>
                     <li class = "header_item">
-                        <a href="/#videos" class="header_links">VIDEOS<i class="fa-solid fa-sort-down"></i></a></li>
+                        <a href="#videos" class="header_links">VIDEOS</i></a>
+                        <% if(user && user.admin){ %> 
+                            <ul>
+                                <li><a href="/video" class="header_links">All Videos</a></li>
+                                <li><a href="/video/upload" class="header_links">Upload Video</a></li>
+                            </ul>
+                        <% } %>
+                    </li>
                     <li class = "header_item">
-                        <a href="/#blog" class="header_links">BLOG</a></li>
+                        <a href="#blog" class="header_links">BLOG</a>
+                        <% if(user && user.admin){ %> 
+                            <ul>
+                                <li><a href="/blog" class="header_links">All Blogs</a></li>
+                                <li><a href="/blog/new" class="header_links">New Blog</a></li>
+                            </ul>
+                        <% } %>
+                    </li>
                     <li class = "header_item">
-                        <a href="/meeting" class="header_links">MEETINGS</a></li>
+                        <a href="/meeting" class="header_links">MEETINGS</a>
+                    </li>
+    
                     <li class = "header_item">
-                        <a href="/account" class="header_links">ACCOUNT</a></li>
-                    <li class = "header_item">
-                        <a href="/logout"class="header_links">LOGOUT</a></li>
+                        <a href="/donate" class="header_links">DONATION</a>
+                        <% if(user && user.admin){ %> 
+                            <ul>
+                                <li><a href="/transactions" class="header_links">Donate Transactions</a></li>
+                            </ul>
+                        <% } %>
+                    </li>
+    
+                    <% if(user) { %>
+                        <li class = "header_item">
+                            <a href="/account" class="header_links">ACCOUNT</a></li>
+                        <li class = "header_item">
+                            <a href="/logout"class="header_links">LOGOUT</a></li>
+                    <% } else { %>
+                        <li class = "header_item">
+                            <a href="/login" class="header_links">LOGIN</a></li>
+                        <li class = "header_item">
+                            <a href="/signup" class="header_links">SIGNUP</a></li>
+                    <% } %>
                 </ul>
             </div>
         </nav>  
