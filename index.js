@@ -1,4 +1,5 @@
 require('dotenv').config();
+var nodemailer = require('nodemailer');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
@@ -11,6 +12,7 @@ const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
 const transactionRoute = require('./routes/adminTransaction');
 const emailRoute = require('./email-nodeapp/emailVerify');
+const newUserVerifyRoute = require('./email-nodeapp/newUserVerify')
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
@@ -38,6 +40,17 @@ const {OAuth2Client} = require('google-auth-library');
 const CLIENT_ID = '376022680662-meru43h5tvg8i8qfeii49bjuj2rbi5qe.apps.googleusercontent.com'
 const client = new OAuth2Client(CLIENT_ID);
 
+const smtpConfig = {
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // use SSL
+  auth: {
+      user: 'pmpgmbc.manage@gmail.com',
+      pass: 'psdPSD22//'
+  }
+};
+const transporter = nodemailer.createTransport(smtpConfig);
+
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.json());
 app.use(cookieParser());
@@ -56,6 +69,7 @@ app.set('view engine', 'ejs');
 app.use('/blog', authAmdin(), blogRoute);
 app.use('/video', videoRoute);
 app.use('/sendVerification', emailRoute);
+app.use('/newUserVerification', authAmdin(), newUserVerifyRoute);
 app.use('/transactions', transactionRoute);
 
 app.get('/', (req,res) => {
@@ -132,15 +146,80 @@ app.post('/signup', async (req,res) => {
 
       if(errors.length == 0) {
         // adds account to database, creating account
-        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}', false)`;
-        await client.query(registerQuery); 
-        res.redirect("/login");
+        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}', false, false)`;
+        await client.query(registerQuery);
+        let mailOptions = {
+          from: 'PMPGMBC Registration ✔ <PMPGMBC@gmail.com>',
+          to: req.body.email,
+          subject: "Church user verification for " + req.body.fName + " " + req.body.lName,
+          text: 'Verification ' + req.body.fName + '✔',
+          html: "<p>Thanks for registering PMPGMBC! Your email: " + req.body.email + " will be verified by our admin soon.</p>",
+          bcc: "fred@gmail.com"
+        };
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            } else {
+                console.log('Message sent successfully!');
+                console.log('Message sent: ' + info.response);
+            }
+        });
+        mailOptions = {
+            from: 'PMPGMBC Registration ✔ <PMPGMBC@gmail.com>',
+            to: 'pmpgmbc.manage@gmail.com',
+            subject: "Please verify a new user for " + req.body.fName + " " + req.body.lName,
+            text: 'Verification for' + req.body.fName + '✔',
+            html: "<h3> A new user, " + req.body.fName + " " + req.body.lName + ", just registered our church. Please verify the registration: " + req.body.email + " by clicking the following link.</h3> <h4>https://church276.herokuapp.com/newUserVerification</h4>",
+            bcc: "pmpgmbc.manage@gmail.com"
+        };
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            } else {
+                console.log('Message sent to Admin user.');
+                console.log('Message sent: ' + info.response);
+            }
+        });
+        res.send("Thanks for your registration! Your account will be verified by our church admin. If the admin approved, you will receive an email notification.");
+        // res.redirect('/');
         client.release();
       } else {
         res.render('pages/signup', {errors});
       }
   } catch (err) {
     res.send(err);
+  }
+})
+
+app.post('/verified', async (req,res) => {
+  const fname = req.body.fName;
+  const lname = req.body.lName;
+  const email = req.body.email;
+  const verifiedQuery = `update usr set is_verified=true where fname='${fname}' and lname='${lname}' and email='${email}'`;
+
+  try{
+      const client = await pool.connect();
+      await client.query(verifiedQuery);
+      // req.session.user = {fname:fname, lname:lname, email:email, password:password, admin:req.session.user.admin};
+      // res.redirect('/');
+      let mailOptions = {
+        from: 'PMPGMBC Registration ✔ <PMPGMBC@gmail.com>',
+        to: email,
+        subject: "Church user verification for " + req.body.fName + " " + req.body.lName,
+        text: 'Verification ' + req.body.fName + '✔',
+        html: "<h2>Thanks for registering PMPGMBC! Your email: " + req.body.email + " has been verified. You could perform as a registered user in the PMPGMBC church web.</h2>",
+      };
+      transporter.sendMail(mailOptions, function(error, info){
+          if(error){
+              console.log(error);
+          } else {
+              console.log('Verified message sent successfully!');
+              console.log('Verified message sent: ' + info.response);
+          }
+      });
+      res.send(fname + ' ' + lname + ' has been verified!')
+  } catch (err){
+      res.send(err);
   }
 })
 
