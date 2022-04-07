@@ -69,7 +69,7 @@ app.set('view engine', 'ejs');
 app.use('/blog', authAdmin(), blogRoute);
 app.use('/video', videoRoute);
 app.use('/sendVerification', emailRoute);
-app.use('/newUserVerification', authAmdin(), newUserVerifyRoute);
+app.use('/newUserVerification', authAdmin(), newUserVerifyRoute);
 app.use('/transactions', transactionRoute);
 
 app.get('/', (req,res) => {
