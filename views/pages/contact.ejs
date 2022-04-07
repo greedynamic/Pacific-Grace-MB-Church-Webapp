@@ -26,9 +26,15 @@
                 <li class = "header_item">
                     <a href="/" class="header_links">HOME</a></li>
                 <li class = "header_item">
-                    <a href="/roombooking" class="header_links">ROOMS</a></li>
+                    <a href="/roombooking" class="header_links">ROOMS</a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="https://www.notion.so/b66a06bed507445aa993ca389f267e76?v=910840af92d84ee38e48c663459a346a" class="header_links">Reservations</a></li>
+                        </ul>
+                    <% } %>
+                </li>
                 <li class = "header_item">
-                    <a href="#videos" class="header_links">VIDEOS</i></a>
+                    <a href="/#videos" class="header_links">VIDEOS</i></a>
                     <% if(user && user.admin){ %> 
                         <ul>
                             <li><a href="/video" class="header_links">All Videos</a></li>
@@ -37,7 +43,7 @@
                     <% } %>
                 </li>
                 <li class = "header_item">
-                    <a href="#blog" class="header_links">BLOG</a>
+                    <a href="/#blog" class="header_links">BLOG</a>
                     <% if(user && user.admin){ %> 
                         <ul>
                             <li><a href="/blog" class="header_links">All Blogs</a></li>
@@ -47,17 +53,18 @@
                 </li>
                 <li class = "header_item">
                     <a href="/meeting" class="header_links">MEETINGS</a></li>
-                <% if(user) { %>
-                    <li class = "header_item">
-                        <a href="/account" class="header_links">ACCOUNT</a></li>
-                    <li class = "header_item">
-                        <a href="/logout"class="header_links">LOGOUT</a></li>
-                <% } else { %>
-                    <li class = "header_item">
-                        <a href="/login" class="header_links">LOGIN</a></li>
-                    <li class = "header_item">
-                        <a href="/signup" class="header_links">SIGNUP</a></li>
-                <% } %>
+                <li class = "header_item">
+                    <a href="/donate" class="header_links">DONATION</a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/transactions" class="header_links">Donate Transactions</a></li>
+                        </ul>
+                    <% } %>
+                </li>
+                <li class = "header_item">
+                    <a href="/account" class="header_links">ACCOUNT</a></li>
+                <li class = "header_item">
+                    <a href="/logout"class="header_links">LOGOUT</a></li>
             </ul>
         </div>
     </nav> 
@@ -66,7 +73,7 @@
     <section>
         
         <div class="form_container">
-            <form onsubmit="sendEmail(); reset(); return false;">
+            <form onsubmit="sendEmail(); sendEmailConfirmation(); reset(); return false;">
                 <h1>CONTACT US</h1> 
                 <input type="text" id="name" placeholder="Your Name" required>
                 <input type="email" id="email" placeholder="Your Email" required>
@@ -99,12 +106,34 @@
                 Password : "Qwerty@1234",
                 To : 'church.pacific01@gmail.com',
                 From : document.getElementById("email").value,
-                Subject : "Contact Form - ",
+                Subject : "Contact Form - Submission",
                 Body : "Name: " + document.getElementById("name").value
                         +" <br> Email: " + document.getElementById("email").value
                         +" <br> Phone no: " + document.getElementById("phone").value
                         +" <br> Message: " + document.getElementById("message").value
 
+            }).then(
+            message => alert("Your Submission sent succesfully")
+            );
+        }
+    </script>
+
+    <script>
+        function sendEmailConfirmation(){
+            Email.send({
+                Host : "smtp.gmail.com",
+                Username : "church.pacific01@gmail.com",
+                Password : "Qwerty@1234",
+                To : document.getElementById("email").value,
+                From : 'church.pacific01@gmail.com',
+                Subject : "Contact Form - Confirmation ",
+                Body : "This is a confirmation regarding your submission."  
+                        + "<br> Name: " + document.getElementById("name").value
+                        +" <br> Email: " + document.getElementById("email").value
+                        +" <br> Phone no: " + document.getElementById("phone").value
+                        +" <br> Message: " + document.getElementById("message").value
+                        + "<br> <br> <br> THANKS FOR YOUR PATIENCE. WE WILL GET BACK TO YOU IN 2-3 BUSINESS DAYS"
+                        +"<br><br><br> PLEASE DO NOT REPLY TO THIS EMAIL."
             }).then(
             message => alert("Your Submission sent succesfully")
             );

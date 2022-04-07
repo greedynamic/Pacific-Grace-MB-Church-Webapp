@@ -55,7 +55,6 @@ body {
     display: inline-block;
 }
 
-
 .currency {
     border: 1px solid #000;
 }
@@ -64,3 +63,23 @@ img {
     width: 60%; 
     height: auto; 
 }
+
+button {
+    background-color: #0079C1; /* Green */
+    border: none;
+    color: white;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding: 20px 40px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    border-radius: 10%;
+    transition-duration: 0.4s;
+    cursor: pointer;
+  }
+
+button:hover{
+      background-color: #37424a;
+  }
