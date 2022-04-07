@@ -58,6 +58,7 @@ form {
     display: flex;
     flex-direction: column;
     margin-bottom: auto;
+    margin-top: 3vh;
     align-items: center;
     justify-content: center;
     padding: 10vh;
@@ -65,7 +66,7 @@ form {
 }
 
 .public-meetings h4 {
-    margin-bottom: 2vh;
+    margin-bottom: 3vh;
 }
 
 .public-meetings button {
