@@ -29,7 +29,7 @@ const peerServer = ExpressPeerServer(server, {
     debug: true
 });
 const session = require('express-session')
-const {authUser, authAmdin} = require('./routes/middleware');
+const {authUser, authAdmin} = require('./routes/middleware');
 const {Users} = require('./public/roomUsers');
 var roomUsers = new Users();
 
@@ -53,7 +53,7 @@ app.use('/peerjs', peerServer);
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use('/blog', authAmdin(), blogRoute);
+app.use('/blog', authAdmin(), blogRoute);
 app.use('/video', videoRoute);
 app.use('/sendVerification', emailRoute);
 app.use('/transactions', transactionRoute);

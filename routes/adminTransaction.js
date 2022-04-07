@@ -9,7 +9,7 @@ const aws = require('aws-sdk');
 const { Pool } = require('pg');
 const path = require('path');
 const { resourceUsage } = require('process');
-const {authUser, authAmdin} = require('./middleware');
+const {authUser, authAdmin} = require('./middleware');
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -27,7 +27,7 @@ aws.config.update({
 router.use(express.static(path.join(__dirname, '../public')));
 
 /** Get all transactions */
-router.get('/', authAmdin(), (req, res) => { 
+router.get('/', authAdmin(), (req, res) => { 
   pool.query('select * from transaction', (error, result) => {
     if(error) {
       res.send(error)
