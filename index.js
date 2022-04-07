@@ -102,7 +102,7 @@ app.get('/roombooking', (req, res) =>{
 });
 
 app.get('/contact', (req, res) =>{
-  res.render('pages/contact');
+  res.render('pages/contact', {user: req.session.user});
 });
 
 app.get('/signup', (req,res) => {
