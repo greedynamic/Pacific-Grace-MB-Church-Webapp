@@ -5,10 +5,17 @@
 
 body {
     background-color: aliceblue;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 h1 {
-    margin-bottom: 20px;
+    margin-bottom: 4vh;
+}
+
+label {
+    font-size: 20px;
 }
 
 input[type=text], input[type=password] {
@@ -19,6 +26,7 @@ input[type=text], input[type=password] {
     border: 1px solid black;
     border-radius: 5px;
     margin-bottom: 20px;
+    font-size: 20px;
 }
 
 input[type=submit] {
@@ -26,11 +34,13 @@ input[type=submit] {
     color: white;
     border-color: rgb(42, 42, 42);
     border-radius: 3px;
-    font-size: 16px;
+    font-size: 18px;
     padding: 8px;
     margin-top: 20px;
 }
 
 input[type=submit]:hover {
     background-color: rgb(80, 80, 80);
+    color: teal;
+    transition: 0.3s;
 }

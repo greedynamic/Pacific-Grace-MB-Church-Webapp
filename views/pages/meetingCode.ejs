@@ -4,13 +4,13 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Church Account</title>
+        <title>Meetings</title>
         <link rel="stylesheet" href="/stylesheets/styles.css">
-        <link rel="stylesheet" href="/stylesheets/editAccount.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="/stylesheets/meeting.css">
+        <link rel="stylesheet" href="/stylesheets/meetingCode.css">
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
-        <script src="index.js"></script>
+        <script src="index.js" defer></script>
+        <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
     </head>
     <body>
         <nav class="header">
@@ -38,20 +38,21 @@
                         <a href="/logout"class="header_links">LOGOUT</a></li>
                 </ul>
             </div>
-        </nav>    
-        <section id="editDetails">
-            <h1>Edit Account Details</h1>
-            <form method="post">
-                <label for="fName">First Name:</label><br>
-                <input type="text" name="fName" minlength="1" maxlength="100" value="<%= user.fname%>" required><br>
-                <label for="lName">Last Name:</label><br>
-                <input type="text" name="lName" minlength="1" maxlength="100" value="<%= user.lname%>" required><br>
-                <label for="email">Email:</label><br>
-                <input type="text" name="email" minlength="1" maxlength="100" value="<%= user.email%>" required><br>
-                <label for="password">Password:</label><br>
-                <input type="text" name="password" minlength="8" maxlength="20" value="<%= user.password%>" required><br>
-                <input type="submit" value="Submit">
+        </nav>   
+        <div class="join-room">
+            <h2>Have A Meeting Code?</h2>
+            <form method="post"> 
+                <input type="text" id="roomId" name="roomId" placeholder="Enter code here..." required>
+                <input type="submit" id="submit" value="✔">
             </form>
-        </section>
+            <div id="errorContent">
+                <% if(typeof errors != 'undefined') { %> 
+                    <p><%= errors[0].message %></p>
+                <% } %>
+            </div>
+            <div class="back-btn">
+                <a href="/meeting"><button><i class="fa-solid fa-arrow-left-long"></i></button></a>
+            </div>
+        </div>
     </body>
 </html>

@@ -23,23 +23,17 @@
             </div>
             <div id="loginContent">
                 <form method="post">
-                    <input type="text" placeholder="Email" name="email" minlength="1" maxlength="100" required><br>
-                    <input type="password" placeholder="Password" name="password" minglength="1" maxlength="20" required><br>
+                    <input type="text" name="email" minlength="1" maxlength="100" placeholder="Email" autofocus required><br>
+                    <input type="password" name="password" minglength="1" maxlength="20" placeholder="Password" autofocus required><br>
                     <input type="submit" value="Login">
                 </form>
             </div>
             <div id="signupContent">
-                <form action="/signup">
-                    <text>No account?</text>
-                    <a href="/signup">Create one</a>
-                </form>
+                <text>No account?</text>
+                <a href="/signup">Create one</a>
             </div>
-            <br>
-            <div class="g-signin2" data-onsuccess="onSignIn" style="float:right; padding-right: 185px;"></div>
-            <br>
-            <br>
-            <br>
-            <div><a href="#" onclick="signOut();" style="float:right; padding-right: 125px;">Google Account Sign out</a></div>
+            <div class="g-signin2" data-onsuccess="onSignIn" style="display:flex; align-items: center; justify-content: center; margin-bottom: 30px; margin-top: 20px;"></div>
+            <div><a href="#" onclick="signOut();" style="display:flex; align-items: center; justify-content: center;">Google Account Sign out</a></div>
         </div>
         <script>
             function onSignIn(googleUser) {

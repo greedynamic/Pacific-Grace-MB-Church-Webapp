@@ -360,7 +360,7 @@
     padding: 15% 0 0 0;
 }
 
-.video_tag .video_text h3{
+.video_tag .video_text h3 a{
     text-align: center;
 }
 
@@ -401,7 +401,7 @@
     margin-top: 20px;
     font-weight: 600;
 }
-.icons .fa{
+.about i {
     color: teal;
     margin: 0 13px; 
     cursor: pointer;

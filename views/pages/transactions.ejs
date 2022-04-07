@@ -4,13 +4,13 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Church Account</title>
+        <title>Transaction Record</title>
         <link rel="stylesheet" href="/stylesheets/styles.css">
-        <link rel="stylesheet" href="/stylesheets/editAccount.css">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="/stylesheets/meeting.css">
+        <link rel="stylesheet" href="/stylesheets/transactions.css">
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
-        <script src="index.js"></script>
+        <script src="index.js" defer></script>
+        <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
     </head>
     <body>
         <nav class="header">
@@ -38,20 +38,27 @@
                         <a href="/logout"class="header_links">LOGOUT</a></li>
                 </ul>
             </div>
-        </nav>    
-        <section id="editDetails">
-            <h1>Edit Account Details</h1>
-            <form method="post">
-                <label for="fName">First Name:</label><br>
-                <input type="text" name="fName" minlength="1" maxlength="100" value="<%= user.fname%>" required><br>
-                <label for="lName">Last Name:</label><br>
-                <input type="text" name="lName" minlength="1" maxlength="100" value="<%= user.lname%>" required><br>
-                <label for="email">Email:</label><br>
-                <input type="text" name="email" minlength="1" maxlength="100" value="<%= user.email%>" required><br>
-                <label for="password">Password:</label><br>
-                <input type="text" name="password" minlength="8" maxlength="20" value="<%= user.password%>" required><br>
-                <input type="submit" value="Submit">
-            </form>
-        </section>
+        </nav>  
+        <div class="title">
+            <h2>Transaction Record</h2>
+        </div> 
+        <div class="main-table">
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Amount</th>
+                    <th>Created at</th>
+                </tr>
+                <% transactions.forEach(function(transaction) { %>
+                    <tr>
+                        <td><%= transaction.name %></td>
+                        <td><%= transaction.email %></td>
+                        <td><%= transaction.amount %></td>
+                        <td><%= transaction.created_at %></td>
+                    </tr>
+                <% }); %>
+            </table>
+        </div>
     </body>
 </html>

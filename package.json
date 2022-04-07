@@ -11,25 +11,37 @@
     "test": "nodemon test.js"
   },
   "dependencies": {
+    "@zoomus/websdk": "^2.3.0",
+    "aws-sdk": "^2.1103.0",
     "bcrypt": "^5.0.1",
+    "bucket": "0.0.1",
+    "chai": "^4.3.6",
+    "chai-http": "^4.3.0",
     "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
     "dotenv": "^16.0.0",
-    "ejs": "^3.1.5",
+    "ejs": "^3.1.6",
     "express": "^4.17.3",
     "express-flash": "^0.0.2",
     "express-session": "^1.17.2",
-    "gcp-metadata": "^4.3.1",
+    "fs": "^0.0.1-security",
     "google-auth-library": "^7.14.0",
-    "googleapis": "^97.0.0",
     "moment": "^2.29.1",
-    "nodemailer": "^6.7.2",
+    "multer": "^1.4.4",
+    "multer-s3": "^2.10.0",
+    "node-fetch": "^3.2.3",
+    "nodemailer": "^6.7.3",
+    "nodemon": "^2.0.15",
     "passport": "^0.5.2",
     "passport-local": "^1.0.0",
-    "pg": "^8.7.3"
+    "peer": "^0.6.1",
+    "pg": "^8.7.3",
+    "response": "^0.18.0",
+    "socket.io": "^4.4.1",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "got": "^11.3.0",
-    "nodemon": "^2.0.15",
     "tape": "^4.7.0"
   },
   "repository": {

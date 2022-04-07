@@ -1,18 +1,24 @@
 require('dotenv').config();
+var nodemailer = require('nodemailer');
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const app = express();
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
+const fetch = (...args) =>
+  import('node-fetch').then(({ default: fetch }) => fetch(...args));
+const moment = require('moment');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
+const transactionRoute = require('./routes/adminTransaction');
 const emailRoute = require('./email-nodeapp/emailVerify');
+const newUserVerifyRoute = require('./email-nodeapp/newUserVerify')
 const path = require('path');
 const PORT = process.env.PORT || 5000;
 const { Pool } = require('pg');
 const req = require('express/lib/request');
 const pool = new Pool({
-    connectionString: process.env.DATABASE_URL || 'postgres://wwiwookhmzbgif:b99fe28f9a5e30cdca56d64ce4165e8c1bf3f8a4fc1895b437043db9fa4ed35a@ec2-34-230-110-100.compute-1.amazonaws.com:5432/d329ha74afil4s',
+    connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
@@ -24,19 +30,26 @@ const { ExpressPeerServer } = require('peer');
 const peerServer = ExpressPeerServer(server, {
     debug: true
 });
-
-const flash = require('express-flash')
 const session = require('express-session')
-const bcrypt = require('bcrypt')
-const passport = require('passport');
-const {authUser, authAmdin} = require('./routes/middleware');
-const { database } = require('pg/lib/defaults');
-const users = [];
+const {authUser, authAdmin} = require('./routes/middleware');
+const {Users} = require('./public/roomUsers');
+var roomUsers = new Users();
 
 // Google Auth
 const {OAuth2Client} = require('google-auth-library');
 const CLIENT_ID = '376022680662-meru43h5tvg8i8qfeii49bjuj2rbi5qe.apps.googleusercontent.com'
 const client = new OAuth2Client(CLIENT_ID);
+
+const smtpConfig = {
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true, // use SSL
+  auth: {
+      user: 'pmpgmbc.manage@gmail.com',
+      pass: 'psdPSD22//'
+  }
+};
+const transporter = nodemailer.createTransport(smtpConfig);
 
 app.use(express.static(path.join(__dirname, '/public')));
 app.use(express.json());
@@ -48,13 +61,16 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
 }))
+app.use('/peerjs', peerServer);
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.use('/blog', authAmdin(), blogRoute);
+app.use('/blog', authAdmin(), blogRoute);
 app.use('/video', videoRoute);
 app.use('/sendVerification', emailRoute);
+app.use('/newUserVerification', authAdmin(), newUserVerifyRoute);
+app.use('/transactions', transactionRoute);
 
 app.get('/', (req,res) => {
   // Post recent blogs on homepage
@@ -79,6 +95,14 @@ app.get('/database', async (req, res) => {
   } catch (err) {
     res.send(err);
   }
+});
+
+app.get('/roombooking', (req, res) =>{
+  res.render('pages/roombooking');
+});
+
+app.get('/contact', (req, res) =>{
+  res.render('pages/contact');
 });
 
 app.get('/signup', (req,res) => {
@@ -122,15 +146,80 @@ app.post('/signup', async (req,res) => {
 
       if(errors.length == 0) {
         // adds account to database, creating account
-        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}', false)`;
-        await client.query(registerQuery); 
-        res.redirect("/login");
+        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}', false, false)`;
+        await client.query(registerQuery);
+        let mailOptions = {
+          from: 'PMPGMBC Registration ✔ <PMPGMBC@gmail.com>',
+          to: req.body.email,
+          subject: "Church user verification for " + req.body.fName + " " + req.body.lName,
+          text: 'Verification ' + req.body.fName + '✔',
+          html: "<p>Thanks for registering PMPGMBC! Your email: " + req.body.email + " will be verified by our admin soon.</p>",
+          bcc: "fred@gmail.com"
+        };
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            } else {
+                console.log('Message sent successfully!');
+                console.log('Message sent: ' + info.response);
+            }
+        });
+        mailOptions = {
+            from: 'PMPGMBC Registration ✔ <PMPGMBC@gmail.com>',
+            to: 'pmpgmbc.manage@gmail.com',
+            subject: "Please verify a new user for " + req.body.fName + " " + req.body.lName,
+            text: 'Verification for' + req.body.fName + '✔',
+            html: "<h3> A new user, " + req.body.fName + " " + req.body.lName + ", just registered our church. Please verify the registration: " + req.body.email + " by clicking the following link.</h3> <h4>https://church276.herokuapp.com/newUserVerification</h4>",
+            bcc: "pmpgmbc.manage@gmail.com"
+        };
+        transporter.sendMail(mailOptions, function(error, info){
+            if(error){
+                console.log(error);
+            } else {
+                console.log('Message sent to Admin user.');
+                console.log('Message sent: ' + info.response);
+            }
+        });
+        res.send("Thanks for your registration! Your account will be verified by our church admin. If the admin approved, you will receive an email notification.");
+        // res.redirect('/');
         client.release();
       } else {
         res.render('pages/signup', {errors});
       }
   } catch (err) {
     res.send(err);
+  }
+})
+
+app.post('/verified', async (req,res) => {
+  const fname = req.body.fName;
+  const lname = req.body.lName;
+  const email = req.body.email;
+  const verifiedQuery = `update usr set is_verified=true where fname='${fname}' and lname='${lname}' and email='${email}'`;
+
+  try{
+      const client = await pool.connect();
+      await client.query(verifiedQuery);
+      // req.session.user = {fname:fname, lname:lname, email:email, password:password, admin:req.session.user.admin};
+      // res.redirect('/');
+      let mailOptions = {
+        from: 'PMPGMBC Registration ✔ <PMPGMBC@gmail.com>',
+        to: email,
+        subject: "Church user verification for " + req.body.fName + " " + req.body.lName,
+        text: 'Verification ' + req.body.fName + '✔',
+        html: "<h2>Thanks for registering PMPGMBC! Your email: " + req.body.email + " has been verified. You could perform as a registered user in the PMPGMBC church web.</h2>",
+      };
+      transporter.sendMail(mailOptions, function(error, info){
+          if(error){
+              console.log(error);
+          } else {
+              console.log('Verified message sent successfully!');
+              console.log('Verified message sent: ' + info.response);
+          }
+      });
+      res.send(fname + ' ' + lname + ' has been verified!')
+  } catch (err){
+      res.send(err);
   }
 })
 
@@ -194,6 +283,10 @@ app.get('/profile', checkAuthenticated, (req, res)=>{
   res.render('profile', {user});
 })
 
+app.get('/donate', (req,res) => {
+  res.render('pages/donate', {paypalClientId: process.env.PAYPAL_CLIENT_ID});
+})
+
 app.get('/account', (req,res) => {
   if(req.session.user){
     res.render('pages/account', {user:req.session.user});
@@ -231,15 +324,15 @@ app.get('/account/edit', (req,res) => {
 })
 
 app.post('/account/edit', async (req,res) => {
-  try{
-    const oldEmail = req.session.user.email;
-    const fname = req.body.fName;
-    const lname = req.body.lName;
-    const email = req.body.email;
-    const password = req.body.password;
-    const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}',
-      password='${password}' where email='${oldEmail}'`;
+  const oldEmail = req.session.user.email;
+  const fname = req.body.fName;
+  const lname = req.body.lName;
+  const email = req.body.email;
+  const password = req.body.password;
+  const updateQuery = `update usr set fname='${fname}', lname='${lname}', email='${email}',
+    password='${password}' where email='${oldEmail}'`;
 
+  try{
     const client = await pool.connect();
     await client.query(updateQuery);
     req.session.user = {fname:fname, lname:lname, email:email, password:password, admin:req.session.user.admin};
@@ -260,13 +353,57 @@ app.get('/blogs/:title', (req,res) => {
   })
 })
 
-app.use('/peerjs', peerServer);
+// Get video page
+app.get('/videos/:title', (req,res)=>{
+  pool.query(`SELECT * FROM video WHERE title='${req.params.title}';`, (error, result) =>{
+      if(error)
+          res.send(error);
+      else{
+          res.render('pages/showVideo', {'videos': result.rows});
+      }
+  })
+})
 
-app.get('/meeting', (req,res) => {
+app.get('/meeting', async (req,res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query(`select * from activemeetings where public=true`);
+    const results = {'results': (result) ? result.rows : null};
+    if (req.session.user) {
+      res.render('pages/meeting', results);
+    } else {
+      res.redirect('/login')
+    }
+  } catch(err) {
+    res.send(err);
+  }
+})
+
+app.get('/meeting/code', (req,res) => {
   if (req.session.user) {
-    res.render('pages/meeting');
+    let errors = [];
+    res.render('pages/meetingCode', errors);
   } else {
     res.redirect('/login')
+  }
+})
+
+app.post('/meeting/code', async (req,res) => {
+  let code = req.body.roomId;
+  let errors = [];
+  try {
+    const client = await pool.connect();
+    const meetingQuery = `select * from activemeetings where id='${code}'`;
+    const result = await client.query(meetingQuery);
+    if (result.rowCount == 0) {
+      errors.push({message: "Meeting code does not exist!"});
+      res.render('pages/meetingCode', {errors});
+    } else {
+      res.redirect(`/meeting/room/${code}`);
+    }
+    client.release();
+  } catch (err) {
+    res.send(err);
   }
 })
 
@@ -287,59 +424,60 @@ app.get('/meeting/room/:room', (req,res) => {
   }
 })
 
-// change by adding new parameter for num participants
-// when participants reaches 0, delete room
-
+// Handles communication between client and server
 io.of("/room").on('connection', socket => {
-  socket.on('join-room', async (roomId, userId) => {
+  socket.on('join-room', async (roomId, userId, name) => {
     socket.join(roomId);
-    socket.to(roomId).emit('user-connected', userId);
-    // Add room to activemeetings
-    try {
-      const client = await pool.connect();
-      const meetingQuery = `select * from activemeetings where id='${roomId}'`;
-      const result = await client.query(meetingQuery);
-      if (result.rowCount == 0) {
-        await client.query(`insert into activemeetings values('${roomId}')`);
-      }
-      client.release();
-    } catch (err) {
-      res.send(err);
-    }
+    roomUsers.removeUser(userId);
+    roomUsers.addUser(userId, name, roomId);
+    io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
+    io.of("/room").to(roomId).emit('user-connected', userId);
+    socket.on('send-chat-message', (msg) => {
+      io.of("/room").to(roomId).emit('chat-message', msg, name);
+    });
     socket.on('disconnect', async () => {
-      socket.to(roomId).emit('user-disconnected', userId);
-      // Remove room from activemeetings
-      try {
-        const client = await pool.connect();
-        await client.query(`delete from activemeetings where id='${roomId}'`);
-        client.release();
-      } catch (err) {
-        res.send(err);
+      let roomUser = roomUsers.removeUser(userId);
+      if (roomUser) {
+        io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
+        io.of("/room").to(roomId).emit('user-disconnected', userId);
+        // Remove room from activemeetings
+        if (roomUsers.getUserList(roomId).length == 0) {
+          try {
+            const client = await pool.connect();
+            await client.query(`delete from activemeetings where id='${roomId}'`);
+            client.release();
+          } catch (err) {
+            res.send(err);
+          }
+        }
       }
     });
   });
 });
 
-// Checks if meeting exists with room id and joins if it does
-app.post("/meeting", async (req,res) => {
-  const roomId = req.body.roomId;
-  const meetingQuery = `select * from activemeetings where id='${roomId}'`;
-  let errors = [];
-
+app.get('/meeting/public', async (req,res) => {
   try {
-    const client = await pool.connect();
-    const result = await client.query(meetingQuery);
-    if (result.rowCount == 1) {
-      res.redirect(`/meeting/room/${roomId}`);
-    } else {
-      errors.push({message: "Meeting code does not exist!"});
-      res.render('pages/meeting', {errors});
-    }
-    client.release();
+    const roomId = uuidV4();
+    const fName = req.session.user.fname;
+    const meetingName = `${fName} s meeting`; 
+    await pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', true)`);
+    res.redirect(`/meeting/room/${roomId}`);
   } catch (err) {
     res.send(err);
   }
-});
+})
+
+app.get('/meeting/private', async (req,res) => {
+  try {
+    const roomId = uuidV4();
+    const fName = req.session.user.fname;
+    const meetingName = `${fName} s meeting`; 
+    await pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', false)`);
+    res.redirect(`/meeting/room/${roomId}`);
+  } catch (err) {
+    res.send(err);
+  }
+})
 
 function checkAuthenticated(req, res, next){
   let token = req.cookies['session-token'];
@@ -363,9 +501,70 @@ function checkAuthenticated(req, res, next){
     .catch(err=>{
         res.redirect('/login')
     })
+}
 
+/** DONATION */
+
+const { PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET } = process.env; // change client_id and client_secret of real business if want to go live
+const base = "https://api-m.sandbox.paypal.com"; // if want to go live transaction, use "https://api-m.paypal.com"
+
+// capture payment & store order information or fullfill order
+app.post("/api/orders/:orderID/capture", async (req, res) => {
+  const { orderID } = req.params;
+  const captureData = await capturePayment(orderID);
+  res.json(captureData);
+  // TODO: store payment information such as the transaction ID
+  const isShared = req.body.shareInfo;
+  var name, email;  
+  if(isShared == 'yes'){
+     name = captureData.payer.name.given_name + " " + captureData.payer.name.surname;
+     email = captureData.payer.email_address;
+  } 
+  else{
+    name = 'anonymous';
+    email = 'anonymous';
+  }
+  const amount = captureData.purchase_units[0].payments.captures[0].amount.value;
+  const created_at =  moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
+  var query = `INSERT INTO transaction VALUES ('${name}', '${email}', ${amount}, '${created_at}')`;
+  pool.query(query, (error, result) => {
+    if(error)
+      res.send(error)
+    else{
+      console.log("success");
+    }
+  })
+});
+
+
+// use the orders api to capture payment for an order
+async function capturePayment(orderId) {
+  const accessToken = await generateAccessToken();
+  const url = `${base}/v2/checkout/orders/${orderId}/capture`;
+  const response = await fetch(url, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  const data = await response.json();
+  return data;
+}
+
+// generate an access token using client id and app secret
+async function generateAccessToken() {
+  const auth = Buffer.from(PAYPAL_CLIENT_ID + ":" + PAYPAL_CLIENT_SECRET).toString("base64")
+  const response = await fetch(`${base}/v1/oauth2/token`, {
+    method: "post",
+    body: "grant_type=client_credentials",
+    headers: {
+      Authorization: `Basic ${auth}`,
+    },
+  });
+  const data = await response.json();
+  return data.access_token;
 }
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
-
- 

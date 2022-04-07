@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/contact.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <script src="index.js" defer></script>
+    <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
+
+</head>
+<body>
+    <nav class="header">
+        <div class="header_container">
+            <a href="/" id="headerlogo"><i class="fa-solid fa-church"></i>Pacific Church</a>
+            <div class="header_toggle" id="mobile_menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <ul class="header_menu">
+                <li class = "header_item">
+                    <a href="/" class="header_links">HOME</a></li>
+                <li class = "header_item">
+                    <a href="/roombooking" class="header_links">ROOMS</a></li>
+                <li class = "header_item">
+                    <a href="#videos" class="header_links">VIDEOS</i></a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/video" class="header_links">All Videos</a></li>
+                            <li><a href="/video/upload" class="header_links">Upload Video</a></li>
+                        </ul>
+                    <% } %>
+                </li>
+                <li class = "header_item">
+                    <a href="#blog" class="header_links">BLOG</a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/blog" class="header_links">All Blogs</a></li>
+                            <li><a href="/blog/new" class="header_links">New Blog</a></li>
+                        </ul>
+                    <% } %>
+                </li>
+                <li class = "header_item">
+                    <a href="/meeting" class="header_links">MEETINGS</a></li>
+                <% if(user) { %>
+                    <li class = "header_item">
+                        <a href="/account" class="header_links">ACCOUNT</a></li>
+                    <li class = "header_item">
+                        <a href="/logout"class="header_links">LOGOUT</a></li>
+                <% } else { %>
+                    <li class = "header_item">
+                        <a href="/login" class="header_links">LOGIN</a></li>
+                    <li class = "header_item">
+                        <a href="/signup" class="header_links">SIGNUP</a></li>
+                <% } %>
+            </ul>
+        </div>
+    </nav> 
+
+
+    <section>
+        
+        <div class="form_container">
+            <form onsubmit="sendEmail(); sendEmailConfirmation(); reset(); return false;">
+                <h1>CONTACT US</h1> 
+                <input type="text" id="name" placeholder="Your Name" required>
+                <input type="email" id="email" placeholder="Your Email" required>
+                <input type="text" id="phone" placeholder="Phone no." required>
+                <textarea id="message" rows="4" placeholder="Tell us..."></textarea>
+                <span> *We will get back to you within 2-3 business days.</span>
+                <button type="submit">SEND</button>
+            </form>
+        </div>
+
+    </section>
+    <section>
+        <h2>You can find us here</h2>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d83371.94302863597!2d-123.01117339681741!3d49.23141280530833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x548678e28d22ec0b%3A0x7d46874f44a2b95a!2sPort%20Moody%20Pacific%20Grace%20MB%20Church!5e0!3m2!1sen!2sca!4v1648935055626!5m2!1sen!2sca" width="1000" height="500" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </section>
+
+
+
+
+
+
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>
+    
+    <script>
+        function sendEmail(){
+            Email.send({
+                Host : "smtp.gmail.com",
+                Username : "church.pacific01@gmail.com",
+                Password : "Qwerty@1234",
+                To : 'church.pacific01@gmail.com',
+                From : document.getElementById("email").value,
+                Subject : "Contact Form - Submission",
+                Body : "Name: " + document.getElementById("name").value
+                        +" <br> Email: " + document.getElementById("email").value
+                        +" <br> Phone no: " + document.getElementById("phone").value
+                        +" <br> Message: " + document.getElementById("message").value
+
+            }).then(
+            message => alert("Your Submission sent succesfully")
+            );
+        }
+    </script>
+
+    <script>
+        function sendEmailConfirmation(){
+            Email.send({
+                Host : "smtp.gmail.com",
+                Username : "church.pacific01@gmail.com",
+                Password : "Qwerty@1234",
+                To : document.getElementById("email").value,
+                From : 'church.pacific01@gmail.com',
+                Subject : "Contact Form - Confirmation ",
+                Body : "This is a confirmation regarding your submission."  
+                        + "<br> Name: " + document.getElementById("name").value
+                        +" <br> Email: " + document.getElementById("email").value
+                        +" <br> Phone no: " + document.getElementById("phone").value
+                        +" <br> Message: " + document.getElementById("message").value
+                        + "<br> <br> <br> THANKS FOR YOUR PATIENCE. WE WILL GET BACK TO YOU IN 2-3 BUSINESS DAYS"
+                        +"<br><br><br> PLEASE DO NOT REPLY TO THIS EMAIL."
+            }).then(
+            message => alert("Your Submission sent succesfully")
+            );
+        }
+    </script>
+
+
+
+<section class="about">
+    <h5>ABOUT US</h5>
+    <P>We are determined to move forward by combining technology to make everything more accessible </P>
+    <div class="icons">
+        <i class="fa fa-facebook"></i>
+        <i class="fa fa-twitter"></i>
+        <i class="fa fa-instagram"></i>
+        <i class="fa fa-linkedin"></i>
+    </div>
+    <p>Made by AntaresFive</p>
+</section>
+</body>
+</html>

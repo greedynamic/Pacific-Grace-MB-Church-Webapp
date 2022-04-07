@@ -28,6 +28,8 @@
                 <li class = "header_item">
                     <a href="/" class="header_links">HOME</a></li>
                 <li class = "header_item">
+                    <a href="/roombooking" class="header_links">ROOMS</a></li>
+                <li class = "header_item">
                     <a href="#videos" class="header_links">VIDEOS</i></a>
                     <% if(user && user.admin){ %> 
                         <ul>
@@ -45,6 +47,19 @@
                         </ul>
                     <% } %>
                 </li>
+                <li class = "header_item">
+                    <a href="/meeting" class="header_links">MEETINGS</a>
+                </li>
+
+                <li class = "header_item">
+                    <a href="/donate" class="header_links">DONATION</a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="/transactions" class="header_links">Donate Transactions</a></li>
+                        </ul>
+                    <% } %>
+                </li>
+
                 <% if(user) { %>
                     <li class = "header_item">
                         <a href="/account" class="header_links">ACCOUNT</a></li>
@@ -69,7 +84,7 @@
         <p>
             We will never change the world by going to Church <br>We will only change the world by being the Church
         </p>
-        <a href=""class="homepage_btn">Visit Us To Know More</a>
+        <a href="/contact"class="homepage_btn">Visit Us To Know More</a>
     </div>
 
 </section>
@@ -85,7 +100,9 @@
             for(var i=0; i < blogs.length; i++) { %> 
                 <div class="blog_box">
                     <div class="blog_image">
-                        <img src="images/homeimage/ChurchBlog1.jpg" alt="Blog">
+                        <% if(blogs[i].filepath != null) { %>
+                            <img src="<%= blogs[i].filepath%>">
+                        <% } %>
                     </div>
                     <div>
                     <div class="blog_text">
@@ -106,22 +123,23 @@
 <section id="videos">
     <div class="video_heading">
         <h4 style="margin-bottom: 0;">VIDEOS</h4>
-        <a class="more-videos" style="float: right; font-size: large;" href="/video/archivedVideo">More Videos</a><br>
+        <a style="float: right; font-size: large;" href="/video/archivedVideo">More Videos</a><br>
     </div>
     <div class="video_tag">
         <% if(videos.length) { 
             for (var i=0; i < videos.length; i++){ %>
                 <div class="show_video">
-                    <% if(videos[i].filename != 'undefined') {%>
-                        <video src="videos/<%= videos[i].filename%>" controls type="video/*" width='800' height='500' ></video>
+                    <% if(videos[i].filepath != 'undefined') {%>
+                        <video src="<%= videos[i].filepath%>" controls type="video/*" style="clear:left; float: left; padding-right: 20px;" width='800' height='500' ></video>
                     <%} else{ %> 
                         <iframe src="<%= videos[i].url %>" width="800" height="500"></iframe>
                     <% } %>
                 </div>
                 <div class="video_text" >
-                    <h3><%= videos[i].title %></h3>
-                    <p><%= videos[i].description %></p>
+                    <h3><%= videos[i].title %></h3><br>
+                    <a href="/videos/<%= videos[i].title %>" style="align-content: center;">View Notes</a>
                 </div>
+                
             <% }
         } %>
         <br>
@@ -130,7 +148,7 @@
 <!--CONTACT US-->
 <section class="contact">
     <h6>Have any questions?<br> Feel free to ask us</h6>
-    <a href="" class="homepage_btn">CONTACT US</a>
+    <a href="/contact" class="homepage_btn">CONTACT US</a>
 </section>
 
 

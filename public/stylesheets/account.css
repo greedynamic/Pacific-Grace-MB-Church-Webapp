@@ -9,6 +9,7 @@ body {
 
 h1 {
     margin-bottom: 20px;
+    font-size: 24px;
 }
 
 table, th, td {
@@ -16,9 +17,9 @@ table, th, td {
     border: 1px solid black;
     border-collapse: collapse;
     text-align: left;
-    font-size: 18px;
-    padding: 15px;
-    width: 25vw;
+    font-size: 20px;
+    padding: 16px;
+    width: 28vw;
 }
 
 button {
@@ -26,12 +27,14 @@ button {
     color: white;
     border-color: rgb(42, 42, 42);
     border-radius: 3px;
-    font-size: 16px;
-    padding: 8px;
-    margin-top: 30px;
-    margin-right: 8px;
+    font-size: 18px;
+    padding: 7px;
+    margin-top: 5vh;
+    margin-right: 10px;
 }
 
 button:hover {
     background-color: rgb(80, 80, 80);
+    color: teal;
+    transition: 0.3s;
 }

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New User Verification</title>
+</head>
+<body>
+    <div id="loginContent">
+        <form action="/verified" method="post">
+            <h>Please enter the user you want to verify: </h>
+            <br>
+            <input type="text" placeholder="First Name" name="fName" minlength="1" maxlength="100" required><br>
+            <input type="text" placeholder="Last Name" name="lName" minlength="1" maxlength="100" required><br>
+            <input type="text" placeholder="Email" name="email" minlength="1" maxlength="100" required><br>
+            <input type="submit" value="Verify the user">
+        </form>
+    </div>
+</body>
+</html>

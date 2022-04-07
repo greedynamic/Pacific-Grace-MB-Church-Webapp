@@ -10,12 +10,6 @@
         <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
         <script src="index.js" defer></script>
         <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
-        <script>
-            function loadCode() {
-                const code = document.getElementById("roomId").value;
-                document.location = '/meeting/room/' + code;
-            }
-        </script>
     </head>
     <body>
         <nav class="header">
@@ -30,35 +24,56 @@
                     <li class = "header_item">
                         <a href="/" class="header_links">HOME</a></li>
                     <li class = "header_item">
+                        <a href="/roombooking" class="header_links">ROOMS</a></li>
+                    <li class = "header_item">
                         <a href="/#videos" class="header_links">VIDEOS<i class="fa-solid fa-sort-down"></i></a></li>
                     <li class = "header_item">
                         <a href="/#blog" class="header_links">BLOG</a></li>
+                    <li class = "header_item">
+                        <a href="/meeting" class="header_links">MEETINGS</a></li>
                     <li class = "header_item">
                         <a href="/account" class="header_links">ACCOUNT</a></li>
                     <li class = "header_item">
                         <a href="/logout"class="header_links">LOGOUT</a></li>
                 </ul>
             </div>
-        </nav>   
+        </nav>  
+        <div class="title">
+            <h1>Start A Virtual Meeting</h1>
+        </div> 
         <div class="main">
             <div class="create-room">
                 <h4>Create A New Room</h4>
-                <a href="/meeting/room">
-                    <button>Create</button>
-                </a>
+                <div class="dropdown">
+                    <button class="dropbtn">Create</button>
+                    <div class="dropdown-content">
+                        <a href="/meeting/public">Public Meeting</a>
+                        <a href="/meeting/private">Private Meeting</a>
+                    </div>
+                </div>
             </div>
             <div class="join-room">
                 <h4>Have A Meeting Code?</h4>
-                <form method="post"> 
-                    <input type="text" id="roomId" name="roomId" placeholder="Enter code here..." required>
-                    <input type="submit" id="submit" value="✔">
-                </form>
-                <div id="errorContent">
-                    <% if(typeof errors != 'undefined') { %> 
-                        <p><%= errors[0].message %></p>
-                    <% } %>
-                </div>
+                <a href="/meeting/code"><button>Join a Meeting</button></a>
             </div>
+        </div>
+        <!-- public meetings -->
+        <div class="public-meetings">
+            <h4>Public Meetings</h4>
+            <table>
+                <tr>
+                    <th style="width: 30vw">Meeting Name</th>
+                    <th>Join</th>
+                </tr>
+                <% results.forEach(function(meeting) { %>
+                    <tr>
+                        <td><%= meeting.name %></td>
+                        <td>
+                            <a href="/meeting/room/<%= meeting.id%>"><button>✔</button></a>
+                        </td>
+                    </tr>
+                <% }); %>
+            </table>
         </div>
     </body>
 </html>
