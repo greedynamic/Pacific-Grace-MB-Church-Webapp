@@ -202,7 +202,7 @@ app.get('/logout', (req,res) => {
 
 app.get('/profile', checkAuthenticated, (req, res)=>{
   let user = req.user;
-  res.render('profile', {user});
+  res.render('pages/profile', {user});
 })
 
 app.get('/donate', (req,res) => {
@@ -221,15 +221,14 @@ app.post('/account', async (req,res) =>{
   var buttonValue = req.body.button;
 
   if (buttonValue == "delete") {
-    try {
-      const client = await pool.connect();
-      const email = req.session.user.email;
-      await client.query(`delete from usr where email='${email}'`);
-      res.redirect('/logout');
-      client.release();
-    } catch (err) {
-      res.send(err);
-    }
+    const email = req.session.user.email;
+    pool.query(`delete from usr where email='${email}'`, (err) => {
+      if (err) {
+        res.send(err);
+      } else {
+        res.redirect('/logout');
+      }
+    });
   } else if(buttonValue == "edit") {
     res.redirect('/account/edit');
   } else {
@@ -294,11 +293,11 @@ app.get('/blogs/:title', (req,res) => {
 // Get video page
 app.get('/videos/:title', (req,res)=>{
   pool.query(`SELECT * FROM video WHERE title='${req.params.title}';`, (error, result) =>{
-      if(error)
-          res.send(error);
-      else{
-          res.render('pages/showVideo', {'videos': result.rows});
-      }
+    if(error)
+      res.send(error);
+    else{
+      res.render('pages/showVideo', {'videos': result.rows});
+    }
   })
 })
 
@@ -346,18 +345,49 @@ app.post('/meeting/code', async (req,res) => {
   }
 })
 
-app.get('/meeting/room', (req,res) => {
-  if (req.session.user) {
-    res.redirect(`/meeting/room/${uuidV4()}`);
-  } else {
-    res.redirect('/login')
-  }
+app.get('/meeting/public', (req,res) => {
+  const roomId = uuidV4();
+  const fName = req.session.user.fname;
+  const meetingName = `${fName} meeting`; 
+
+  pool.query(`insert into activemeetings values('${roomId}', '${meetingName}', true)`, (err) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.redirect(`/meeting/room/${roomId}`);
+    }
+  });
+})
+
+app.get('/meeting/private', (req,res) => {
+  const roomId = uuidV4();
+  const fName = req.session.user.fname;
+  const meetingName = `${fName} meeting`; 
+  
+  pool.query(`insert into activemeetings values('${roomId}', '${meetingName}', false)`, (err) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.redirect(`/meeting/room/${roomId}`);
+    }
+  });
 })
 
 // Renders a unique room
 app.get('/meeting/room/:room', (req,res) => {
   if (req.session.user) {
-    res.render('pages/room', {roomId: req.params.room, user: req.session.user});
+    // If meeting code exists, render room, else redirect to meeting page
+    pool.query(`select * from activemeetings where id='${req.params.room}'`, (err, result) => {
+      if (err) {
+        res.send(err);
+      } else {
+        if (result.rowCount > 0) {
+          res.render('pages/room', {roomId: req.params.room, user: req.session.user});
+        } else {
+          res.redirect('/meeting');
+        }
+      }
+    })
   } else {
     res.redirect('/login')
   }
@@ -371,9 +401,11 @@ io.of("/room").on('connection', socket => {
     roomUsers.addUser(userId, name, roomId);
     io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
     io.of("/room").to(roomId).emit('user-connected', userId);
+
     socket.on('send-chat-message', (msg) => {
       io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
+
     socket.on('disconnect', () => {
       let roomUser = roomUsers.removeUser(userId);
       if (roomUser) {
@@ -381,9 +413,9 @@ io.of("/room").on('connection', socket => {
         io.of("/room").to(roomId).emit('user-disconnected', userId);
         // Remove room from activemeetings
         if (roomUsers.getUserList(roomId).length == 0) {
-          pool.query(`delete from activemeetings where id='${roomId}'`, (err, res) => {
+          pool.query(`delete from activemeetings where id='${roomId}'`, (err) => {
             if (err) {
-              res.send(err);
+              throw err;
             }
           });
         }
@@ -391,30 +423,6 @@ io.of("/room").on('connection', socket => {
     });
   });
 });
-
-app.get('/meeting/public', (req,res) => {
-  const roomId = uuidV4();
-  const fName = req.session.user.fname;
-  const meetingName = `${fName} meeting`; 
-  try {
-    pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', true)`);
-    res.redirect(`/meeting/room/${roomId}`);
-  } catch (err) {
-    res.send(err);
-  }
-})
-
-app.get('/meeting/private', (req,res) => {
-  const roomId = uuidV4();
-  const fName = req.session.user.fname;
-  const meetingName = `${fName} meeting`; 
-  try {
-    pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', false)`);
-    res.redirect(`/meeting/room/${roomId}`);
-  } catch (err) {
-    res.send(err);
-  }
-})
 
 function checkAuthenticated(req, res, next){
   let token = req.cookies['session-token'];
@@ -504,3 +512,4 @@ async function generateAccessToken() {
 }
 
 server.listen(PORT, () => console.log(`Listening on ${ PORT }`));
+module.exports = server;
