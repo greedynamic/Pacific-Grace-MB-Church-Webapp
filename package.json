@@ -14,6 +14,7 @@
     "@zoomus/websdk": "^2.3.0",
     "aws-sdk": "^2.1103.0",
     "bcrypt": "^5.0.1",
+    "bucket": "0.0.1",
     "chai": "^4.3.6",
     "chai-http": "^4.3.0",
     "cookie-parser": "^1.4.6",
