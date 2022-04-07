@@ -98,7 +98,7 @@ app.get('/database', async (req, res) => {
 });
 
 app.get('/roombooking', (req, res) =>{
-  res.render('pages/roombooking');
+  res.render('pages/roombooking',{user:req.session.user})
 });
 
 app.get('/contact', (req, res) =>{

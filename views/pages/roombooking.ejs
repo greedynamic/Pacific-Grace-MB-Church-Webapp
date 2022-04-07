@@ -14,20 +14,70 @@
 </head>
 <body>
     <section>
-    <nav class="header">
-        <div class="header_container">
-            <a href="/" id="headerlogo"><i class="fa-solid fa-church"></i>Pacific Church</a>
-            <div class="header_toggle" id="mobile_menu">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
+        <nav class="header">
+            <div class="header_container">
+                <a href="/" id="headerlogo"><i class="fa-solid fa-church"></i>Pacific Church</a>
+                <div class="header_toggle" id="mobile_menu">
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                    <span class="bar"></span>
+                </div>
+                <ul class="header_menu">
+                    <li class = "header_item">
+                        <a href="/" class="header_links">HOME</a></li>
+                    <li class = "header_item">
+                        <a href="/roombooking" class="header_links">ROOMS</a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="https://www.notion.so/b66a06bed507445aa993ca389f267e76?v=910840af92d84ee38e48c663459a346a" class="header_links">Reservations</a></li>
+                        </ul>
+                    <% } %>
+                    </li>
+                    <li class = "header_item">
+                        <a href="#videos" class="header_links">VIDEOS</i></a>
+                        <% if(user && user.admin){ %> 
+                            <ul>
+                                <li><a href="/video" class="header_links">All Videos</a></li>
+                                <li><a href="/video/upload" class="header_links">Upload Video</a></li>
+                            </ul>
+                        <% } %>
+                    </li>
+                    <li class = "header_item">
+                        <a href="#blog" class="header_links">BLOG</a>
+                        <% if(user && user.admin){ %> 
+                            <ul>
+                                <li><a href="/blog" class="header_links">All Blogs</a></li>
+                                <li><a href="/blog/new" class="header_links">New Blog</a></li>
+                            </ul>
+                        <% } %>
+                    </li>
+                    <li class = "header_item">
+                        <a href="/meeting" class="header_links">MEETINGS</a>
+                    </li>
+    
+                    <li class = "header_item">
+                        <a href="/donate" class="header_links">DONATION</a>
+                        <% if(user && user.admin){ %> 
+                            <ul>
+                                <li><a href="/transactions" class="header_links">Donate Transactions</a></li>
+                            </ul>
+                        <% } %>
+                    </li>
+    
+                    <% if(user) { %>
+                        <li class = "header_item">
+                            <a href="/account" class="header_links">ACCOUNT</a></li>
+                        <li class = "header_item">
+                            <a href="/logout"class="header_links">LOGOUT</a></li>
+                    <% } else { %>
+                        <li class = "header_item">
+                            <a href="/login" class="header_links">LOGIN</a></li>
+                        <li class = "header_item">
+                            <a href="/signup" class="header_links">SIGNUP</a></li>
+                    <% } %>
+                </ul>
             </div>
-            <ul class="header_menu">
-                <li class = "header_item">
-                    <a href="/" class="header_links">HOME</a></li> 
-            </ul>
-        </div>
-    </nav>
+        </nav>   
     </section>
 
     <section class="roomcal">
