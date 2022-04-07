@@ -43,15 +43,17 @@ router.get('/new', (req,res) => res.render('pages/newBlog'));
 const BUCKET = process.env.S3_BUCKET_NAME;
 const s3 = new aws.S3();
 const upload = multer({
-    storage: multerS3({
-        s3: s3,
-        bucket: BUCKET,
-        key: function (req, file, cb) {
-            const ext = path.extname(file.originalname);
-            cb(null, `${uuid()}${ext}`);
-        }
-    })
+  storage: multerS3({
+      s3: s3,
+      bucket: BUCKET,
+      acl: "public-read",
+      key: function (req, file, cb) {
+          const ext = path.extname(file.originalname);
+          cb(null, `${uuid()}${ext}`);
+      }
+  })
 })
+
 
 /** Get blog components in the blog table
  *  Redirect to /allBlogs page 

@@ -17,7 +17,7 @@ describe('/login', () => {
                 done();
             })
     })
-    it('should POST regular user login', (done) => {
+    it('should POST regular user login', (done) => {~
         chai.request(server)
             .post("/login")
             .send({'email':'tester@gmail.com', 'password':'testing1'})
@@ -67,15 +67,6 @@ describe('/meeting', () => {
             .end((err, res) => {
                 res.should.have.status(200)
                 res.should.to.be.html;
-                done();
-            })
-    })
-    it('should GET meeting room redirect', (done) => {
-        chai.request(server)
-            .get("/meeting/room")
-            .redirects(0)
-            .end((err, res) => {
-                res.should.have.status(302)
                 done();
             })
     })
