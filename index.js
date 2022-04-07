@@ -384,9 +384,8 @@ app.get('/meeting', async (req,res) => {
   try {
     const client = await pool.connect();
     const result = await client.query(`select * from activemeetings where public=true`);
-    const results = {'results': (result) ? result.rows : null};
     if (req.session.user) {
-      res.render('pages/meeting', results);
+      res.render('pages/meeting', {results : result.rows, user: req.session.user});
     } else {
       res.redirect('/login')
     }
@@ -398,8 +397,7 @@ app.get('/meeting', async (req,res) => {
 
 app.get('/meeting/code', (req,res) => {
   if (req.session.user) {
-    let errors = [];
-    res.render('pages/meetingCode', errors);
+    res.render('pages/meetingCode', {user : req.session.user});
   } else {
     res.redirect('/login')
   }
@@ -414,7 +412,7 @@ app.post('/meeting/code', async (req,res) => {
     const result = await client.query(meetingQuery);
     if (result.rowCount == 0) {
       errors.push({message: "Meeting code does not exist!"});
-      res.render('pages/meetingCode', {errors});
+      res.render('pages/meetingCode', {errors: errors, user: req.session.user});
     } else {
       res.redirect(`/meeting/room/${code}`);
     }
