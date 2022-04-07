@@ -1,7 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const router = express.Router();
-const {authUser, authAmdin} = require('./middleware');
+const {authUser, authAdmin} = require('./middleware');
 const moment = require('moment');
 const multer = require('multer');
 const multerS3 = require('multer-s3');
@@ -43,9 +43,9 @@ const upload = multer({
 
 
 // Render upload video form
-router.get('/upload', authAmdin(), (req,res) => res.render('pages/uploadVideo'));
+router.get('/upload', authAdmin(), (req,res) => res.render('pages/uploadVideo'));
 
-router.post('/upload', authAmdin(), upload.single('video'), (req,res) => {
+router.post('/upload', authAdmin(), upload.single('video'), (req,res) => {
     if(req.file){
         var filepath = req.file.location;
         var filekey = req.file.key;
@@ -70,7 +70,7 @@ router.post('/upload', authAmdin(), upload.single('video'), (req,res) => {
 })
 
 // Get all videos uploaded
-router.get('/', authAmdin(), (req, res) => {
+router.get('/', authAdmin(), (req, res) => {
     pool.query('SELECT * FROM video ORDER BY uploaded_at DESC;', (error, result) => {
         if(error)
             res.send(error);
@@ -82,7 +82,7 @@ router.get('/', authAmdin(), (req, res) => {
 
 
 // Delete videos
-router.post('/del/:title', authAmdin(), (req,res) => {
+router.post('/del/:title', authAdmin(), (req,res) => {
     var query = `SELECT * FROM video WHERE title='${req.params.title}';`;
     pool.query(query, (error,result) => {
         if(error){
@@ -104,7 +104,7 @@ router.post('/del/:title', authAmdin(), (req,res) => {
 })
 
 /** Render /blog/edit/:title to edit page */
-router.get('/edit/:title', authAmdin(), (req,res) => {
+router.get('/edit/:title', authAdmin(), (req,res) => {
     var query = `SELECT * FROM video WHERE title='${req.params.title}';`
     pool.query(query, (error, result) => {
         if(error)
