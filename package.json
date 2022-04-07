@@ -9,7 +9,11 @@
   "scripts": {
     "start": "nodemon index.js",
     "test": "nodemon test.js",
+<<<<<<< HEAD
     "name-test": "mocha test"
+=======
+    "meeting-test": "mocha tests"
+>>>>>>> 1531bc667ea4c9c3d9d924add7c33747a5c0b7ec
   },
   "dependencies": {
     "@zoomus/websdk": "^2.3.0",
@@ -33,7 +37,6 @@
     "node-fetch": "^3.2.3",
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.15",
-    "passport": "^0.5.2",
     "passport-local": "^1.0.0",
     "peer": "^0.6.1",
     "pg": "^8.7.3",
@@ -42,8 +45,15 @@
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "chai": "^4.3.6",
     "got": "^11.3.0",
+<<<<<<< HEAD
     "request": "^2.88.2",
+=======
+    "jest": "^27.5.1",
+    "mocha": "^9.2.2",
+    "supertest": "^6.2.2",
+>>>>>>> 1531bc667ea4c9c3d9d924add7c33747a5c0b7ec
     "tape": "^4.7.0"
   },
   "repository": {

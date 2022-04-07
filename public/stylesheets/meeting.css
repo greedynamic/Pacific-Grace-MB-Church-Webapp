@@ -54,29 +54,11 @@ form {
     width: 20%;
 }
 
-#errorContent {
-    margin-top: 10px;
-    font-size: 18px;
-    color: red;
-    -webkit-animation: cssAnimation 4s forwards; 
-    animation: cssAnimation 4s forwards;
-}
-
-@keyframes cssAnimation {
-    0%   {opacity: 1;}
-    80%  {opacity: 1;}
-    100% {opacity: 0;}
-}
-@-webkit-keyframes cssAnimation {
-    0%   {opacity: 1;}
-    80%  {opacity: 1;}
-    100% {opacity: 0;}
-}
-
 .public-meetings {
     display: flex;
     flex-direction: column;
     margin-bottom: auto;
+    margin-top: 3vh;
     align-items: center;
     justify-content: center;
     padding: 10vh;
@@ -84,7 +66,7 @@ form {
 }
 
 .public-meetings h4 {
-    margin-bottom: 2vh;
+    margin-bottom: 3vh;
 }
 
 .public-meetings button {

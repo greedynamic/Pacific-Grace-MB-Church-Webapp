@@ -34,13 +34,13 @@ const upload = multer({
     storage: multerS3({
         s3: s3,
         bucket: BUCKET,
+        acl: "public-read",
         key: function (req, file, cb) {
             const ext = path.extname(file.originalname);
             cb(null, `${uuid()}${ext}`);
         }
     })
 })
-
 
 // Render upload video form
 router.get('/upload', authAdmin(), (req,res) => res.render('pages/uploadVideo'));
@@ -128,6 +128,13 @@ router.post('/edit/:title', upload.single('video'), (req,res) => {
           if(result.rows[0].filekey != 'undefined'){
             s3.deleteObject({Bucket: BUCKET, Key: result.rows[0].filekey}).promise();
           }
+          if(result.rows[0].url != 'undefined'){
+            const url = undefined;
+            pool.query(`UPDATE video SET url= '${url}' where title='${req.params.title}';`, (err)=>{
+              if(err)
+                res.send(err);
+            });
+          }
         }
       });  
       // Update new files
@@ -138,7 +145,22 @@ router.post('/edit/:title', upload.single('video'), (req,res) => {
           res.send(err);
       });
     }
-    if(req.body.url){
+    if(req.url){
+        // Delete old files
+        var query = `SELECT * FROM video WHERE title='${req.params.title}';`;
+        pool.query(query, (error,result) => {
+          if(error)
+            res.send(error); 
+          else{
+            if(result.rows[0].filekey != 'undefined'){
+              s3.deleteObject({Bucket: BUCKET, Key: result.rows[0].filekey}).promise();
+              pool.query(`UPDATE video SET filepath='undefined', filekey='undefined' where title='${req.params.title}';`, (err)=>{
+                if(err)
+                  res.send(err);
+              });
+            }
+          }
+        });  
         var url = req.body.url;
         var url_parts = url.split('/');
         var video_id = url_parts[3];

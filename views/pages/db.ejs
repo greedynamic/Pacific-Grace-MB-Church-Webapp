@@ -1,23 +1,37 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <%- include ("../partials/header.ejs") %>
-</head>
-
-<body>
-
-<%- include ("../partials/nav.ejs") %>
-
-<div class="container">
-<h2>Database Results</h2>
-
-<ul>
-    <% results.forEach(function(r) { %>
-        <li><%= r.fname %> - <%= r.lname %> - <%= r.email %> - <%= r.password %></li>
-    <% }); %>
-</ul>
-
-</div>
-
-</body>
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Database</title>
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@100;200;400;600;700&display=swap" rel="stylesheet">
+    <script src="index.js" defer></script>
+    <script src="https://kit.fontawesome.com/1762306277.js" crossorigin="anonymous" defer></script>
+  </head>
+  <body>
+      <nav class="header">
+        <div class="header_container">
+            <a href="/" id="headerlogo"><i class="fa-solid fa-church"></i>Pacific Church</a>
+            <div class="header_toggle" id="mobile_menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+            <ul class="header_menu">
+                <li class = "header_item">
+                    <a href="/" class="header_links">HOME</a></li>
+            </ul>
+        </div>
+    </nav>    
+    <div class="container">
+      <h2>Database Results</h2>
+      <ul style="margin-left: 20px;">
+          <% results.forEach(function(r) { %>
+            <li><%= r.fname %> - <%= r.lname %> - <%= r.email %> - <%= r.password %></li>
+          <% }); %>
+      </ul>
+    </div>
+  </body>
 </html>

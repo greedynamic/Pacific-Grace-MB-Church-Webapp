@@ -28,7 +28,13 @@
                 <li class = "header_item">
                     <a href="/" class="header_links">HOME</a></li>
                 <li class = "header_item">
-                    <a href="/roombooking" class="header_links">ROOMS</a></li>
+                    <a href="/roombooking" class="header_links">ROOMS</a>
+                    <% if(user && user.admin){ %> 
+                        <ul>
+                            <li><a href="https://www.notion.so/b66a06bed507445aa993ca389f267e76?v=910840af92d84ee38e48c663459a346a" class="header_links">Reservations</a></li>
+                        </ul>
+                    <% } %>
+                </li>
                 <li class = "header_item">
                     <a href="#videos" class="header_links">VIDEOS</i></a>
                     <% if(user && user.admin){ %> 
