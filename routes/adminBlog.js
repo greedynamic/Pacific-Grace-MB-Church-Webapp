@@ -46,6 +46,7 @@ const upload = multer({
     storage: multerS3({
         s3: s3,
         bucket: BUCKET,
+        acl: "public-read",
         key: function (req, file, cb) {
             const ext = path.extname(file.originalname);
             cb(null, `${uuid()}${ext}`);
