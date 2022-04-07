@@ -155,43 +155,45 @@ app.get('/login', (req,res) => {
 
 app.post('/login', async (req,res) => {
   let token = req.body.token;
-  // console.log(token);
-  async function verify() {
-    const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
-    });
-    const payload = ticket.getPayload();
-    const userid = payload['sub'];
-  }
-  verify()
-  .then(()=>{
-    req.session.user = {fname:'OAuth', lname:'Go',
-      email:'Google User', password:'g@g.c', admin:'f'};
-      res.cookie('session-token', token);
-      res.send('success')
-  })
-  .catch(console.error);
-  try {
+  if (token) {
+    // console.log(token);
+    async function verify() {
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
+      });
+      const payload = ticket.getPayload();
+      const userid = payload['sub'];
+    }
+    verify()
+    .then(()=>{
+      req.session.user = {fname:'OAuth', lname:'Go',
+        email:'Google User', password:'g@g.c', admin:'f'};
+        res.cookie('session-token', token);
+        res.send('success')
+    })
+    .catch(console.error);
+  } else  {
     const email = req.body.email;
     const password = req.body.password;
     const loginQuery = `select * from usr where email='${email}' and password='${password}'`;
     let errors = [];
-
-    const client = await pool.connect();
-    const result = await client.query(loginQuery);
-    if (result.rowCount == 1) {
-      const userResult = result.rows[0];
-      req.session.user = {fname:userResult.fname, lname:userResult.lname,
-        email:userResult.email, password:userResult.password, admin:userResult.admin};
-      res.redirect("/");
-    } else {
-      errors.push({message: "Invalid email or password"});
-      res.render('pages/login', {errors});
+    try {
+      const client = await pool.connect();
+      const result = await client.query(loginQuery);
+      if (result.rowCount == 1) {
+        const userResult = result.rows[0];
+        req.session.user = {fname:userResult.fname, lname:userResult.lname,
+          email:userResult.email, password:userResult.password, admin:userResult.admin};
+        res.redirect("/");
+      } else {
+        errors.push({message: "Invalid email or password"});
+        res.render('pages/login', {errors});
+      }
+      client.release();
+    } catch (err) {
+      res.send(err);
     }
-    client.release();
-  } catch (err) {
-    res.send(err);
   }
 });
 
@@ -352,7 +354,7 @@ app.get('/meeting/room', (req,res) => {
   }
 })
 
-//render unique room
+// Renders a unique room
 app.get('/meeting/room/:room', (req,res) => {
   if (req.session.user) {
     res.render('pages/room', {roomId: req.params.room, user: req.session.user});
@@ -372,7 +374,7 @@ io.of("/room").on('connection', socket => {
     socket.on('send-chat-message', (msg) => {
       io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
-    socket.on('disconnect', async () => {
+    socket.on('disconnect', () => {
       let roomUser = roomUsers.removeUser(userId);
       if (roomUser) {
         io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
@@ -380,9 +382,7 @@ io.of("/room").on('connection', socket => {
         // Remove room from activemeetings
         if (roomUsers.getUserList(roomId).length == 0) {
           try {
-            const client = await pool.connect();
-            await client.query(`delete from activemeetings where id='${roomId}'`);
-            client.release();
+            pool.query(`delete from activemeetings where id='${roomId}'`);
           } catch (err) {
             res.send(err);
           }
@@ -392,24 +392,24 @@ io.of("/room").on('connection', socket => {
   });
 });
 
-app.get('/meeting/public', async (req,res) => {
+app.get('/meeting/public', (req,res) => {
+  const roomId = uuidV4();
+  const fName = req.session.user.fname;
+  const meetingName = `${fName} meeting`; 
   try {
-    const roomId = uuidV4();
-    const fName = req.session.user.fname;
-    const meetingName = `${fName} s meeting`; 
-    await pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', true)`);
+    pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', true)`);
     res.redirect(`/meeting/room/${roomId}`);
   } catch (err) {
     res.send(err);
   }
 })
 
-app.get('/meeting/private', async (req,res) => {
+app.get('/meeting/private', (req,res) => {
+  const roomId = uuidV4();
+  const fName = req.session.user.fname;
+  const meetingName = `${fName} meeting`; 
   try {
-    const roomId = uuidV4();
-    const fName = req.session.user.fname;
-    const meetingName = `${fName} s meeting`; 
-    await pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', false)`);
+    pool.query(`insert into activemeetings values('${roomId}', 1, '${meetingName}', false)`);
     res.redirect(`/meeting/room/${roomId}`);
   } catch (err) {
     res.send(err);
