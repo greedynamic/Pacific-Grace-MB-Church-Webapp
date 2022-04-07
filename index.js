@@ -5,7 +5,7 @@ const app = express();
 const res = require('express/lib/response');
 const { redirect } = require('express/lib/response');
 const fetch = (...args) =>
-  import('node-fetch').then(({ default: fetch }) => fetch(...args));
+import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const moment = require('moment');
 const blogRoute = require('./routes/adminBlog');
 const videoRoute = require('./routes/adminVideo');
@@ -30,8 +30,8 @@ const peerServer = ExpressPeerServer(server, {
 });
 const session = require('express-session')
 const {authUser, authAmdin} = require('./routes/middleware');
-const {Users} = require('./public/roomUsers');
-var roomUsers = new Users();
+const { RoomUsers } = require('./public/roomUsers');
+var roomUsers = new RoomUsers();
 
 // Google Auth
 const {OAuth2Client} = require('google-auth-library');
@@ -109,44 +109,42 @@ const validateEmail = (email) => {
 };
 
 app.post('/signup', async (req,res) => {
+  const firstName = req.body.fName;
+  const lastName  = req.body.lName;
+  const email = req.body.email;
+  const password = req.body.password;
+  let errors = [];
   try {
-    const firstName = req.body.fName;
-    const lastName  = req.body.lName;
-    const email = req.body.email;
-    const password = req.body.password;
-    let errors = [];
-
     const client = await pool.connect();
     const emailQuery = `select * from usr where email='${email}'`;
     const result = await client.query(emailQuery);
     
-      //check if email is in database
-      if(result.rows.length > 0) {
-        errors.push({message: "Email in use. Please use a different email"})
-      }
-      if (!validateEmail(email)) {
-        errors.push({message: "Email address is invalid."});
-      }
-      if(password.length < 8) {
-        errors.push({message: "Password minimum length 8 characters."});
-      }
+    if (result.rows.length > 0) {
+      errors.push({message: "Email in use. Please use a different email"})
+    }
+    if (!validateEmail(email)) {
+      errors.push({message: "Email address is invalid."});
+    }
+    if (password.length < 8) {
+      errors.push({message: "Password minimum length 8 characters."});
+    }
 
-      if(errors.length == 0) {
-        // adds account to database, creating account
-        const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}', false)`;
-        await client.query(registerQuery); 
-        res.redirect("/login");
-        client.release();
-      } else {
-        res.render('pages/signup', {errors});
-      }
+    if (errors.length == 0) {
+      // adds account to database, creating account
+      const registerQuery = `insert into usr values('${firstName}', '${lastName}', '${email}', '${password}', false)`;
+      await client.query(registerQuery); 
+      res.redirect("/login");
+      client.release();
+    } else {
+      res.render('pages/signup', {errors});
+    }
   } catch (err) {
     res.send(err);
   }
 })
 
 app.get('/login', (req,res) => {
-  if(req.session.user){
+  if (req.session.user) {
     res.redirect('/');
   } else {
     res.render('pages/login');
@@ -212,8 +210,8 @@ app.get('/donate', (req,res) => {
 })
 
 app.get('/account', (req,res) => {
-  if(req.session.user){
-    res.render('pages/account', {user:req.session.user});
+  if (req.session.user) {
+    res.render('pages/account', {user: req.session.user});
   } else {
     res.redirect('/login');
   }
@@ -276,6 +274,7 @@ app.post('/account/edit', async (req,res) => {
     } else {
       res.render('pages/editAccount', {user: req.session.user, errors})
     }
+    client.release();
   } catch (err){
     res.send(err);
   }
@@ -313,6 +312,7 @@ app.get('/meeting', async (req,res) => {
     } else {
       res.redirect('/login')
     }
+    client.release();
   } catch(err) {
     res.send(err);
   }
@@ -381,11 +381,11 @@ io.of("/room").on('connection', socket => {
         io.of("/room").to(roomId).emit('user-disconnected', userId);
         // Remove room from activemeetings
         if (roomUsers.getUserList(roomId).length == 0) {
-          try {
-            pool.query(`delete from activemeetings where id='${roomId}'`);
-          } catch (err) {
-            res.send(err);
-          }
+          pool.query(`delete from activemeetings where id='${roomId}'`, (err, res) => {
+            if (err) {
+              res.send(err);
+            }
+          });
         }
       }
     });
@@ -473,7 +473,6 @@ app.post("/api/orders/:orderID/capture", async (req, res) => {
     }
   })
 });
-
 
 // use the orders api to capture payment for an order
 async function capturePayment(orderId) {
