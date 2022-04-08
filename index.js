@@ -494,10 +494,12 @@ io.of("/room").on('connection', socket => {
         io.of("/room").to(roomId).emit('user-disconnected', userId);
         // Remove room from activemeetings
         if (roomUsers.getUserList(roomId).length == 0) {
+          console.log("worked")
           pool.query(`delete from activemeetings where id='${roomId}'`, (err) => {
             if (err) {
               throw err;
             }
+            console.log("meeting removed")
           });
         }
       }
