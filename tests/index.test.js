@@ -39,15 +39,17 @@ describe('/login', () => {
                 done();
             }) 
     })
-    // it('should fail login in user on POST request', (done) => {
-    //     chai.request(server)
-    //         .post("/login")
-    //         .send({'email':'invalid@gmail.com', 'password':'invalid'})
-    //         .end((err,res) => {
-    //             res.should.fail();
-    //             done();
-    //         }) 
-    // })
+    it('should fail POST admin user login', (done) => {
+        chai.request(server)
+            .post("/login")
+            .send({'email':'peterpark@gmail.com', 'password':'pedterpark'})
+            .redirects(0)
+            .end((err,res) => {
+                res.should.have.status(200);
+                res.should.to.be.html;
+                done();
+            }) 
+    })
 })
 
 describe('/meeting', () => {
@@ -69,24 +71,6 @@ describe('/meeting', () => {
                 done();
             })
     })
-    // it('should GET meeting public redirect', (done) => {
-    //     chai.request(server)
-    //         .get("/meeting/public")
-    //         .redirects(0)
-    //         .end((err, res) => {
-    //             res.should.have.status(200)
-    //             done();
-    //         })
-    // })
-    // it('should GET meeting private redirect', (done) => {
-    //     chai.request(server)
-    //         .get("/meeting/private")
-    //         .redirects(0)
-    //         .end((err, res) => {
-    //             res.should.have.status(302)
-    //             done();
-    //         })
-    // })
     it('should GET a unique meeting room page', (done) => {
         chai.request(server)
             .get('/meeting/room/:room')

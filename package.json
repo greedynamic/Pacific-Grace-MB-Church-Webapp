@@ -9,7 +9,7 @@
   "scripts": {
     "start": "nodemon index.js",
     "test": "nodemon test.js",
-    "meeting-test": "mocha tests"
+    "mocha-test": "mocha tests"
   },
   "dependencies": {
     "@zoomus/websdk": "^2.3.0",
