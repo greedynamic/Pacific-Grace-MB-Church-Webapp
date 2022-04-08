@@ -422,32 +422,30 @@ app.post('/meeting/code', async (req,res) => {
   }
 })
 
-app.get('/meeting/public', (req,res) => {
+app.get('/meeting/public', async (req,res) => {
   const roomId = uuidV4();
   const fName = req.session.user.fname;
-  const meetingName = `${fName} meeting`; 
+  const meetingName = `${fName} s meeting`; 
 
-  pool.query(`insert into activemeetings values('${roomId}', '${meetingName}', true)`, (err) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.redirect(`/meeting/room/${roomId}`);
-    }
-  });
+  try {
+    await pool.query(`insert into activemeetings values('${roomId}', '${meetingName}', true)`);
+    res.redirect(`/meeting/room/${roomId}`);
+  } catch (err) {
+    res.send(err);
+  }
 })
 
-app.get('/meeting/private', (req,res) => {
+app.get('/meeting/private', async (req,res) => {
   const roomId = uuidV4();
   const fName = req.session.user.fname;
-  const meetingName = `${fName} meeting`; 
-  
-  pool.query(`insert into activemeetings values('${roomId}', '${meetingName}', false)`, (err) => {
-    if (err) {
-      res.send(err);
-    } else {
-      res.redirect(`/meeting/room/${roomId}`);
-    }
-  });
+  const meetingName = `${fName} s meeting`; 
+
+  try {
+    await pool.query(`insert into activemeetings values('${roomId}', '${meetingName}', false)`);
+    res.redirect(`/meeting/room/${roomId}`);
+  } catch (err) {
+    res.send(err);
+  }
 })
 
 // Renders a unique room
@@ -477,20 +475,20 @@ io.of("/room").on('connection', socket => {
     roomUsers.removeUser(userId);
     roomUsers.addUser(userId, name, roomId);
     io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
-    io.of("/room").to(roomId).emit('user-connected', userId);
+    socket.to(roomId).emit('user-connected', userId);
 
     socket.on('send-chat-message', (msg) => {
       io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       let roomUser = roomUsers.removeUser(userId);
       if (roomUser) {
         io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
-        io.of("/room").to(roomId).emit('user-disconnected', userId);
+        socket.to(roomId).emit('user-disconnected', userId);
         // Remove room from activemeetings
         if (roomUsers.getUserList(roomId).length == 0) {
-          pool.query(`delete from activemeetings where id='${roomId}'`, (err) => {
+          await pool.query(`delete from activemeetings where id='${roomId}'`, (err) => {
             if (err) {
               throw err;
             }
