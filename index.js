@@ -481,18 +481,20 @@ io.of("/room").on('connection', socket => {
       io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       let roomUser = roomUsers.removeUser(userId);
       if (roomUser) {
         io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
         socket.to(roomId).emit('user-disconnected', userId);
         // Remove room from activemeetings
         if (roomUsers.getUserList(roomId).length === 0) {
-          pool.query(`delete from activemeetings where id='${roomId}'`, (err) => {
+          const client = await pool.connect();
+          client.query(`delete from activemeetings where id='${roomId}'`, (err) => {
             if (err) {
               throw err;
             }
           });
+          client.release();
         }
       }
     });
