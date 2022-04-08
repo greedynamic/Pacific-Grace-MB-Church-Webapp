@@ -485,15 +485,18 @@ io.of("/room").on('connection', socket => {
       let roomUser = roomUsers.removeUser(userId);
       if (roomUser) {
         io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
+        roomUsers.removeUser(userId)
         socket.to(roomId).emit('user-disconnected', userId);
         // Remove room from activemeetings
         if (roomUsers.getUserList(roomId).length === 0) {
           const client = await pool.connect();
-          client.query(`delete from activemeetings where id='${roomId}'`, (err) => {
-            if (err) {
-              throw err;
+          client.query(`delete from activemeetings where id='${roomId}'`, (error) => {
+            if (error) {
+              console.log(`Error in deleting active meeting where id = ${roomId}`)
+              res.send(error);
             }
           });
+          console.log(`terminated id = ${roomId}`);
           client.release();
         }
       }
