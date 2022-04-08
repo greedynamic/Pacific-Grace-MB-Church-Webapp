@@ -470,7 +470,7 @@ app.get('/meeting/room/:room', (req,res) => {
 
 // Handles communication between client and server
 io.of("/room").on('connection', socket => {
-  socket.on('join-room', async (roomId, userId, name) => {
+  socket.on('join-room', (roomId, userId, name) => {
     socket.join(roomId);
     roomUsers.removeUser(userId);
     roomUsers.addUser(userId, name, roomId);
@@ -481,14 +481,14 @@ io.of("/room").on('connection', socket => {
       io.of("/room").to(roomId).emit('chat-message', msg, name);
     });
 
-    socket.on('disconnect', async () => {
+    socket.on('disconnect', () => {
       let roomUser = roomUsers.removeUser(userId);
       if (roomUser) {
         io.of("/room").to(roomId).emit('updateUsersList', roomUsers.getUserList(roomId));
         socket.to(roomId).emit('user-disconnected', userId);
         // Remove room from activemeetings
-        if (roomUsers.getUserList(roomId).length == 0) {
-          await pool.query(`delete from activemeetings where id='${roomId}'`, (err) => {
+        if (roomUsers.getUserList(roomId).length === 0) {
+          pool.query(`delete from activemeetings where id='${roomId}'`, (err) => {
             if (err) {
               throw err;
             }
